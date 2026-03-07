@@ -14,15 +14,18 @@ const config = require('../config/config');
  * @returns {Function} CORS middleware
  */
 const configureCors = () => {
-  const allowedOrigins = (config.security.cors.origin || '')
-    .split(',')
-    .map(o => o.trim())
-    .filter(Boolean);
+  const rawOrigin = config.security.cors.origin || '';
+  const allowAll = rawOrigin.trim() === '*';
+  const allowedOrigins = allowAll
+    ? []
+    : rawOrigin.split(',').map(o => o.trim()).filter(Boolean);
 
   return cors({
     origin: (origin, callback) => {
       // Allow requests with no origin (mobile apps, Postman, curl)
       if (!origin) return callback(null, true);
+      // Allow all origins if configured with *
+      if (allowAll) return callback(null, true);
       if (allowedOrigins.includes(origin)) return callback(null, true);
       callback(new Error(`CORS: origin ${origin} not allowed`));
     },
