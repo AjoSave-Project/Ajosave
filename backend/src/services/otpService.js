@@ -51,7 +51,7 @@ const sendOtpSms = async (phoneNumber, otp) => {
     from: TERMII_SENDER_ID,
     sms: message,
     type: 'plain',
-    channel: 'dnd',
+    channel: 'generic',
     api_key: TERMII_API_KEY,
   };
 
@@ -100,6 +100,7 @@ const createAndSendOtp = async (user) => {
     await sendOtpSms(user.phoneNumber, otp);
   } catch (smsErr) {
     console.error(`⚠️ SMS delivery failed for ${user.phoneNumber}:`, smsErr.message);
+    throw new Error(`OTP SMS failed: ${smsErr.message}`);
   }
 
   return { expiry };
