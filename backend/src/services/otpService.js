@@ -36,9 +36,9 @@ const sendOtpSms = async (phoneNumber, otp) => {
   const message = `Your AjoSave verification code is: ${otp}. Valid for ${OTP_EXPIRY_MINUTES} minutes. Do not share this code.`;
 
   if (!TERMII_API_KEY) {
-    // Dev fallback — log to console if no API key configured
-    console.log(`📱 [OTP DEV] Code for ${phoneNumber}: ${otp}`);
-    return { success: true, dev: true };
+    // No SMS provider — log and return OTP in response for testing
+    console.log(`📱 [OTP NO-SMS] Code for ${phoneNumber}: ${otp}`);
+    return { success: true, dev: true, otp };
   }
 
   // Always log OTP in dev so you can test without SMS
@@ -95,9 +95,11 @@ const createAndSendOtp = async (user) => {
     return { expiry, devOtp: otp };
   }
 
-  // Production — send via Termii
+  // Production — send via Termii (or return OTP if no key configured)
   try {
-    await sendOtpSms(user.phoneNumber, otp);
+    const result = await sendOtpSms(user.phoneNumber, otp);
+    // If no SMS provider, return OTP so it can be included in API response
+    if (result.dev) return { expiry, devOtp: result.otp };
   } catch (smsErr) {
     console.error(`⚠️ SMS delivery failed for ${user.phoneNumber}:`, smsErr.message);
     throw new Error(`OTP SMS failed: ${smsErr.message}`);
