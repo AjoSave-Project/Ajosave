@@ -219,7 +219,7 @@ const registerUser = asyncErrorHandler(async (req, res) => {
         requiresOtp: true,
         phoneNumber: savedUser.phoneNumber,
         userId: savedUser._id,
-        ...(process.env.NODE_ENV !== 'production' && { devOtp }),
+        ...( devOtp ? { devOtp } : {}),
       },
       timestamp: new Date().toISOString()
     });
@@ -290,7 +290,7 @@ const loginUser = asyncErrorHandler(async (req, res) => {
         requiresOtp: true,
         phoneNumber: user.phoneNumber,
         userId: user._id,
-        ...(process.env.NODE_ENV !== 'production' && { devOtp }),
+        ...( devOtp ? { devOtp } : {}),
       },
       timestamp: new Date().toISOString()
     });
@@ -499,7 +499,7 @@ const sendOtp = asyncErrorHandler(async (req, res) => {
     message: 'OTP sent successfully',
     data: {
       phoneNumber: user.phoneNumber,
-      ...(process.env.NODE_ENV !== 'production' && { devOtp }),
+      ...( devOtp ? { devOtp } : {}),
     },
     timestamp: new Date().toISOString(),
   });
@@ -615,7 +615,7 @@ const forgotPassword = asyncErrorHandler(async (req, res) => {
     data: {
       userId: user._id,
       phoneNumber: user.phoneNumber,
-      ...(process.env.NODE_ENV !== 'production' && { devOtp }),
+      ...( devOtp ? { devOtp } : {}),
     },
     timestamp: new Date().toISOString(),
   });
