@@ -29,7 +29,8 @@ const configureCors = () => {
       if (allowedOrigins.includes(origin)) return callback(null, true);
       callback(new Error(`CORS: origin ${origin} not allowed`));
     },
-    credentials: config.security.cors.credentials,
+    // credentials only makes sense with specific origins, not wildcard
+    credentials: !allowAll && config.security.cors.credentials,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
     optionsSuccessStatus: 200

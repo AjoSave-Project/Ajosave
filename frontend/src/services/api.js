@@ -53,6 +53,12 @@ const makeRequest = async (endpoint, options = {}) => {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     };
+
+    // Inject JWT token from localStorage if present
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      defaultHeaders['Authorization'] = `Bearer ${token}`;
+    }
     
     // Merge options with defaults
     const config = {
@@ -61,7 +67,7 @@ const makeRequest = async (endpoint, options = {}) => {
         ...defaultHeaders,
         ...options.headers,
       },
-      credentials: 'include', // CRITICAL: Include cookies in requests
+      // No credentials: 'include' — we use Bearer tokens, not cookies
     };
     
     // Log request in development

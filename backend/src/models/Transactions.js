@@ -14,7 +14,7 @@ const TransactionSchema = new mongoose.Schema({
   groupId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Group',
-    required: [true, 'Group ID is required'],
+    required: false,
     index: true
   },
 
@@ -29,8 +29,8 @@ const TransactionSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Transaction type is required'],
     enum: {
-      values: ['contribution', 'payout', 'withdrawal'],
-      message: 'Type must be contribution, payout, or withdrawal'
+      values: ['contribution', 'payout', 'withdrawal', 'fund_wallet'],
+      message: 'Type must be contribution, payout, withdrawal, or fund_wallet'
     },
     index: true
   },

@@ -137,10 +137,13 @@ export const AuthProvider = ({ children }) => {
 
   /**
    * Complete OTP Login
-   * Called after OTP is verified — sets user state and marks as authenticated
+   * Called after OTP is verified — stores JWT token and sets user state
    */
   const completeOtpLogin = (user, token) => {
     console.log('✅ completeOtpLogin called, user:', user, 'token present:', !!token);
+    if (token) {
+      localStorage.setItem('authToken', token);
+    }
     setPendingOtp(false);
     setUser(user || null);
     setIsAuthenticated(true);
@@ -164,6 +167,7 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       setIsAuthenticated(false);
       setError(null);
+      localStorage.removeItem('authToken');
       
       console.log('✅ Logout successful');
     } catch (error) {
@@ -173,6 +177,7 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       setIsAuthenticated(false);
       setError(null);
+      localStorage.removeItem('authToken');
     } finally {
       setLoading(false);
     }
