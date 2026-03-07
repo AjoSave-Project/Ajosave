@@ -14,8 +14,9 @@ const config = require('../config/config');
  * @returns {Function} CORS middleware
  */
 const configureCors = () => {
-  const rawOrigin = config.security.cors.origin || '';
-  const allowAll = rawOrigin.trim() === '*';
+  // Read directly from process.env to avoid any config caching issues
+  const rawOrigin = process.env.CORS_ORIGIN || config.security.cors.origin || '';
+  const allowAll = rawOrigin.trim() === '*' || !rawOrigin.trim();
   const allowedOrigins = allowAll
     ? []
     : rawOrigin.split(',').map(o => o.trim()).filter(Boolean);
@@ -33,17 +34,19 @@ const configureCors = () => {
     return originPatterns.some(pattern => pattern.test(origin));
   };
 
+  console.log(`[CORS] allowAll=${allowAll}, origins=${allowedOrigins.join('|')}, patterns=${rawPatterns}`);
+
   return cors({
     origin: (origin, callback) => {
       // Allow requests with no origin (mobile apps, Postman, curl)
       if (!origin) return callback(null, true);
-      // Allow all origins if configured with *
+      // Allow all origins if not configured or set to *
       if (allowAll) return callback(null, true);
       if (isOriginAllowed(origin)) return callback(null, true);
+      console.warn(`[CORS] Blocked origin: ${origin}`);
       // Return false (block) instead of throwing — avoids hitting globalErrorHandler
       return callback(null, false);
     },
-    // credentials only makes sense with specific origins, not wildcard
     credentials: !allowAll && config.security.cors.credentials,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
