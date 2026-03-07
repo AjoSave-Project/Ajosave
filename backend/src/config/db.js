@@ -125,17 +125,7 @@ const connectDB = async (retryCount = 0) => {
       return connectDB(retryCount + 1);
     } else {
       // All retry attempts failed
-      console.error('💥 All connection attempts failed. Exiting application.');
-      
-      // Provide helpful error messages based on error type
-      if (error.message.includes('authentication failed')) {
-        console.error('🔐 Authentication Error: Check your MongoDB username and password');
-      } else if (error.message.includes('ENOTFOUND')) {
-        console.error('🌐 Network Error: Check your internet connection and MongoDB URI');
-      } else if (error.message.includes('timeout')) {
-        console.error('⏰ Timeout Error: MongoDB server is not responding');
-      }
-      
+      console.error('💥 All connection attempts failed.');
       throw new Error(`Failed to connect to MongoDB after ${maxRetries + 1} attempts: ${error.message}`);
     }
   }
