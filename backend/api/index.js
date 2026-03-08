@@ -24,12 +24,14 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 app.use(sanitizeInput);
 
-// Health check — always responds, no sensitive info exposed
+// Health check
 app.get(['/', '/api/health'], (req, res) => {
   res.status(200).json({
     success: true,
     message: 'AjoSave API',
     database: isConnected ? 'connected' : 'disconnected',
+    connectionError: connectionError || null,
+    mongoUriSet: !!process.env.MONGO_URI,
     timestamp: new Date().toISOString(),
   });
 });
