@@ -48,7 +48,7 @@ const configureCors = () => {
       return callback(null, false);
     },
     credentials: !allowAll && config.security.cors.credentials,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
     optionsSuccessStatus: 204
   });

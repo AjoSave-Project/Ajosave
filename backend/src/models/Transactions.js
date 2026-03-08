@@ -29,8 +29,8 @@ const TransactionSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Transaction type is required'],
     enum: {
-      values: ['contribution', 'payout', 'withdrawal', 'fund_wallet'],
-      message: 'Type must be contribution, payout, withdrawal, or fund_wallet'
+      values: ['contribution', 'payout', 'withdrawal', 'fund_wallet', 'lock', 'unlock'],
+      message: 'Type must be contribution, payout, withdrawal, fund_wallet, lock, or unlock'
     },
     index: true
   },

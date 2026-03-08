@@ -1,31 +1,30 @@
-// backend/src/routes/transactionRoutes.js - UPDATED
-
 const express = require('express');
 const router = express.Router();
 
-const { protect, requireVerification } = require('../middlewares/authMiddleware');
+const { protect } = require('../middlewares/authMiddleware');
+const turnGuard = require('../middlewares/turnGuard');
 
-const { 
+const {
   getTransactions,
   createContribution,
   createWalletContribution,
   getTransactionById,
-  getTransactionStats
+  getTransactionStats,
+  exportCSV,
+  claimPayout
 } = require('../controllers/transactionController');
 
 const { sanitizeInput } = require('../middlewares/validation');
 
-// Apply authentication to all routes
 router.use(protect);
-
-// Apply input sanitization
 router.use(sanitizeInput);
 
-// Transaction routes
 router.get('/', getTransactions);
 router.get('/stats', getTransactionStats);
-router.post('/contribution', /* requireVerification, */ createContribution); // TODO: re-enable in production
-router.post('/contribution/wallet', createWalletContribution);
+router.get('/export', exportCSV);
+router.post('/contribution', turnGuard, createContribution);
+router.post('/contribution/wallet', turnGuard, createWalletContribution);
+router.post('/payout', claimPayout);
 router.get('/:id', getTransactionById);
 
 module.exports = router;

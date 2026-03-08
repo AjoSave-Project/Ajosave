@@ -381,11 +381,179 @@ const createWalletContribution = asyncErrorHandler(async (req, res) => {
   });
 });
 
+/**
+ * Export transactions as CSV
+ *
+ * @route   GET /api/transactions/export
+ * @access  Private
+ */
+const exportCSV = asyncErrorHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  const transactions = await Transaction.find({ userId })
+    .populate('groupId', 'name')
+    .sort({ createdAt: -1 });
+
+  const escape = (val) => {
+    if (val === null || val === undefined) return '';
+    const str = String(val);
+    if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+      return `"${str.replace(/"/g, '""')}"`;
+    }
+    return str;
+  };
+
+  const headers = ['Transaction ID', 'Type', 'Amount', 'Status', 'Description', 'Group', 'Payment Method', 'Date'];
+  const rows = transactions.map(tx => [
+    escape(tx.transactionId),
+    escape(tx.type),
+    escape(tx.amount),
+    escape(tx.status),
+    escape(tx.description),
+    escape(tx.groupId?.name || ''),
+    escape(tx.paymentMethod),
+    escape(tx.createdAt ? new Date(tx.createdAt).toISOString() : '')
+  ].join(','));
+
+  const csv = [headers.join(','), ...rows].join('\n');
+  const userName = req.user.firstName ? `${req.user.firstName}_${req.user.lastName}` : 'user';
+  const dateStr = new Date().toISOString().split('T')[0];
+  const filename = `transactions_${userName}_${dateStr}.csv`;
+
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+  res.status(200).send(csv);
+});
+
+/**
+ * Claim payout for the current turn recipient
+ *
+ * @route   POST /api/transactions/payout
+ * @access  Private
+ */
+const claimPayout = asyncErrorHandler(async (req, res) => {
+  const userId = req.user._id;
+  const { groupId } = req.body;
+
+  if (!groupId) throw new ValidationError('groupId is required');
+
+  const group = await Group.findById(groupId);
+  if (!group) throw new NotFoundError('Group not found');
+
+  if (!group.members.some(m => m.toString() === userId.toString())) {
+    throw new ValidationError('You are not a member of this group');
+  }
+
+  // Find the member whose status is 'current' — that's the payout recipient
+  const recipientEntry = group.membersList.find(
+    m => m.userId.toString() === userId.toString() && m.status === 'current'
+  );
+  if (!recipientEntry) {
+    throw new ValidationError('It is not your turn to receive a payout');
+  }
+
+  if (!recipientEntry) {
+    throw new ValidationError('You are not a member of this group');
+  }
+
+  const payoutAmount = group.contributionAmount * group.maxMembers;
+
+  if (group.totalPool < payoutAmount) {
+    throw new ValidationError(`Insufficient pool balance. Pool: ₦${group.totalPool.toLocaleString()}, Required: ₦${payoutAmount.toLocaleString()}`);
+  }
+
+  // Credit wallet
+  let wallet = await Wallet.findOne({ userId });
+  if (!wallet) {
+    wallet = new Wallet({ userId, totalBalance: 0, availableBalance: 0, lockedBalance: 0 });
+  }
+  wallet.availableBalance += payoutAmount;
+  wallet.totalPayouts = (wallet.totalPayouts || 0) + payoutAmount;
+  await wallet.save();
+
+  // Record transaction
+  const transaction = new Transaction({
+    userId,
+    groupId,
+    transactionId: Transaction.generateTransactionId(),
+    type: 'payout',
+    amount: payoutAmount,
+    status: 'completed',
+    description: `Payout from ${group.name}`,
+    paymentMethod: 'wallet',
+    metadata: { group_name: group.name },
+    completedAt: new Date()
+  });
+  await transaction.save();
+
+  // Deduct from pool
+  group.totalPool -= payoutAmount;
+
+  // Mark current member as 'completed', advance turn
+  recipientEntry.status = 'completed';
+  recipientEntry.turns += 1;
+
+  // Advance currentTurn and set next member to 'current'
+  const pendingMembers = group.membersList.filter(m => m.status === 'pending');
+  if (pendingMembers.length > 0) {
+    pendingMembers[0].status = 'current';
+    group.currentTurn += 1;
+  } else {
+    // All members have received — group cycle complete
+    group.status = 'completed';
+  }
+
+  await group.save();
+
+  console.log(`✅ Payout claimed: ${transaction.transactionId} — ₦${payoutAmount} to user ${userId}`);
+
+  res.status(200).json({
+    success: true,
+    message: `Payout of ₦${payoutAmount.toLocaleString()} received successfully`,
+    data: {
+      transaction,
+      wallet: { availableBalance: wallet.availableBalance, totalPayouts: wallet.totalPayouts }
+    },
+    timestamp: new Date().toISOString()
+  });
+});
+
+/**
+ * Get all transactions for a specific group
+ *
+ * @route   GET /api/groups/:id/transactions
+ * @desc    Get all transactions for a group (any member can view)
+ * @access  Private
+ */
+const getGroupTransactions = asyncErrorHandler(async (req, res) => {
+  const userId = req.user._id;
+  const { id: groupId } = req.params;
+
+  const group = await Group.findById(groupId);
+  if (!group) throw new NotFoundError('Group not found');
+
+  const isMember = group.members.some(m => m.toString() === userId.toString());
+  if (!isMember) throw new ValidationError('You are not a member of this group');
+
+  const transactions = await Transaction.find({ groupId })
+    .populate('userId', 'firstName lastName')
+    .sort({ createdAt: -1 });
+
+  res.status(200).json({
+    success: true,
+    data: { transactions, count: transactions.length },
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Export all controller functions
 module.exports = {
   getTransactions,
   createContribution,
   createWalletContribution,
   getTransactionById,
-  getTransactionStats
+  getTransactionStats,
+  exportCSV,
+  claimPayout,
+  getGroupTransactions
 };

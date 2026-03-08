@@ -183,6 +183,35 @@ const api = {
       method: 'DELETE',
     });
   },
+
+  /**
+   * PATCH Request
+   */
+  patch: async (endpoint, data = {}) => {
+    return makeRequest(endpoint, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  },
+
+  /**
+   * GET Blob — for file downloads (CSV, etc.)
+   * Returns the raw Response so the caller can call .blob()
+   */
+  getBlob: async (endpoint, params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    const url = queryString ? `${API_BASE_URL}${endpoint}?${queryString}` : `${API_BASE_URL}${endpoint}`;
+    const token = localStorage.getItem('authToken');
+    const headers = { Accept: '*/*' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    const response = await fetch(url, { method: 'GET', headers });
+    if (!response.ok) {
+      let msg = 'Export failed';
+      try { const d = await response.json(); msg = d.message || msg; } catch (_) {}
+      throw new APIError(msg, response.status);
+    }
+    return response;
+  },
 };
 
 // Export API methods and error class

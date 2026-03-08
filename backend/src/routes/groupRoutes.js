@@ -14,6 +14,8 @@ const {
   getGroupStats
 } = require('../controllers/groupContoller');
 
+const { getGroupTransactions } = require('../controllers/transactionController');
+
 const { protect, requireVerification } = require('../middlewares/authMiddleware');
 const { sanitizeInput } = require('../middlewares/validation');
 
@@ -30,6 +32,7 @@ router.get('/find/:code', findGroupByCode);
 
 router.get('/:id', getGroupById);
 router.get('/:id/stats', getGroupStats);
+router.get('/:id/transactions', getGroupTransactions);
 router.post('/:id/join', /* requireVerification, */ joinGroup); // TODO: re-enable in production
 
 // Group management (admin only)

@@ -8,9 +8,12 @@ const {
   getBankAccounts,
   setPrimaryBankAccount,
   initializeFunding,
-  verifyFunding
+  verifyFunding,
+  withdraw,
+  saveAutoWithdrawal
 } = require('../controllers/walletController');
 
+const { createLock, getLocks, unlock } = require('../controllers/lockController');
 const { protect } = require('../middlewares/authMiddleware');
 
 router.use(protect);
@@ -22,5 +25,10 @@ router.post('/add-bank-account', addBankAccount);
 router.patch('/bank-accounts/:accountId/set-primary', setPrimaryBankAccount);
 router.post('/fund/initialize', initializeFunding);
 router.post('/fund/verify', verifyFunding);
+router.post('/withdraw', withdraw);
+router.post('/auto-withdrawal', saveAutoWithdrawal);
+router.post('/locks', createLock);
+router.get('/locks', getLocks);
+router.post('/locks/:lockId/unlock', unlock);
 
 module.exports = router;

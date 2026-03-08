@@ -15,8 +15,10 @@ const { sanitizeInput } = require('./src/middlewares/validation');
 const authRoutes = require('./src/routes/authRoutes');
 const transactionRoutes = require('./src/routes/transactionRoutes');
 const groupRoutes = require('./src/routes/groupRoutes');
-
 const walletRoutes = require('./src/routes/walletRoutes');
+
+// Import cron jobs
+const { startLockReleaseCron } = require('./src/services/lockReleaseCron');
 const initializeDatabase = async () => {
   try {
     await connectDB();
@@ -94,6 +96,7 @@ const startServer = async () => {
     
     const server = app.listen(config.server.port, () => {
       console.log(`🚀 Server running on port ${config.server.port} [${config.server.nodeEnv}]`);
+      startLockReleaseCron();
     });
     
     const gracefulShutdown = (signal) => {

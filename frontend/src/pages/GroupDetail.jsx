@@ -1,6 +1,6 @@
-// frontend/src/pages/GroupDetail.jsx - NEW FILE
+// frontend/src/pages/GroupDetail.jsx
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import {
@@ -14,9 +14,14 @@ import {
   CheckCircle,
   AlertCircle,
   DollarSign,
-  Settings
+  Settings,
+  ArrowUpCircle,
+  ArrowDownCircle,
+  Banknote,
+  RefreshCw
 } from 'lucide-react'
 import groupService from '../services/groupServices'
+import { api } from '../services/api'
 import LoadingSpinner from '../components/common/LoadingSpinner'
 
 const GroupDetail = () => {
@@ -27,7 +32,12 @@ const GroupDetail = () => {
   const [group, setGroup] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [activeTab, setActiveTab] = useState('overview') // overview, members, history
+  const [activeTab, setActiveTab] = useState('overview')
+
+  // Transaction history state
+  const [transactions, setTransactions] = useState([])
+  const [loadingTx, setLoadingTx] = useState(false)
+  const [txError, setTxError] = useState(null)
 
   useEffect(() => {
     fetchGroupDetail()
@@ -37,11 +47,7 @@ const GroupDetail = () => {
     try {
       setLoading(true)
       setError(null)
-      
-      console.log('🔍 Fetching group details:', id)
       const response = await groupService.getGroupById(id)
-      
-      console.log('✅ Group data:', response.data.group)
       setGroup(response.data.group)
     } catch (err) {
       console.error('❌ Failed to fetch group:', err)
@@ -50,6 +56,24 @@ const GroupDetail = () => {
       setLoading(false)
     }
   }
+
+  const fetchTransactions = useCallback(async () => {
+    if (!id) return
+    try {
+      setLoadingTx(true)
+      setTxError(null)
+      const response = await api.get(`/groups/${id}/transactions`)
+      setTransactions(response.data?.transactions || [])
+    } catch (err) {
+      setTxError(err.message || 'Failed to load transactions')
+    } finally {
+      setLoadingTx(false)
+    }
+  }, [id])
+
+  useEffect(() => {
+    if (activeTab === 'history') fetchTransactions()
+  }, [activeTab, fetchTransactions])
 
   const copyInvitationCode = () => {
     if (group?.invitationCode) {
@@ -439,14 +463,85 @@ const GroupDetail = () => {
 
         {activeTab === 'history' && (
           <div className="bg-white rounded-2xl shadow-sm border border-deepBlue-100 p-6">
-            <h2 className="text-lg font-semibold text-deepBlue-800 mb-4">Transaction History</h2>
-            <div className="text-center py-12">
-              <Calendar className="w-16 h-16 text-deepBlue-300 mx-auto mb-4" />
-              <p className="text-deepBlue-600 mb-2">Transaction history coming soon</p>
-              <p className="text-sm text-deepBlue-500">
-                This feature will show all contributions and payouts for this group
-              </p>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-deepBlue-800">Transaction History</h2>
+              <button
+                onClick={fetchTransactions}
+                disabled={loadingTx}
+                className="p-2 text-deepBlue-500 hover:text-deepBlue-700 hover:bg-deepBlue-50 rounded-lg transition"
+                title="Refresh"
+              >
+                <RefreshCw className={`w-4 h-4 ${loadingTx ? 'animate-spin' : ''}`} />
+              </button>
             </div>
+
+            {loadingTx ? (
+              <div className="flex justify-center py-12">
+                <LoadingSpinner size="md" text="Loading transactions..." />
+              </div>
+            ) : txError ? (
+              <div className="text-center py-12">
+                <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-3" />
+                <p className="text-red-600 mb-3">{txError}</p>
+                <button
+                  onClick={fetchTransactions}
+                  className="text-sm text-deepBlue-600 hover:underline"
+                >
+                  Try again
+                </button>
+              </div>
+            ) : transactions.length === 0 ? (
+              <div className="text-center py-12">
+                <Calendar className="w-16 h-16 text-deepBlue-200 mx-auto mb-4" />
+                <p className="text-deepBlue-600 font-medium mb-1">No transactions yet</p>
+                <p className="text-sm text-deepBlue-400">
+                  Contributions and payouts for this group will appear here
+                </p>
+              </div>
+            ) : (
+              <div className="divide-y divide-deepBlue-100">
+                {transactions.map((tx) => {
+                  const isCredit = tx.type === 'payout'
+                  const typeConfig = {
+                    contribution: { icon: ArrowUpCircle, color: 'text-amber-500', bg: 'bg-amber-50', label: 'Contribution' },
+                    payout: { icon: ArrowDownCircle, color: 'text-green-500', bg: 'bg-green-50', label: 'Payout' },
+                    withdrawal: { icon: Banknote, color: 'text-red-500', bg: 'bg-red-50', label: 'Withdrawal' },
+                  }
+                  const cfg = typeConfig[tx.type] || typeConfig.contribution
+                  const Icon = cfg.icon
+                  const statusColors = {
+                    completed: 'bg-green-100 text-green-700',
+                    pending: 'bg-yellow-100 text-yellow-700',
+                    failed: 'bg-red-100 text-red-700',
+                  }
+
+                  return (
+                    <div key={tx._id} className="flex items-center gap-4 py-4">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${cfg.bg}`}>
+                        <Icon className={`w-5 h-5 ${cfg.color}`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-deepBlue-800 text-sm">{cfg.label}</p>
+                        {tx.description && (
+                          <p className="text-xs text-deepBlue-500 truncate">{tx.description}</p>
+                        )}
+                        <p className="text-xs text-deepBlue-400 mt-0.5">
+                          {new Date(tx.createdAt).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </p>
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <p className={`font-bold text-sm ${isCredit ? 'text-green-600' : 'text-red-500'}`}>
+                          {isCredit ? '+' : '-'}₦{tx.amount.toLocaleString()}
+                        </p>
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColors[tx.status] || 'bg-gray-100 text-gray-600'}`}>
+                          {tx.status}
+                        </span>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
           </div>
         )}
       </div>

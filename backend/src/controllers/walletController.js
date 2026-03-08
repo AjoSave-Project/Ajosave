@@ -399,6 +399,88 @@ const verifyFunding = asyncErrorHandler(async (req, res) => {
   });
 });
 
+/**
+ * Withdraw funds to linked bank account
+ *
+ * @route   POST /api/wallets/withdraw
+ * @access  Private
+ */
+const withdraw = asyncErrorHandler(async (req, res) => {
+  const userId = req.user._id;
+  const { bankAccountId, amount } = req.body;
+
+  if (!amount || amount <= 0) throw new ValidationError('Amount must be positive');
+  if (!bankAccountId) throw new ValidationError('Bank account is required');
+
+  const wallet = await Wallet.findOne({ userId });
+  if (!wallet) throw new NotFoundError('Wallet not found');
+
+  if (wallet.availableBalance < amount) {
+    throw new ValidationError(`Insufficient balance. Available: ₦${wallet.availableBalance.toLocaleString()}`);
+  }
+
+  const account = wallet.linkedBankAccounts.id(bankAccountId);
+  if (!account) throw new NotFoundError('Bank account not found');
+
+  wallet.availableBalance -= Number(amount);
+  wallet.totalWithdrawals = (wallet.totalWithdrawals || 0) + Number(amount);
+  await wallet.save();
+
+  const transaction = new Transaction({
+    userId,
+    transactionId: Transaction.generateTransactionId(),
+    type: 'withdrawal',
+    amount: Number(amount),
+    status: 'completed',
+    description: `Withdrawal to ${account.bankName} ****${account.accountNumber.slice(-4)}`,
+    paymentMethod: 'bank_transfer',
+    paymentDetails: { bankName: account.bankName },
+    completedAt: new Date()
+  });
+  await transaction.save();
+
+  res.status(200).json({
+    success: true,
+    message: 'Withdrawal initiated successfully',
+    data: {
+      transaction,
+      wallet: { availableBalance: wallet.availableBalance, totalBalance: wallet.totalBalance }
+    },
+    timestamp: new Date().toISOString()
+  });
+});
+
+/**
+ * Save auto-withdrawal settings
+ *
+ * @route   POST /api/wallets/auto-withdrawal
+ * @access  Private
+ */
+const saveAutoWithdrawal = asyncErrorHandler(async (req, res) => {
+  const userId = req.user._id;
+  const { bankAccount, percentage, minAmount, enabled } = req.body;
+
+  let wallet = await Wallet.findOne({ userId });
+  if (!wallet) {
+    wallet = new Wallet({ userId });
+  }
+
+  wallet.autoWithdrawal = {
+    enabled: !!enabled,
+    bankAccount: bankAccount || wallet.autoWithdrawal?.bankAccount,
+    percentage: percentage ?? wallet.autoWithdrawal?.percentage ?? 100,
+    minAmount: minAmount ?? wallet.autoWithdrawal?.minAmount ?? 1000
+  };
+  await wallet.save();
+
+  res.status(200).json({
+    success: true,
+    message: 'Auto-withdrawal settings saved',
+    data: { autoWithdrawal: wallet.autoWithdrawal },
+    timestamp: new Date().toISOString()
+  });
+});
+
 module.exports = {
   getMyWallet,
   verifyBankAccount,
@@ -406,5 +488,7 @@ module.exports = {
   getBankAccounts,
   setPrimaryBankAccount,
   initializeFunding,
-  verifyFunding
+  verifyFunding,
+  withdraw,
+  saveAutoWithdrawal
 };
