@@ -66,14 +66,9 @@ const connectOnce = async () => {
 };
 
 module.exports = async (req, res) => {
-  // Always serve health check without DB
-  if (req.url === '/' || req.url === '/api/health') {
-    return app(req, res);
-  }
-
   await connectOnce();
 
-  if (!isConnected) {
+  if (!isConnected && req.url !== '/' && req.url !== '/api/health') {
     return res.status(503).json({
       success: false,
       message: 'Database unavailable. Please try again.',
