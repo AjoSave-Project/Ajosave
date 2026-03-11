@@ -55,7 +55,7 @@ const SettingsSidebar = ({ open, onClose, user, onLogout }) => {
         </nav>
 
         {/* Logout — always visible at bottom */}
-        <div className="border-t border-gray-100 flex-shrink-0">
+        <div className="border-t border-gray-100 pb-8 flex-shrink-0">
           <button onClick={onLogout}
             className="w-full flex items-center space-x-3 px-5 py-4 hover:bg-red-50 transition">
             <div className="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center flex-shrink-0">
