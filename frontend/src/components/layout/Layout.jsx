@@ -18,12 +18,12 @@ const Layout = ({ children }) => {
     { path: '/wallet', icon: Wallet, label: 'Wallet' }
   ];
 
-  // Don't show footer on auth and home pages
-  const showFooter = isAuthenticated && !loading && location.pathname !== '/' && location.pathname !== '/auth';
+  // Show footer on all authenticated pages
+  const showFooter = isAuthenticated && !loading;
 
   return (
     <div className="min-h-screen bg-deepBlue-50">
-      {/* NEW: Add Header */}
+      {/* Header - Always show for authenticated users */}
       <Header />
       
       {/* Main Content */}
@@ -31,7 +31,7 @@ const Layout = ({ children }) => {
         {children}
       </div>
       
-      {/* Fixed Footer Navigation - Only show when authenticated */}
+      {/* Fixed Footer Navigation - Show for authenticated users */}
       {showFooter && (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-deepBlue-200 z-50">
           <div className="flex justify-around items-center py-3">

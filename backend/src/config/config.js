@@ -22,8 +22,8 @@ const config = {
   // JWT Configuration
   jwt: {
     secret: process.env.JWT_SECRET,
-    // Token expiration time (1 hour for access tokens)
-    expiresIn: process.env.JWT_EXPIRES_IN || '1h',
+    // Token expiration time (30 minutes for access tokens)
+    expiresIn: process.env.JWT_EXPIRES_IN || '30m',
     // Refresh token expiration (7 days)
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d'
   },
@@ -47,7 +47,7 @@ const config = {
       httpOnly: true, // Prevent XSS attacks
       secure: process.env.NODE_ENV === 'production', // HTTPS only in production
       sameSite: 'strict', // CSRF protection
-      maxAge: 60 * 60 * 1000 // 1 hour in milliseconds
+      maxAge: 30 * 60 * 1000 // 30 minutes in milliseconds
     }
   },
 

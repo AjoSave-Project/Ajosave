@@ -196,7 +196,7 @@ const Groups = () => {
 
   return (
     <div className="min-h-screen bg-deepBlue-50 pb-20">
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 py-6 max-w-5xl">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-deepBlue-800">My Groups</h1>

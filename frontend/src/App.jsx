@@ -2,8 +2,17 @@ import React from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { ToastProvider } from './components/common/Toast'
+import { useSessionTimeout } from './hooks/useSessionTimeout'
+import { useNetworkStatus } from './hooks/useNetworkStatus'
+import SessionTimeoutWarning from './components/common/SessionTimeoutWarning'
+import NetworkStatus from './components/common/NetworkStatus'
 import Layout from './components/layout/Layout'
 import Home from './pages/Home'
+import About from './pages/About'
+import HowItWorks from './pages/HowItWorks'
+import Contact from './pages/Contact'
+import PrivacyPolicy from './pages/PrivacyPolicy'
+import TermsConditions from './pages/TermsConditions'
 import Auth from './pages/Auth'
 import Dashboard from './pages/Dashboard'
 import Groups from './pages/Groups'
@@ -48,82 +57,130 @@ const PublicRoute = ({ children }) => {
   return children
 }
 
+// App Content Component with Session Management
+const AppContent = () => {
+  const sessionTimeout = useSessionTimeout(25, 5); // 25 min timeout, 5 min warning (matches backend 30min)
+  const networkStatus = useNetworkStatus();
+
+  return (
+    <>
+      {/* Network Status Banner */}
+      <NetworkStatus 
+        isOnline={networkStatus.isOnline} 
+        isSlowConnection={networkStatus.isSlowConnection} 
+      />
+      
+      <Routes>
+        {/* Public Routes - No Layout wrapper */}
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/how-it-works" element={<HowItWorks />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-conditions" element={<TermsConditions />} />
+        <Route 
+          path="/auth" 
+          element={
+            <PublicRoute>
+              <div className="min-h-screen bg-deepBlue-50">
+                <Auth />
+              </div>
+            </PublicRoute>
+          } 
+        />
+        
+        {/* Protected Routes - With Layout wrapper */}
+        <Route 
+          path="/dashboard" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Dashboard />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/groups" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Groups />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/groups/:id" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <GroupDetail />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/groups/create" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <CreateGroup />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/groups/join" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <JoinGroup />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/payment" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Payment />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/wallet" 
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Wallet />
+              </Layout>
+            </ProtectedRoute>
+          } 
+        />
+      </Routes>
+      
+      {/* Session Timeout Warning */}
+      <SessionTimeoutWarning
+        show={sessionTimeout.showWarning}
+        timeLeft={sessionTimeout.timeLeft}
+        onExtend={sessionTimeout.extendSession}
+        onDismiss={sessionTimeout.dismissWarning}
+      />
+    </>
+  );
+};
+
 function App() {
   return (
     <ToastProvider>
       <AuthProvider>
         <Router>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route 
-              path="/auth" 
-              element={
-                <PublicRoute>
-                  <Auth />
-                </PublicRoute>
-              } 
-            />
-            <Route 
-              path="/dashboard" 
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/groups" 
-              element={
-                <ProtectedRoute>
-                  <Groups />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/groups/:id" 
-              element={
-                <ProtectedRoute>
-                  <GroupDetail />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/groups/create" 
-              element={
-                <ProtectedRoute>
-                  <CreateGroup />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/groups/join" 
-              element={
-                <ProtectedRoute>
-                  <JoinGroup />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/payment" 
-              element={
-                <ProtectedRoute>
-                  <Payment />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/wallet" 
-              element={
-                <ProtectedRoute>
-                  <Wallet />
-                </ProtectedRoute>
-              } 
-            />
-          </Routes>
-        </Layout>
-      </Router>
-    </AuthProvider>
+          <AppContent />
+        </Router>
+      </AuthProvider>
     </ToastProvider>
   )
 }

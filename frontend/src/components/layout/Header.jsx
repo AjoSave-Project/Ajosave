@@ -41,7 +41,7 @@ const SettingsSidebar = ({ open, onClose, user, onLogout }) => {
         </div>
 
         {/* Nav items — scrollable */}
-        <nav className="py-2 flex-1 overflow-y-auto">
+        <nav className="py-2 flex-1 overflow-y-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {items.map(({ icon: Icon, label, path }) => (
             <button key={label} onClick={() => path ? nav(path) : onClose()}
               className="w-full flex items-center space-x-3 px-5 py-3 hover:bg-gray-50 transition">
