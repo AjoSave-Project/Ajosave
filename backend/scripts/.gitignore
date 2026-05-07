@@ -1,0 +1,11 @@
+# Ignore backup files
+backups/
+*.json
+!package.json
+!package-lock.json
+
+# Keep the scripts themselves
+!clearDatabase.js
+!quickClear.js
+!backupAndClear.js
+!README.md

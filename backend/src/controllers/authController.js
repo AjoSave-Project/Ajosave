@@ -210,17 +210,17 @@ const registerUser = asyncErrorHandler(async (req, res) => {
 
 
     // Send OTP to verify phone number
-    const { devOtp } = await createAndSendOtp(savedUser);
+    await createAndSendOtp(savedUser, 'verification');
 
 
     res.status(201).json({
       success: true,
-      message: 'Registration successful. Please verify your phone number.',
+      message: 'Registration successful. Please check your email for verification code.',
       data: {
         requiresOtp: true,
+        email: savedUser.email,
         phoneNumber: savedUser.phoneNumber,
         userId: savedUser._id,
-        ...( devOtp ? { devOtp } : {}),
       },
       timestamp: new Date().toISOString()
     });
@@ -281,17 +281,17 @@ const loginUser = asyncErrorHandler(async (req, res) => {
     await user.save();
 
     // Send OTP for 2FA
-    const { devOtp } = await createAndSendOtp(user);
+    await createAndSendOtp(user, 'verification');
 
 
     res.status(200).json({
       success: true,
-      message: 'Credentials verified. Please enter the OTP sent to your phone.',
+      message: 'Credentials verified. Please check your email for verification code.',
       data: {
         requiresOtp: true,
+        email: user.email,
         phoneNumber: user.phoneNumber,
         userId: user._id,
-        ...( devOtp ? { devOtp } : {}),
       },
       timestamp: new Date().toISOString()
     });
@@ -483,7 +483,7 @@ const refreshToken = asyncErrorHandler(async (req, res) => {
 /**
  * Send OTP Handler
  * @route   POST /api/auth/send-otp
- * @desc    Send OTP to a user's phone (resend support)
+ * @desc    Send OTP to a user's email (resend support)
  * @access  Public
  */
 const sendOtp = asyncErrorHandler(async (req, res) => {
@@ -493,14 +493,13 @@ const sendOtp = asyncErrorHandler(async (req, res) => {
   const user = await User.findById(userId).select('+otpCode +otpExpiry');
   if (!user) throw new AuthenticationError('User not found');
 
-  const { devOtp } = await createAndSendOtp(user);
+  await createAndSendOtp(user, 'verification');
 
   res.status(200).json({
     success: true,
-    message: 'OTP sent successfully',
+    message: 'OTP sent successfully to your email',
     data: {
-      phoneNumber: user.phoneNumber,
-      ...( devOtp ? { devOtp } : {}),
+      email: user.email,
     },
     timestamp: new Date().toISOString(),
   });
@@ -608,15 +607,15 @@ const forgotPassword = asyncErrorHandler(async (req, res) => {
     });
   }
 
-  const { devOtp } = await createAndSendOtp(user);
+  const { devOtp } = await createAndSendOtp(user, 'password-reset');
 
   res.status(200).json({
     success: true,
-    message: 'OTP sent to your phone number.',
+    message: 'OTP sent to your registered email address.',
     data: {
       userId: user._id,
       phoneNumber: user.phoneNumber,
-      ...( devOtp ? { devOtp } : {}),
+      email: user.email, // Include email so user knows where to check
     },
     timestamp: new Date().toISOString(),
   });

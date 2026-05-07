@@ -1,9 +1,5 @@
 const crypto = require('crypto');
-const axios = require('axios');
-
-const TERMII_API_KEY = process.env.TERMII_API_KEY;
-const TERMII_SENDER_ID = process.env.TERMII_SENDER_ID || 'N-Alert';
-const TERMII_BASE_URL = 'https://v3.api.termii.com/api';
+const { sendOtpEmail, sendPasswordResetEmail } = require('./emailService');
 
 const OTP_EXPIRY_MINUTES = 10;
 const OTP_LENGTH = 6;
@@ -23,60 +19,39 @@ const hashOtp = (otp) => {
 };
 
 /**
- * Send OTP via Termii SMS
+ * Send OTP via Email
+ * 
+ * @param {string} email - User's email address
+ * @param {string} otp - 6-digit OTP code
+ * @param {string} firstName - User's first name
+ * @param {string} purpose - Purpose of OTP ('verification' or 'password-reset')
+ * @returns {Promise<Object>} Result object
  */
-const sendOtpSms = async (phoneNumber, otp) => {
-  // Normalize to international format for Termii
-  const normalized = phoneNumber.startsWith('+')
-    ? phoneNumber.slice(1) // Termii wants no leading +
-    : phoneNumber.startsWith('0')
-    ? `234${phoneNumber.slice(1)}`
-    : phoneNumber;
+const sendOtpViaEmail = async (email, otp, firstName, purpose = 'verification') => {
+  try {
+    let result;
+    if (purpose === 'password-reset') {
+      result = await sendPasswordResetEmail(email, otp, firstName);
+    } else {
+      result = await sendOtpEmail(email, otp, firstName);
+    }
 
-  const message = `Your AjoSave verification code is: ${otp}. Valid for ${OTP_EXPIRY_MINUTES} minutes. Do not share this code.`;
-
-  if (!TERMII_API_KEY) {
-    // No SMS provider — log and return OTP in response for testing
-    console.log(`📱 [OTP NO-SMS] Code for ${phoneNumber}: ${otp}`);
-    return { success: true, dev: true, otp };
+    return { success: true };
+  } catch (emailErr) {
+    console.error(`⚠️ Email delivery failed for ${email}:`, emailErr.message);
+    throw emailErr;
   }
-
-  // Always log OTP in dev so you can test without SMS
-  if (process.env.NODE_ENV !== 'production') {
-    console.log(`📱 [OTP] Code for ${normalized}: ${otp}`);
-  }
-
-  const payload = {
-    to: normalized,
-    from: TERMII_SENDER_ID,
-    sms: message,
-    type: 'plain',
-    channel: 'generic',
-    api_key: TERMII_API_KEY,
-  };
-
-  const response = await axios.post(`${TERMII_BASE_URL}/sms/send`, payload, {
-    headers: { 'Content-Type': 'application/json' },
-    timeout: 10000,
-  });
-
-  console.log('📡 Termii response status:', response.status);
-  console.log('📡 Termii response data:', JSON.stringify(response.data));
-
-  if (response.data?.code !== 'ok') {
-    console.error('❌ Termii error response:', JSON.stringify(response.data));
-    throw new Error(`Termii error: ${response.data?.message || 'Unknown error'}`);
-  }
-
-  return { success: true };
 };
 
 /**
- * Create and store OTP on user document, then send via SMS.
- * In development: skips SMS and returns the OTP in the response data.
- * In production: sends via Termii SMS.
+ * Create and store OTP on user document, then send via email.
+ * OTP is only sent via email - never returned in response.
+ * 
+ * @param {Object} user - User document
+ * @param {string} purpose - Purpose of OTP ('verification' or 'password-reset')
+ * @returns {Promise<Object>} Object with expiry
  */
-const createAndSendOtp = async (user) => {
+const createAndSendOtp = async (user, purpose = 'verification') => {
   const otp = generateOtp();
   const expiry = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000);
 
@@ -84,29 +59,14 @@ const createAndSendOtp = async (user) => {
   user.otpExpiry = expiry;
   await user.save();
 
-  const isDev = process.env.NODE_ENV !== 'production';
-
-  if (isDev) {
-    console.log(`\n📱 ========== DEV OTP ==========`);
-    console.log(`   Phone : ${user.phoneNumber}`);
-    console.log(`   Code  : ${otp}`);
-    console.log(`================================\n`);
-    return { expiry, devOtp: otp };
-  }
-
-  // Send via Termii if key is configured
   try {
-    const result = await sendOtpSms(user.phoneNumber, otp);
-    // If no SMS provider, return OTP so it can be included in API response
-    if (result.dev) return { expiry, devOtp: result.otp };
-  } catch (smsErr) {
-    console.error(`⚠️ SMS delivery failed for ${user.phoneNumber}:`, smsErr.message);
-    // SMS failed — return OTP in response as fallback so auth still works
-    return { expiry, devOtp: otp };
+    await sendOtpViaEmail(user.email, otp, user.firstName, purpose);
+    console.log(`✅ OTP sent successfully to ${user.email}`);
+    return { expiry };
+  } catch (emailErr) {
+    console.error(`⚠️ Failed to send OTP email:`, emailErr.message);
+    throw new Error('Failed to send verification code. Please try again.');
   }
-
-  // Always return devOtp so frontend can autofill (remove when real SMS is active)
-  return { expiry, devOtp: otp };
 };
 
 /**
