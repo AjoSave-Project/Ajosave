@@ -18,20 +18,42 @@ const EMAIL_FROM_NAME = process.env.EMAIL_FROM_NAME || 'AjoSave';
  */
 const createTransporter = () => {
   if (!EMAIL_USER || !EMAIL_PASSWORD) {
-    console.warn('⚠️  Email credentials not configured. Emails will be logged to console only.');
+    console.warn('⚠️  Email credentials not configured. EMAIL_USER or EMAIL_PASSWORD missing.');
     return null;
   }
 
-  return nodemailer.createTransporter({
-    service: 'gmail', // Use Gmail SMTP
-    auth: {
-      user: EMAIL_USER,
-      pass: EMAIL_PASSWORD, // Use App Password, not regular password
-    },
-  });
+  try {
+    // Ensure nodemailer is properly loaded
+    if (!nodemailer || typeof nodemailer.createTransport !== 'function') {
+      console.error('❌ Nodemailer module not properly loaded');
+      return null;
+    }
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: EMAIL_USER,
+        pass: EMAIL_PASSWORD,
+      },
+    });
+
+    console.log('✅ Email transporter created successfully');
+    return transporter;
+  } catch (error) {
+    console.error('❌ Failed to create email transporter:', error.message);
+    return null;
+  }
 };
 
-const transporter = createTransporter();
+let transporter = null;
+
+// Lazy initialization - create transporter only when needed
+const getTransporter = () => {
+  if (!transporter) {
+    transporter = createTransporter();
+  }
+  return transporter;
+};
 
 /**
  * Send OTP Email
@@ -393,10 +415,13 @@ The AjoSave Team
  * @returns {Promise<Object>} Result object with success status
  */
 const sendEmail = async (to, subject, text, html) => {
+  const transporter = getTransporter();
+  
   // If no transporter (no email config), throw error
   if (!transporter) {
-    console.error('❌ Email service not configured. Please set EMAIL_USER and EMAIL_PASSWORD environment variables.');
-    throw new Error('Email service is not configured. Please contact support.');
+    const errorMsg = 'Email service is not configured. Please set EMAIL_USER and EMAIL_PASSWORD environment variables.';
+    console.error(`❌ ${errorMsg}`);
+    throw new Error(errorMsg);
   }
 
   try {
@@ -430,6 +455,8 @@ const sendEmail = async (to, subject, text, html) => {
  * @returns {Promise<boolean>} True if email is configured and working
  */
 const verifyEmailConfig = async () => {
+  const transporter = getTransporter();
+  
   if (!transporter) {
     return false;
   }

@@ -35,7 +35,7 @@
     "mongodb": "^6.20.0",
     "mongoose": "^8.18.2",
     "node-cron": "^3.0.3",
-    "nodemailer": "^8.0.7"
+    "nodemailer": "^6.9.15"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
