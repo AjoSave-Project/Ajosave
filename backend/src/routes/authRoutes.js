@@ -14,6 +14,8 @@ const {
   resetPassword,
   verifyBvnHandler,
   verifyNinHandler,
+  sendEmailOtp,
+  verifyEmailOtp,
 } = require('../controllers/authController');
 
 const { protect, requireVerification } = require('../middlewares/authMiddleware');
@@ -29,6 +31,8 @@ router.post('/register', validateRegistration, registerUser);
 router.post('/login', validateLogin, loginUser);
 router.post('/send-otp', sendOtp);
 router.post('/verify-otp', verifyOtpHandler);
+router.post('/send-email-otp', sendEmailOtp); // Pre-registration email OTP
+router.post('/verify-email-otp', verifyEmailOtp); // Pre-registration email verification
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
 

@@ -705,6 +705,86 @@ const verifyNinHandler = asyncErrorHandler(async (req, res) => {
   });
 });
 
+/**
+ * Send Email OTP (Pre-Registration)
+ * @route   POST /api/auth/send-email-otp
+ * @desc    Send OTP to email before user registration (for email verification step)
+ * @access  Public
+ */
+const sendEmailOtp = asyncErrorHandler(async (req, res) => {
+  const { email } = req.body;
+  if (!email) throw new ValidationError('Email is required');
+
+  // Normalize email
+  const normalizedEmail = email.toLowerCase().trim();
+
+  // Check if email already exists
+  const existingUser = await User.findOne({ email: normalizedEmail });
+  if (existingUser) {
+    throw new ValidationError('An account with this email already exists', [{
+      field: 'email',
+      message: 'This email is already registered',
+      value: normalizedEmail
+    }]);
+  }
+
+  // Create a temporary OTP record (we'll store it in a temporary user document)
+  // or use a separate OTP collection. For simplicity, we'll create a temporary user
+  const tempUser = new User({
+    firstName: 'Temp',
+    lastName: 'User',
+    email: normalizedEmail,
+    password: 'TempPassword123!', // Will be replaced during actual registration
+    phoneNumber: '+2340000000000', // Temporary
+    bvn: '00000000000', // Temporary
+    nin: '00000000000', // Temporary
+    dateOfBirth: new Date('2000-01-01'),
+    isTemporary: true, // Flag to identify temp users
+  });
+
+  await tempUser.save();
+
+  // Send OTP
+  await createAndSendOtp(tempUser, 'verification');
+
+  res.status(200).json({
+    success: true,
+    message: 'Verification code sent to your email',
+    data: {
+      userId: tempUser._id,
+      email: normalizedEmail,
+    },
+    timestamp: new Date().toISOString(),
+  });
+});
+
+/**
+ * Verify Email OTP (Pre-Registration)
+ * @route   POST /api/auth/verify-email-otp
+ * @desc    Verify OTP for email before registration
+ * @access  Public
+ */
+const verifyEmailOtp = asyncErrorHandler(async (req, res) => {
+  const { userId, otp } = req.body;
+  if (!userId || !otp) throw new ValidationError('userId and otp are required');
+
+  const tempUser = await User.findById(userId).select('+otpCode +otpExpiry');
+  if (!tempUser) throw new AuthenticationError('Session expired. Please start over.');
+
+  const valid = await verifyOtpCode(tempUser, otp);
+  if (!valid) throw new AuthenticationError('Invalid or expired OTP');
+
+  res.status(200).json({
+    success: true,
+    message: 'Email verified successfully',
+    data: {
+      userId: tempUser._id,
+      email: tempUser.email,
+    },
+    timestamp: new Date().toISOString(),
+  });
+});
+
 module.exports = {
   registerUser,
   loginUser,
@@ -719,6 +799,8 @@ module.exports = {
   resetPassword,
   verifyBvnHandler,
   verifyNinHandler,
+  sendEmailOtp,
+  verifyEmailOtp,
   generateToken,
   formatUserResponse
 };
