@@ -7,10 +7,91 @@
     <title>AjoSave Admin Portal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- Preload critical font weights -->
+    <link rel="preload" as="font" type="font/woff2" href="https://fonts.gstatic.com/s/nunito/v26/XRXI3I6Li01BKofiOc5wtlZ2di8HDLshdTQ3j77e.woff2" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=block" rel="stylesheet" />
+    <style>
+      /* Prevent FOUT by hiding content until fonts load */
+      #root {
+        opacity: 0;
+        transition: opacity 0.3s ease-in;
+      }
+      #root.fonts-loaded {
+        opacity: 1;
+      }
+      /* Loading screen */
+      #font-loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #0f172a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition: opacity 0.3s ease-out;
+      }
+      #font-loader.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .loader-spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid rgba(148, 163, 184, 0.3);
+        border-top-color: #3b82f6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
   </head>
   <body>
+    <div id="font-loader">
+      <div class="loader-spinner"></div>
+    </div>
     <div id="root"></div>
+    <script>
+      // Font loading detection
+      (function() {
+        const loader = document.getElementById('font-loader');
+        const root = document.getElementById('root');
+        const maxWaitTime = 3000; // Maximum 3 seconds wait
+        let fontsLoaded = false;
+
+        function hideLoader() {
+          if (!fontsLoaded) {
+            fontsLoaded = true;
+            root.classList.add('fonts-loaded');
+            setTimeout(() => {
+              loader.classList.add('hidden');
+              setTimeout(() => loader.remove(), 300);
+            }, 100);
+          }
+        }
+
+        // Use Font Loading API if available
+        if ('fonts' in document) {
+          Promise.all([
+            document.fonts.load('400 1em Nunito'),
+            document.fonts.load('500 1em Nunito'),
+            document.fonts.load('600 1em Nunito'),
+            document.fonts.load('700 1em Nunito')
+          ]).then(hideLoader).catch(hideLoader);
+          
+          // Fallback timeout
+          setTimeout(hideLoader, maxWaitTime);
+        } else {
+          // Fallback for browsers without Font Loading API
+          window.addEventListener('load', hideLoader);
+          setTimeout(hideLoader, maxWaitTime);
+        }
+      })();
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

@@ -2,6 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Font face declarations with font-display: block to prevent FOUT */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: local('Nunito'), url(https://fonts.gstatic.com/s/nunito/v26/XRXI3I6Li01BKofiOc5wtlZ2di8HDLshdTQ3j77e.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 500;
+  font-display: block;
+  src: local('Nunito Medium'), url(https://fonts.gstatic.com/s/nunito/v26/XRXI3I6Li01BKofiOc5wtlZ2di8HDOUvdTQ3j77e.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 600;
+  font-display: block;
+  src: local('Nunito SemiBold'), url(https://fonts.gstatic.com/s/nunito/v26/XRXI3I6Li01BKofiOc5wtlZ2di8HDGkqdTQ3j77e.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 700;
+  font-display: block;
+  src: local('Nunito Bold'), url(https://fonts.gstatic.com/s/nunito/v26/XRXI3I6Li01BKofiOc5wtlZ2di8HDFwqdTQ3j77e.woff2) format('woff2');
+}
+
 * {
   margin: 0;
   padding: 0;
