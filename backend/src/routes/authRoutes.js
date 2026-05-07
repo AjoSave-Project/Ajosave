@@ -14,7 +14,7 @@ const {
   resetPassword,
   verifyBvnHandler,
   verifyNinHandler,
-  sendEmailOtp,
+  sendEmailVerificationOtp,
   verifyEmailOtp,
 } = require('../controllers/authController');
 
@@ -31,10 +31,12 @@ router.post('/register', validateRegistration, registerUser);
 router.post('/login', validateLogin, loginUser);
 router.post('/send-otp', sendOtp);
 router.post('/verify-otp', verifyOtpHandler);
-router.post('/send-email-otp', sendEmailOtp); // Pre-registration email OTP
-router.post('/verify-email-otp', verifyEmailOtp); // Pre-registration email verification
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
+
+// Email verification during signup
+router.post('/send-email-otp', sendEmailVerificationOtp);
+router.post('/verify-email-otp', verifyEmailOtp);
 
 // Verification routes
 router.post('/verify-bvn', verifyBvnHandler);
