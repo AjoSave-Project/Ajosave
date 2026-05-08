@@ -16,6 +16,7 @@ const authRoutes = require('./src/routes/authRoutes');
 const transactionRoutes = require('./src/routes/transactionRoutes');
 const groupRoutes = require('./src/routes/groupRoutes');
 const walletRoutes = require('./src/routes/walletRoutes');
+const identityRoutes = require('./src/routes/identityRoutes');
 
 // Import admin routes
 const adminAuthRoutes = require('./src/routes/adminAuthRoutes');
@@ -97,6 +98,7 @@ const createApp = () => {
   app.use('/api/transactions', transactionRoutes);
   app.use('/api/groups', groupRoutes); // NEW
   app.use('/api/wallets', walletRoutes);
+  app.use('/api/identity', identityRoutes); // Identity verification routes
 
   // Admin API Routes
   app.use('/api/admin/auth', adminAuthRoutes);

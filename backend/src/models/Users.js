@@ -77,12 +77,46 @@ const UserSchema = new mongoose.Schema({
     select: false // Exclude from queries by default for security
   },
   
+  bvnVerified: {
+    type: Boolean,
+    default: false
+  },
+  
+  bvnVerifiedAt: {
+    type: Date,
+    default: null
+  },
+  
+  bvnData: {
+    firstName: String,
+    lastName: String,
+    dateOfBirth: String,
+    phoneNumber: String,
+  },
+  
   nin: {
     type: String,
     required: [true, 'NIN is required'],
     unique: true,
     match: [/^\d{11}$/, 'NIN must be exactly 11 digits'],
     select: false // Exclude from queries by default for security
+  },
+  
+  ninVerified: {
+    type: Boolean,
+    default: false
+  },
+  
+  ninVerifiedAt: {
+    type: Date,
+    default: null
+  },
+  
+  ninData: {
+    firstName: String,
+    lastName: String,
+    dateOfBirth: String,
+    phoneNumber: String,
   },
   
   isVerified: {
