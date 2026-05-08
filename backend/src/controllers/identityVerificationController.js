@@ -20,6 +20,12 @@ const verifyBVNController = async (req, res) => {
       return errorResponse(res, 'Invalid BVN format. BVN must be 11 digits.', 400);
     }
 
+    // Validate userId is a valid MongoDB ObjectId
+    const mongoose = require('mongoose');
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return errorResponse(res, 'Invalid user ID format', 400);
+    }
+
     // Find user
     const user = await User.findById(userId);
     if (!user) {
@@ -93,6 +99,12 @@ const verifyNINController = async (req, res) => {
     // Validate NIN format
     if (!/^\d{11}$/.test(nin)) {
       return errorResponse(res, 'Invalid NIN format. NIN must be 11 digits.', 400);
+    }
+
+    // Validate userId is a valid MongoDB ObjectId
+    const mongoose = require('mongoose');
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return errorResponse(res, 'Invalid user ID format', 400);
     }
 
     // Find user

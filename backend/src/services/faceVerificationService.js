@@ -1,6 +1,7 @@
 const axios = require('axios');
 const FormData = require('form-data');
-const fs = require('fs');
+const fs = require('fs').promises;
+const fsSync = require('fs');
 
 /**
  * Face Verification Service
@@ -110,7 +111,7 @@ const verifyWithSmileIdentity = async ({ faceImagePath, bvn, userId }) => {
     formData.append('user_id', userId);
     formData.append('job_type', '5'); // BVN verification with face match
     formData.append('id_number', bvn);
-    formData.append('selfie_image', fs.createReadStream(faceImagePath));
+    formData.append('selfie_image', fsSync.createReadStream(faceImagePath));
 
     // Make API request
     const response = await axios.post(
@@ -171,7 +172,7 @@ const verifyWithSmileIdentityNIN = async ({ faceImagePath, nin, userId }) => {
     formData.append('user_id', userId);
     formData.append('job_type', '11'); // NIN verification with face match
     formData.append('id_number', nin);
-    formData.append('selfie_image', fs.createReadStream(faceImagePath));
+    formData.append('selfie_image', fsSync.createReadStream(faceImagePath));
 
     const response = await axios.post(
       `${config.baseUrl}/id_verification`,
@@ -225,7 +226,7 @@ const verifyWithDojah = async ({ faceImagePath, bvn, userId }) => {
 
     // First, upload the image
     const formData = new FormData();
-    formData.append('image', fs.createReadStream(faceImagePath));
+    formData.append('image', fsSync.createReadStream(faceImagePath));
 
     const uploadResponse = await axios.post(
       `${config.baseUrl}/api/v1/kyc/image/upload`,
@@ -296,7 +297,7 @@ const verifyWithDojahNIN = async ({ faceImagePath, nin, userId }) => {
     }
 
     const formData = new FormData();
-    formData.append('image', fs.createReadStream(faceImagePath));
+    formData.append('image', fsSync.createReadStream(faceImagePath));
 
     const uploadResponse = await axios.post(
       `${config.baseUrl}/api/v1/kyc/image/upload`,
