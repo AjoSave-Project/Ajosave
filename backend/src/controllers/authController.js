@@ -762,8 +762,32 @@ const sendEmailVerificationOtp = asyncErrorHandler(async (req, res) => {
   }
 
   // Check if user already exists
-  const existingUser = await checkUserExists(email.toLowerCase(), phoneNumber);
+  const existingUser = await User.findOne({
+    $or: [
+      { email: email.toLowerCase() },
+      { phoneNumber }
+    ]
+  });
+
   if (existingUser) {
+    // If it's an incomplete registration (temp user), allow resending OTP
+    if (existingUser.firstName === 'Temp' && existingUser.lastName === 'User') {
+      // Resend OTP to existing temp user
+      await createAndSendOtp(existingUser, 'verification');
+      
+      return res.status(200).json({
+        success: true,
+        message: 'Verification code sent to your email',
+        data: {
+          userId: existingUser._id,
+          email: existingUser.email,
+          isReturningUser: true,
+        },
+        timestamp: new Date().toISOString(),
+      });
+    }
+    
+    // If it's a complete registration, return error
     throw new ValidationError('An account with this email or phone number already exists', [{
       field: existingUser.email === email.toLowerCase() ? 'email' : 'phoneNumber',
       message: 'Already registered',
@@ -793,6 +817,7 @@ const sendEmailVerificationOtp = asyncErrorHandler(async (req, res) => {
     data: {
       userId: tempUser._id,
       email: tempUser.email,
+      isReturningUser: false,
     },
     timestamp: new Date().toISOString(),
   });
@@ -837,6 +862,69 @@ const verifyEmailOtp = asyncErrorHandler(async (req, res) => {
   });
 });
 
+/**
+ * Check Registration Status Handler
+ * @route   POST /api/auth/check-registration-status
+ * @desc    Check if user has incomplete registration and return current step
+ * @access  Public
+ */
+const checkRegistrationStatus = asyncErrorHandler(async (req, res) => {
+  const { email, phoneNumber } = req.body;
+  
+  if (!email && !phoneNumber) {
+    throw new ValidationError('Email or phone number is required');
+  }
+
+  const query = {};
+  if (email) query.email = email.toLowerCase();
+  if (phoneNumber) query.phoneNumber = phoneNumber;
+
+  const user = await User.findOne(query);
+
+  if (!user) {
+    return res.status(200).json({
+      success: true,
+      data: {
+        exists: false,
+        canContinue: false,
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  // Check if it's an incomplete registration
+  const isIncomplete = user.firstName === 'Temp' && user.lastName === 'User';
+
+  if (isIncomplete) {
+    return res.status(200).json({
+      success: true,
+      data: {
+        exists: true,
+        canContinue: true,
+        isIncomplete: true,
+        userId: user._id,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        isEmailVerified: user.isEmailVerified,
+        currentStep: user.isEmailVerified ? 'bvn-verification' : 'email-verification',
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  // Complete registration exists
+  return res.status(200).json({
+    success: true,
+    data: {
+      exists: true,
+      canContinue: false,
+      isIncomplete: false,
+      message: 'Account already exists. Please sign in.',
+    },
+    timestamp: new Date().toISOString(),
+  });
+});
+
 module.exports = {
   registerUser,
   loginUser,
@@ -853,6 +941,7 @@ module.exports = {
   verifyNinHandler,
   sendEmailVerificationOtp,
   verifyEmailOtp,
+  checkRegistrationStatus,
   generateToken,
   formatUserResponse
 };

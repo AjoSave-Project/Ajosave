@@ -16,6 +16,7 @@ const {
   verifyNinHandler,
   sendEmailVerificationOtp,
   verifyEmailOtp,
+  checkRegistrationStatus,
 } = require('../controllers/authController');
 
 const { protect, requireVerification } = require('../middlewares/authMiddleware');
@@ -37,6 +38,7 @@ router.post('/reset-password', resetPassword);
 // Email verification during signup
 router.post('/send-email-otp', sendEmailVerificationOtp);
 router.post('/verify-email-otp', verifyEmailOtp);
+router.post('/check-registration-status', checkRegistrationStatus);
 
 // Verification routes
 router.post('/verify-bvn', verifyBvnHandler);
