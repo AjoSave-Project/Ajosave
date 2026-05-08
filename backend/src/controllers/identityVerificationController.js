@@ -8,10 +8,15 @@ const { sendSuccess, sendError } = require('../utils/responseHelpers');
  */
 const verifyBVNController = async (req, res) => {
   try {
+    console.log('[Identity] BVN verification request received');
+    console.log('[Identity] Request body:', req.body);
+    console.log('[Identity] Request headers:', req.headers);
+    
     const { userId, bvn } = req.body;
 
     // Validate required fields
     if (!userId || !bvn) {
+      console.log('[Identity] Missing required fields:', { userId: !!userId, bvn: !!bvn });
       return sendError(res, 'User ID and BVN are required', 400);
     }
 
