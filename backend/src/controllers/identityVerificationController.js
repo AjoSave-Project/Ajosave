@@ -1,6 +1,6 @@
 const { resolveBVN, verifyNIN } = require('../services/paystackIdentityService');
 const User = require('../models/Users');
-const { successResponse, errorResponse } = require('../utils/responseHelpers');
+const { sendSuccess, sendError } = require('../utils/responseHelpers');
 
 /**
  * Verify BVN
@@ -12,29 +12,29 @@ const verifyBVNController = async (req, res) => {
 
     // Validate required fields
     if (!userId || !bvn) {
-      return errorResponse(res, 'User ID and BVN are required', 400);
+      return sendError(res, 'User ID and BVN are required', 400);
     }
 
     // Validate BVN format
     if (!/^\d{11}$/.test(bvn)) {
-      return errorResponse(res, 'Invalid BVN format. BVN must be 11 digits.', 400);
+      return sendError(res, 'Invalid BVN format. BVN must be 11 digits.', 400);
     }
 
     // Validate userId is a valid MongoDB ObjectId
     const mongoose = require('mongoose');
     if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return errorResponse(res, 'Invalid user ID format', 400);
+      return sendError(res, 'Invalid user ID format', 400);
     }
 
     // Find user
     const user = await User.findById(userId);
     if (!user) {
-      return errorResponse(res, 'User not found', 404);
+      return sendError(res, 'User not found', 404);
     }
 
     // Check if BVN is already verified
     if (user.bvnVerified) {
-      return successResponse(res, {
+      return sendSuccess(res, {
         verified: true,
         message: 'BVN already verified',
         data: {
@@ -63,23 +63,20 @@ const verifyBVNController = async (req, res) => {
 
       console.log(`[Identity] BVN verified successfully for user ${userId}`);
 
-      return successResponse(res, {
+      return sendSuccess(res, {
         verified: true,
-        message: 'BVN verified successfully',
-        data: {
-          bvn: bvn,
-          firstName: verificationResult.data?.firstName,
-          lastName: verificationResult.data?.lastName,
-          verifiedAt: user.bvnVerifiedAt,
-        },
-      });
+        bvn: bvn,
+        firstName: verificationResult.data?.firstName,
+        lastName: verificationResult.data?.lastName,
+        verifiedAt: user.bvnVerifiedAt,
+      }, 'BVN verified successfully');
     } else {
       console.log(`[Identity] BVN verification failed for user ${userId}: ${verificationResult.message}`);
-      return errorResponse(res, verificationResult.message || 'BVN verification failed', 400);
+      return sendError(res, verificationResult.message || 'BVN verification failed', 400);
     }
   } catch (error) {
     console.error('[Identity] BVN verification error:', error);
-    return errorResponse(res, error.message || 'BVN verification failed', 500);
+    return sendError(res, error.message || 'BVN verification failed', 500);
   }
 };
 
@@ -93,36 +90,33 @@ const verifyNINController = async (req, res) => {
 
     // Validate required fields
     if (!userId || !nin) {
-      return errorResponse(res, 'User ID and NIN are required', 400);
+      return sendError(res, 'User ID and NIN are required', 400);
     }
 
     // Validate NIN format
     if (!/^\d{11}$/.test(nin)) {
-      return errorResponse(res, 'Invalid NIN format. NIN must be 11 digits.', 400);
+      return sendError(res, 'Invalid NIN format. NIN must be 11 digits.', 400);
     }
 
     // Validate userId is a valid MongoDB ObjectId
     const mongoose = require('mongoose');
     if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return errorResponse(res, 'Invalid user ID format', 400);
+      return sendError(res, 'Invalid user ID format', 400);
     }
 
     // Find user
     const user = await User.findById(userId);
     if (!user) {
-      return errorResponse(res, 'User not found', 404);
+      return sendError(res, 'User not found', 404);
     }
 
     // Check if NIN is already verified
     if (user.ninVerified) {
-      return successResponse(res, {
+      return sendSuccess(res, {
         verified: true,
-        message: 'NIN already verified',
-        data: {
-          nin: user.nin,
-          verifiedAt: user.ninVerifiedAt,
-        },
-      });
+        nin: user.nin,
+        verifiedAt: user.ninVerifiedAt,
+      }, 'NIN already verified');
     }
 
     // Verify NIN
@@ -144,29 +138,26 @@ const verifyNINController = async (req, res) => {
 
       console.log(`[Identity] NIN verified successfully for user ${userId}`);
 
-      return successResponse(res, {
+      return sendSuccess(res, {
         verified: true,
-        message: 'NIN verified successfully',
-        data: {
-          nin: nin,
-          firstName: verificationResult.data?.firstName,
-          lastName: verificationResult.data?.lastName,
-          verifiedAt: user.ninVerifiedAt,
-        },
-      });
+        nin: nin,
+        firstName: verificationResult.data?.firstName,
+        lastName: verificationResult.data?.lastName,
+        verifiedAt: user.ninVerifiedAt,
+      }, 'NIN verified successfully');
     } else {
       console.log(`[Identity] NIN verification failed for user ${userId}: ${verificationResult.message}`);
       
       // Check if third-party service is required
       if (verificationResult.requiresThirdParty) {
-        return errorResponse(res, 'NIN verification requires additional setup. Please contact support.', 501);
+        return sendError(res, 'NIN verification requires additional setup. Please contact support.', 501);
       }
       
-      return errorResponse(res, verificationResult.message || 'NIN verification failed', 400);
+      return sendError(res, verificationResult.message || 'NIN verification failed', 400);
     }
   } catch (error) {
     console.error('[Identity] NIN verification error:', error);
-    return errorResponse(res, error.message || 'NIN verification failed', 500);
+    return sendError(res, error.message || 'NIN verification failed', 500);
   }
 };
 
@@ -180,18 +171,18 @@ const getVerificationStatus = async (req, res) => {
 
     const user = await User.findById(userId).select('bvnVerified ninVerified bvnVerifiedAt ninVerifiedAt');
     if (!user) {
-      return errorResponse(res, 'User not found', 404);
+      return sendError(res, 'User not found', 404);
     }
 
-    return successResponse(res, {
+    return sendSuccess(res, {
       bvnVerified: user.bvnVerified || false,
       ninVerified: user.ninVerified || false,
       bvnVerifiedAt: user.bvnVerifiedAt,
       ninVerifiedAt: user.ninVerifiedAt,
-    });
+    }, 'Verification status retrieved');
   } catch (error) {
     console.error('[Identity] Get status error:', error);
-    return errorResponse(res, 'Failed to get verification status', 500);
+    return sendError(res, 'Failed to get verification status', 500);
   }
 };
 
