@@ -119,31 +119,87 @@ const resolveBVN = async (bvn) => {
 
     console.log(`[Paystack] Resolving BVN: ${bvn.substring(0, 3)}********`);
 
-    // Paystack BVN resolve endpoint
-    const response = await paystackClient.get(`/bank/resolve_bvn/${bvn}`);
+    // Check if we're in development/test mode
+    const isDevelopment = process.env.NODE_ENV !== 'production' || process.env.PAYSTACK_SECRET_KEY?.includes('test');
 
-    if (response.data.status) {
-      console.log('[Paystack] BVN resolved successfully');
+    // For development, return mock data for test BVN
+    if (isDevelopment && bvn === '22222222222') {
+      console.log('[Paystack] Using mock BVN data for development');
       return {
         success: true,
         verified: true,
-        message: 'BVN resolved successfully',
+        message: 'BVN resolved successfully (TEST MODE)',
         data: {
           bvn: bvn,
-          firstName: response.data.data?.first_name,
-          lastName: response.data.data?.last_name,
-          dateOfBirth: response.data.data?.dob,
-          phoneNumber: response.data.data?.mobile,
-          formattedDob: response.data.data?.formatted_dob,
+          firstName: 'TEST',
+          lastName: 'USER',
+          dateOfBirth: '01-01-1990',
+          phoneNumber: '08012345678',
+          formattedDob: '1990-01-01',
         },
       };
-    } else {
-      return {
-        success: false,
-        verified: false,
-        message: response.data.message || 'BVN not found',
-        data: null,
-      };
+    }
+
+    // Try real Paystack API
+    try {
+      const response = await paystackClient.get(`/bank/resolve_bvn/${bvn}`);
+
+      if (response.data.status) {
+        console.log('[Paystack] BVN resolved successfully');
+        return {
+          success: true,
+          verified: true,
+          message: 'BVN resolved successfully',
+          data: {
+            bvn: bvn,
+            firstName: response.data.data?.first_name,
+            lastName: response.data.data?.last_name,
+            dateOfBirth: response.data.data?.dob,
+            phoneNumber: response.data.data?.mobile,
+            formattedDob: response.data.data?.formatted_dob,
+          },
+        };
+      } else {
+        return {
+          success: false,
+          verified: false,
+          message: response.data.message || 'BVN not found',
+          data: null,
+        };
+      }
+    } catch (apiError) {
+      // Check if it's a feature unavailable error
+      if (apiError.response?.data?.code === 'feature_unavailable') {
+        console.warn('[Paystack] BVN service not available. Using mock data for development.');
+        
+        // Return mock success for any valid BVN in development
+        if (isDevelopment) {
+          return {
+            success: true,
+            verified: true,
+            message: 'BVN verified successfully (MOCK - Service Unavailable)',
+            data: {
+              bvn: bvn,
+              firstName: 'MOCK',
+              lastName: 'USER',
+              dateOfBirth: '01-01-1990',
+              phoneNumber: '08012345678',
+              formattedDob: '1990-01-01',
+            },
+          };
+        }
+        
+        // In production, return error
+        return {
+          success: false,
+          verified: false,
+          message: 'BVN verification service is not available. Please contact support to enable this feature.',
+          data: null,
+          requiresSetup: true,
+        };
+      }
+      
+      throw apiError;
     }
   } catch (error) {
     console.error('[Paystack] BVN resolve error:', error.response?.data || error.message);
@@ -187,11 +243,28 @@ const verifyNIN = async (nin, options = {}) => {
 
     console.log(`[Paystack] NIN verification requested: ${nin.substring(0, 3)}********`);
 
+    // Check if we're in development/test mode
+    const isDevelopment = process.env.NODE_ENV !== 'production' || process.env.PAYSTACK_SECRET_KEY?.includes('test');
+
+    // For development, return mock success
+    if (isDevelopment) {
+      console.log('[Paystack] Using mock NIN data for development');
+      return {
+        success: true,
+        verified: true,
+        message: 'NIN verified successfully (MOCK - Third-party service required for production)',
+        data: {
+          nin: nin,
+          firstName: 'MOCK',
+          lastName: 'USER',
+          dateOfBirth: '01-01-1990',
+          phoneNumber: '08012345678',
+        },
+      };
+    }
+
     // Note: Paystack doesn't have a direct NIN verification endpoint
     // You'll need to integrate with a third-party service
-    
-    // For now, return a placeholder response
-    // TODO: Integrate with NIN verification service (Dojah, Smile Identity, etc.)
     
     console.warn('[Paystack] NIN verification not implemented. Please integrate with a third-party service.');
     
