@@ -19,6 +19,13 @@ import Security from './pages/Security'
 import TrustSafety from './pages/TrustSafety'
 import CommunityGuidelines from './pages/CommunityGuidelines'
 import Auth from './pages/Auth'
+import Onboarding from './pages/Onboarding'
+import Welcome from './pages/Welcome'
+import SignIn from './pages/auth/SignIn'
+import CreateAccount from './pages/auth/CreateAccount'
+import VerifyContact from './pages/auth/VerifyContact'
+import KYCVerify from './pages/auth/KYCVerify'
+import CompleteProfile from './pages/auth/CompleteProfile'
 import Dashboard from './pages/Dashboard'
 import Groups from './pages/Groups'
 import GroupDetail from './pages/GroupDetail'
@@ -90,6 +97,68 @@ const AppContent = () => {
         <Route path="/security" element={<Security />} />
         <Route path="/trust-safety" element={<TrustSafety />} />
         <Route path="/community-guidelines" element={<CommunityGuidelines />} />
+        
+        {/* Onboarding Routes */}
+        <Route 
+          path="/onboarding" 
+          element={
+            <PublicRoute>
+              <Onboarding />
+            </PublicRoute>
+          } 
+        />
+        <Route 
+          path="/welcome" 
+          element={
+            <PublicRoute>
+              <Welcome />
+            </PublicRoute>
+          } 
+        />
+        
+        {/* Auth Routes - New Step-by-Step Flow */}
+        <Route 
+          path="/auth/signin" 
+          element={
+            <PublicRoute>
+              <SignIn />
+            </PublicRoute>
+          } 
+        />
+        <Route 
+          path="/auth/signup" 
+          element={
+            <PublicRoute>
+              <CreateAccount />
+            </PublicRoute>
+          } 
+        />
+        <Route 
+          path="/auth/verify-contact" 
+          element={
+            <PublicRoute>
+              <VerifyContact />
+            </PublicRoute>
+          } 
+        />
+        <Route 
+          path="/auth/kyc-verify" 
+          element={
+            <PublicRoute>
+              <KYCVerify />
+            </PublicRoute>
+          } 
+        />
+        <Route 
+          path="/auth/complete-profile" 
+          element={
+            <PublicRoute>
+              <CompleteProfile />
+            </PublicRoute>
+          } 
+        />
+        
+        {/* Legacy Auth Route (for backward compatibility) */}
         <Route 
           path="/auth" 
           element={

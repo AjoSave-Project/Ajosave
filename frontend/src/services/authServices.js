@@ -165,6 +165,90 @@ const refreshToken = async () => {
 };
 
 /**
+ * Check registration status
+ * 
+ * @param {string} email - User's email
+ * @param {string} phoneNumber - User's phone number
+ * @returns {Promise<Object>} Registration status
+ */
+const checkRegistrationStatus = async (email, phoneNumber) => {
+  try {
+    const response = await api.post('/auth/check-registration', { email, phoneNumber });
+    return response;
+  } catch (error) {
+    console.error('❌ Check registration failed:', error.message);
+    throw error;
+  }
+};
+
+/**
+ * Send OTP to email
+ * 
+ * @param {string} email - User's email
+ * @param {string} phoneNumber - User's phone number
+ * @returns {Promise<Object>} Response with userId
+ */
+const sendOtpToEmail = async (email, phoneNumber) => {
+  try {
+    const response = await api.post('/auth/send-email-otp', { email, phoneNumber });
+    return response;
+  } catch (error) {
+    console.error('❌ Send OTP failed:', error.message);
+    throw error;
+  }
+};
+
+/**
+ * Send OTP
+ * 
+ * @param {string} userId - User ID
+ * @returns {Promise<Object>} Response
+ */
+const sendOtp = async (userId) => {
+  try {
+    const response = await api.post('/auth/send-otp', { userId });
+    return response;
+  } catch (error) {
+    console.error('❌ Send OTP failed:', error.message);
+    throw error;
+  }
+};
+
+/**
+ * Verify contact OTP
+ * 
+ * @param {string} userId - User ID
+ * @param {string} otp - OTP code
+ * @returns {Promise<Object>} Response
+ */
+const verifyContactOtp = async (userId, otp) => {
+  try {
+    const response = await api.post('/auth/verify-contact-otp', { userId, otp });
+    return response;
+  } catch (error) {
+    console.error('❌ Verify OTP failed:', error.message);
+    throw error;
+  }
+};
+
+/**
+ * Verify OTP
+ * 
+ * @param {string} userId - User ID
+ * @param {string} otp - OTP code
+ * @returns {Promise<Object>} Response with user and token
+ */
+const verifyOtp = async (userId, otp) => {
+  try {
+    const response = await api.post('/auth/verify-otp', { userId, otp });
+    return response;
+  } catch (error) {
+    console.error('❌ Verify OTP failed:', error.message);
+    throw error;
+  }
+};
+
+/**
  * Auth Service Object
  * 
  * Export all authentication functions as a single object
@@ -176,6 +260,12 @@ const authService = {
   getCurrentUser,
   verifyUser,
   refreshToken,
+  checkRegistrationStatus,
+  sendOtpToEmail,
+  sendOtp,
+  verifyContactOtp,
+  verifyOtp,
 };
 
 export default authService;
+export const AuthService = authService;

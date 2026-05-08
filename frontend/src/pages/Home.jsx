@@ -104,8 +104,8 @@ const Home = () => {
   }
 
   const handleGetStarted = () => {
-    // If not authenticated, go to auth page
-    navigate('/auth')
+    // If not authenticated, go to onboarding/welcome page
+    navigate('/onboarding')
   }
 
   return (
