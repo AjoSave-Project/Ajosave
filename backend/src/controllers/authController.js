@@ -761,26 +761,29 @@ const sendEmailVerificationOtp = asyncErrorHandler(async (req, res) => {
     throw new ValidationError('Email and phone number are required');
   }
 
-  // Check if user already exists
-  const existingUser = await User.findOne({
-    $or: [
-      { email: email.toLowerCase() },
-      { phoneNumber }
-    ]
-  });
-
-  if (existingUser) {
-    // If it's an incomplete registration (temp user), allow resending OTP
-    if (existingUser.firstName === 'Temp' && existingUser.lastName === 'User') {
+  // Check if user already exists with this email
+  const existingUserByEmail = await User.findOne({ email: email.toLowerCase() });
+  
+  if (existingUserByEmail) {
+    // If it's an incomplete registration (temp user)
+    if (existingUserByEmail.firstName === 'Temp' && existingUserByEmail.lastName === 'User') {
+      // Verify the phone number matches
+      if (existingUserByEmail.phoneNumber !== phoneNumber) {
+        throw new ValidationError('This email is already registered with a different phone number. Please use the same phone number or contact support.', [{
+          field: 'phoneNumber',
+          message: 'Phone number mismatch',
+        }]);
+      }
+      
       // Resend OTP to existing temp user
-      await createAndSendOtp(existingUser, 'verification');
+      await createAndSendOtp(existingUserByEmail, 'verification');
       
       return res.status(200).json({
         success: true,
         message: 'Verification code sent to your email',
         data: {
-          userId: existingUser._id,
-          email: existingUser.email,
+          userId: existingUserByEmail._id,
+          email: existingUserByEmail.email,
           isReturningUser: true,
         },
         timestamp: new Date().toISOString(),
@@ -788,9 +791,45 @@ const sendEmailVerificationOtp = asyncErrorHandler(async (req, res) => {
     }
     
     // If it's a complete registration, return error
-    throw new ValidationError('An account with this email or phone number already exists', [{
-      field: existingUser.email === email.toLowerCase() ? 'email' : 'phoneNumber',
-      message: 'Already registered',
+    throw new ValidationError('An account with this email already exists', [{
+      field: 'email',
+      message: 'Email already registered',
+    }]);
+  }
+
+  // Check if user already exists with this phone number
+  const existingUserByPhone = await User.findOne({ phoneNumber });
+  
+  if (existingUserByPhone) {
+    // If it's an incomplete registration (temp user)
+    if (existingUserByPhone.firstName === 'Temp' && existingUserByPhone.lastName === 'User') {
+      // Verify the email matches
+      if (existingUserByPhone.email !== email.toLowerCase()) {
+        throw new ValidationError('This phone number is already registered with a different email. Please use the same email or contact support.', [{
+          field: 'email',
+          message: 'Email mismatch',
+        }]);
+      }
+      
+      // Resend OTP to existing temp user
+      await createAndSendOtp(existingUserByPhone, 'verification');
+      
+      return res.status(200).json({
+        success: true,
+        message: 'Verification code sent to your email',
+        data: {
+          userId: existingUserByPhone._id,
+          email: existingUserByPhone.email,
+          isReturningUser: true,
+        },
+        timestamp: new Date().toISOString(),
+      });
+    }
+    
+    // If it's a complete registration, return error
+    throw new ValidationError('An account with this phone number already exists', [{
+      field: 'phoneNumber',
+      message: 'Phone number already registered',
     }]);
   }
 
