@@ -74,6 +74,14 @@ const config = {
       pattern: /^\d{11}$/,
       length: 11
     }
+  },
+
+  // SMS Configuration
+  sms: {
+    termii: {
+      apiKey: process.env.TERMII_API_KEY,
+      senderId: process.env.TERMII_SENDER_ID || 'AjoSave',
+    }
   }
 };
 

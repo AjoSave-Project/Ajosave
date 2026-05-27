@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const { sendOtpEmail, sendPasswordResetEmail } = require('./emailService');
+const { sendOtpSMS } = require('./smsService');
 
 const OTP_EXPIRY_MINUTES = 10;
 const OTP_LENGTH = 6;
@@ -19,37 +20,50 @@ const hashOtp = (otp) => {
 };
 
 /**
- * Send OTP via Email
+ * Send OTP via Email or SMS
  * 
  * @param {string} email - User's email address
+ * @param {string} phoneNumber - User's phone number
  * @param {string} otp - 6-digit OTP code
  * @param {string} firstName - User's first name
  * @param {string} purpose - Purpose of OTP ('verification' or 'password-reset')
  * @returns {Promise<Object>} Result object
  */
-const sendOtpViaEmail = async (email, otp, firstName, purpose = 'verification') => {
+const sendOtpViaEmailOrSMS = async (email, phoneNumber, otp, firstName, purpose = 'verification') => {
   try {
     let result;
+    
+    // For password reset, send SMS to phone number
     if (purpose === 'password-reset') {
-      result = await sendPasswordResetEmail(email, otp, firstName);
+      try {
+        result = await sendOtpSMS(phoneNumber, otp, firstName, purpose);
+        console.log(`✅ Password reset OTP sent via SMS to ${phoneNumber}`);
+        return { success: true, method: 'sms' };
+      } catch (smsError) {
+        console.error(`⚠️ SMS delivery failed for ${phoneNumber}:`, smsError.message);
+        // Fallback to email if SMS fails
+        console.log(`📧 Falling back to email for ${email}`);
+        result = await sendPasswordResetEmail(email, otp, firstName);
+        return { success: true, method: 'email' };
+      }
     } else {
+      // For verification, use email
       result = await sendOtpEmail(email, otp, firstName);
+      return { success: true, method: 'email' };
     }
-
-    return { success: true };
-  } catch (emailErr) {
-    console.error(`⚠️ Email delivery failed for ${email}:`, emailErr.message);
-    throw emailErr;
+  } catch (error) {
+    console.error(`⚠️ OTP delivery failed:`, error.message);
+    throw error;
   }
 };
 
 /**
- * Create and store OTP on user document, then send via email.
- * OTP is only sent via email - never returned in response.
+ * Create and store OTP on user document, then send via SMS (for password reset) or email (for verification).
+ * OTP is only sent via SMS/email - never returned in response.
  * 
  * @param {Object} user - User document
  * @param {string} purpose - Purpose of OTP ('verification' or 'password-reset')
- * @returns {Promise<Object>} Object with expiry
+ * @returns {Promise<Object>} Object with expiry and delivery method
  */
 const createAndSendOtp = async (user, purpose = 'verification') => {
   const otp = generateOtp();
@@ -60,11 +74,11 @@ const createAndSendOtp = async (user, purpose = 'verification') => {
   await user.save();
 
   try {
-    await sendOtpViaEmail(user.email, otp, user.firstName, purpose);
-    console.log(`✅ OTP sent successfully to ${user.email}`);
-    return { expiry };
-  } catch (emailErr) {
-    console.error(`⚠️ Failed to send OTP email:`, emailErr.message);
+    const result = await sendOtpViaEmailOrSMS(user.email, user.phoneNumber, otp, user.firstName, purpose);
+    console.log(`✅ OTP sent successfully via ${result.method} for ${purpose}`);
+    return { expiry, method: result.method };
+  } catch (error) {
+    console.error(`⚠️ Failed to send OTP:`, error.message);
     throw new Error('Failed to send verification code. Please try again.');
   }
 };

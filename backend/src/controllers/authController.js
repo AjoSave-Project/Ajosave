@@ -655,15 +655,20 @@ const forgotPassword = asyncErrorHandler(async (req, res) => {
     });
   }
 
-  const { devOtp } = await createAndSendOtp(user, 'password-reset');
+  const { devOtp, method } = await createAndSendOtp(user, 'password-reset');
+
+  const message = method === 'sms' 
+    ? 'OTP sent to your registered phone number.'
+    : 'OTP sent to your registered email address.';
 
   res.status(200).json({
     success: true,
-    message: 'OTP sent to your registered email address.',
+    message,
     data: {
       userId: user._id,
       phoneNumber: user.phoneNumber,
-      email: user.email, // Include email so user knows where to check
+      email: user.email,
+      method, // Include delivery method so frontend knows where user should check
     },
     timestamp: new Date().toISOString(),
   });
