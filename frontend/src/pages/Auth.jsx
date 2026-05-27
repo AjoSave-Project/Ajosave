@@ -19,14 +19,14 @@ const Auth = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-deepBlue-50 to-deepBlue-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-deepBlue-50 to-deepBlue-100 flex items-center justify-center home-page-scrollbar">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-deepBlue-600"></div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-deepBlue-50 to-deepBlue-100 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-deepBlue-50 to-deepBlue-100 py-8 home-page-scrollbar">
       <div className="container mx-auto px-4 max-w-md">
         <div className="bg-white rounded-2xl shadow-lg p-6">
 

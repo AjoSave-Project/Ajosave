@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Mail, AlertCircle, Info } from 'lucide-react';
 import { useToast } from '../../components/common/Toast';
-import { AuthService } from '../../services/authService';
+import { AuthService } from '../../services/authServices';
 
 /**
  * Create Account Screen - Step 1 of 3
@@ -118,7 +118,7 @@ const CreateAccount = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col home-page-scrollbar">
       {/* Top Section */}
       <div className="bg-white px-6 pt-8 pb-12">
         <button

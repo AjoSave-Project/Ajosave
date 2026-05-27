@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Menu, Bell, User, LogOut, ChevronDown } from 'lucide-react'
 import { useAdminAuth } from '../../context/AdminAuthContext'
 import NotificationsDropdown from '../common/NotificationsDropdown'
+import LanguageToggle from '../common/LanguageToggle'
 
 export default function AdminHeader({ onMenuClick }) {
   const { adminUser, logout } = useAdminAuth()
@@ -25,6 +26,9 @@ export default function AdminHeader({ onMenuClick }) {
 
       {/* Right */}
       <div className="flex items-center space-x-3">
+        {/* Language Toggle */}
+        <LanguageToggle />
+
         {/* Notifications Dropdown */}
         <NotificationsDropdown />
 

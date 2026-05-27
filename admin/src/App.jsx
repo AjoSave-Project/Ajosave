@@ -1,6 +1,7 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AdminAuthProvider, useAdminAuth } from './context/AdminAuthContext'
+import { LanguageProvider } from './context/LanguageContext'
 import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminLayout from './components/layout/AdminLayout'
@@ -50,11 +51,13 @@ function App() {
   console.log('🎯 App function called')
   
   return (
-    <AdminAuthProvider>
-      <Router>
-        <AppContent />
-      </Router>
-    </AdminAuthProvider>
+    <LanguageProvider>
+      <AdminAuthProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </AdminAuthProvider>
+    </LanguageProvider>
   )
 }
 

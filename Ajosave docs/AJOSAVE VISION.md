@@ -69,3 +69,4 @@ Most importantly, we want to show that you don't have to abandon African financi
 Honestly? We're building this because we're tired of seeing people work hard, save diligently, and still get screwed over by broken systems. We think we can fix that. And if we do it right, we won't just build a successful company-we'll actually change lives and prove that African fintech can be built on African solutions, not just copies of Silicon Valley apps.
 
 That's the vision. That's what gets us excited to build this thing.
+

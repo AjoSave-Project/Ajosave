@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAdminAuth } from '../context/AdminAuthContext'
 import { Lock, Phone, Eye, EyeOff, ShieldCheck } from 'lucide-react'
+import LanguageToggle from '../components/common/LanguageToggle'
 
 export default function AdminLogin() {
   const [phoneNumber, setPhoneNumber] = useState('')
@@ -54,6 +55,11 @@ export default function AdminLogin() {
 
   return (
     <div className="min-h-screen bg-dark-950 flex items-center justify-center p-4">
+      {/* Language Toggle - Top Right */}
+      <div className="absolute top-4 right-4 z-20">
+        <LanguageToggle variant="compact" />
+      </div>
+
       {/* Background glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-deepBlue-900/30 rounded-full blur-3xl"></div>

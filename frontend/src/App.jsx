@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import { ToastProvider } from './components/common/Toast'
 import { useSessionTimeout } from './hooks/useSessionTimeout'
 import { useNetworkStatus } from './hooks/useNetworkStatus'
+import { useHomePageScrollbar } from './hooks/useHomePageScrollbar'
 import SessionTimeoutWarning from './components/common/SessionTimeoutWarning'
 import NetworkStatus from './components/common/NetworkStatus'
 import Layout from './components/layout/Layout'
@@ -75,6 +76,9 @@ const PublicRoute = ({ children }) => {
 const AppContent = () => {
   const sessionTimeout = useSessionTimeout(25, 5); // 25 min timeout, 5 min warning (matches backend 30min)
   const networkStatus = useNetworkStatus();
+  
+  // Apply custom scrollbar for home pages
+  useHomePageScrollbar();
 
   return (
     <>

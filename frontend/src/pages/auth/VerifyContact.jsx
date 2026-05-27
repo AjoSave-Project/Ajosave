@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, MailOpen, AlertCircle } from 'lucide-react';
+import { ArrowLeft, MailOpen } from 'lucide-react';
 import { useToast } from '../../components/common/Toast';
-import { AuthService } from '../../services/authService';
+import { AuthService } from '../../services/authServices';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 /**

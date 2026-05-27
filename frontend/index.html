@@ -11,22 +11,20 @@
     <link rel="manifest" href="/manifest.json" />
     
     <!-- iOS PWA Support -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="AjoSave" />
     <link rel="apple-touch-icon" href="/src/assets/images/icon.png" />
     
     <!-- Security Headers -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-    <meta http-equiv="X-Frame-Options" content="DENY" />
     <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
     
     <title>AjoSave - Digital Community Saving</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Preload critical font weights -->
-    <link rel="preload" as="font" type="font/woff2" href="https://fonts.gstatic.com/s/nunito/v26/XRXI3I6Li01BKofiOc5wtlZ2di8HDLshdTQ3j77e.woff2" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=block" rel="stylesheet" />
+    <!-- Use Google Fonts with display=swap for better performance -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <script src="https://js.paystack.co/v1/inline.js"></script>
     <style>
       /* Prevent FOUT by hiding content until fonts load */
@@ -74,40 +72,22 @@
     </div>
     <div id="root"></div>
     <script>
-      // Font loading detection
+      // Simple font loading with fallback
       (function() {
         const loader = document.getElementById('font-loader');
         const root = document.getElementById('root');
-        const maxWaitTime = 3000; // Maximum 3 seconds wait
-        let fontsLoaded = false;
-
+        
         function hideLoader() {
-          if (!fontsLoaded) {
-            fontsLoaded = true;
-            root.classList.add('fonts-loaded');
-            setTimeout(() => {
-              loader.classList.add('hidden');
-              setTimeout(() => loader.remove(), 300);
-            }, 100);
-          }
+          root.classList.add('fonts-loaded');
+          setTimeout(() => {
+            loader.classList.add('hidden');
+            setTimeout(() => loader.remove(), 300);
+          }, 100);
         }
 
-        // Use Font Loading API if available
-        if ('fonts' in document) {
-          Promise.all([
-            document.fonts.load('400 1em Nunito'),
-            document.fonts.load('500 1em Nunito'),
-            document.fonts.load('600 1em Nunito'),
-            document.fonts.load('700 1em Nunito')
-          ]).then(hideLoader).catch(hideLoader);
-          
-          // Fallback timeout
-          setTimeout(hideLoader, maxWaitTime);
-        } else {
-          // Fallback for browsers without Font Loading API
-          window.addEventListener('load', hideLoader);
-          setTimeout(hideLoader, maxWaitTime);
-        }
+        // Hide loader after a short delay or when page loads
+        window.addEventListener('load', hideLoader);
+        setTimeout(hideLoader, 1000); // Fallback after 1 second
       })();
     </script>
     <script type="module" src="/src/main.jsx"></script>

@@ -215,7 +215,7 @@ const UserSchema = new mongoose.Schema({
   preferences: {
     language: {
       type: String,
-      enum: ['en', 'ig', 'yo', 'ha'],
+      enum: ['en', 'ig', 'yo', 'ha', 'pcm'],
       default: 'en'
     },
     currency: {

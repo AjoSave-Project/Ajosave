@@ -26,8 +26,8 @@ const Layout = ({ children }) => {
       {/* Header - Always show for authenticated users */}
       <Header />
       
-      {/* Main Content */}
-      <div className={showFooter ? 'pb-20' : ''}>
+      {/* Main Content with padding for fixed header */}
+      <div className={`pt-16 ${showFooter ? 'pb-20' : ''}`}>
         {children}
       </div>
       

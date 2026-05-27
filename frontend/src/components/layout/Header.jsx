@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LogOut, User, Wallet, Users, Building2, Bell, Settings, HelpCircle, ChevronRight, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -73,6 +73,17 @@ const Header = () => {
   const { user, logout, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      setIsScrolled(scrollTop > 10);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleLogout = async () => {
     setSidebarOpen(false);
@@ -89,7 +100,11 @@ const Header = () => {
   return (
     <>
       <SettingsSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} user={user} onLogout={handleLogout} />
-      <div className="bg-white border-b border-deepBlue-200 px-4 py-3">
+      <div className={`fixed top-0 left-0 right-0 z-50 px-4 py-3 transition-all duration-300 ${
+        isScrolled 
+          ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-deepBlue-200' 
+          : 'bg-white border-b border-deepBlue-200'
+      }`}>
         <div className="container mx-auto flex items-center justify-between">
           <h1 className="text-xl font-bold text-deepBlue-600">AjoSave</h1>
           {user && (

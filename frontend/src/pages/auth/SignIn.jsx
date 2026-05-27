@@ -98,7 +98,7 @@ const SignIn = () => {
 
   if (otpState) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-white home-page-scrollbar">
         <div className="container mx-auto px-4 py-8 max-w-md">
           <button
             onClick={() => setOtpState(null)}
@@ -125,7 +125,7 @@ const SignIn = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col home-page-scrollbar">
       {/* Top Section */}
       <div className="bg-white px-6 pt-8 pb-16">
         <button

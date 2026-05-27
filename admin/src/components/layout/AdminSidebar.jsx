@@ -5,6 +5,7 @@ import {
   BarChart3, FileText, Settings, ChevronLeft, ChevronRight, LogOut
 } from 'lucide-react'
 import { useAdminAuth } from '../../context/AdminAuthContext'
+import LanguageToggle from '../common/LanguageToggle'
 
 export default function AdminSidebar({ isOpen, onToggle }) {
   const location = useLocation()
@@ -75,7 +76,12 @@ export default function AdminSidebar({ isOpen, onToggle }) {
       </nav>
 
       {/* Logout */}
-      <div className="p-3 border-t border-dark-800">
+      <div className="p-3 border-t border-dark-800 space-y-1">
+        {/* Language Toggle */}
+        <div className={`${isOpen ? 'block' : 'flex justify-center'}`}>
+          <LanguageToggle />
+        </div>
+        
         <button
           onClick={logout}
           title={!isOpen ? 'Logout' : ''}

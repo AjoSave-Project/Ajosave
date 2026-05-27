@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import logo from '../../assets/images/logo.png';
@@ -6,6 +6,17 @@ import logo from '../../assets/images/logo.png';
 const HomeNavbar = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      setIsScrolled(scrollTop > 10);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const navItems = [
     { label: 'Home', path: '/' },
@@ -15,7 +26,11 @@ const HomeNavbar = () => {
   ];
 
   return (
-    <nav className="bg-white shadow-sm border-b border-deepBlue-100 sticky top-0 z-50">
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      isScrolled 
+        ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-deepBlue-100' 
+        : 'bg-deepBlue-200 shadow-sm border-b border-deepBlue-100'
+    }`}>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -26,9 +41,9 @@ const HomeNavbar = () => {
             <img 
               src={logo} 
               alt="AjoSave Logo" 
-              className="w-10 h-10 object-contain"
+              className="w-10 h-10 rounded-xl object-contain"
             />
-            <span className="text-xl font-bold text-deepBlue-800">AjoSave</span>
+            <span className="text-xl font-bold text-deepBlue-600">AjoSave</span>
           </div>
 
           {/* Desktop Navigation */}
@@ -71,7 +86,9 @@ const HomeNavbar = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden border-t border-deepBlue-100 py-4">
+          <div className={`md:hidden border-t py-4 ${
+            isScrolled ? 'border-deepBlue-100 bg-white/95' : 'border-deepBlue-100'
+          }`}>
             <div className="flex flex-col space-y-4">
               {navItems.map((item) => (
                 <button

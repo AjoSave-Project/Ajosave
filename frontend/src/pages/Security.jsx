@@ -207,7 +207,7 @@ const Security = () => {
                 How do I enable two-factor authentication?
               </h3>
               <p className="text-deepBlue-600">
-                Go to Settings > Security > Two-Factor Authentication. Choose between authenticator app or SMS verification. 
+                Go to Settings &gt; Security &gt; Two-Factor Authentication. Choose between authenticator app or SMS verification. 
                 We recommend using an authenticator app for better security.
               </p>
             </div>

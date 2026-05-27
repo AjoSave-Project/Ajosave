@@ -14,6 +14,7 @@ const groupRoutes = require('../src/routes/groupRoutes');
 const walletRoutes = require('../src/routes/walletRoutes');
 const identityRoutes = require('../src/routes/identityRoutes');
 const faceVerificationRoutes = require('../src/routes/faceVerificationRoutes');
+const languageRoutes = require('../src/routes/languageRoutes');
 
 let isConnected = false;
 let connectionError = null;
@@ -44,6 +45,7 @@ app.use('/api/groups', groupRoutes);
 app.use('/api/wallets', walletRoutes);
 app.use('/api/identity', identityRoutes);
 app.use('/api/face', faceVerificationRoutes);
+app.use('/api/language', languageRoutes);
 app.use(notFoundHandler);
 app.use(globalErrorHandler);
 

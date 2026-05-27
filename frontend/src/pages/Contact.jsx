@@ -74,7 +74,7 @@ const Contact = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white home-page-scrollbar">
       <HomeNavbar />
       
       <div className="container mx-auto px-4 py-16">

@@ -15,7 +15,7 @@ const Onboarding = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 py-12">
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 py-12 home-page-scrollbar">
       {/* Illustration */}
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center">

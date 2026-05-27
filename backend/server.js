@@ -18,6 +18,7 @@ const groupRoutes = require('./src/routes/groupRoutes');
 const walletRoutes = require('./src/routes/walletRoutes');
 const identityRoutes = require('./src/routes/identityRoutes');
 const faceVerificationRoutes = require('./src/routes/faceVerificationRoutes');
+const languageRoutes = require('./src/routes/languageRoutes');
 
 // Import admin routes
 const adminAuthRoutes = require('./src/routes/adminAuthRoutes');
@@ -101,6 +102,7 @@ const createApp = () => {
   app.use('/api/wallets', walletRoutes);
   app.use('/api/identity', identityRoutes); // Identity verification routes
   app.use('/api/face', faceVerificationRoutes); // Face verification routes
+  app.use('/api/language', languageRoutes); // Language preference routes
 
   // Admin API Routes
   app.use('/api/admin/auth', adminAuthRoutes);

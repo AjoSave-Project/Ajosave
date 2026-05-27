@@ -2,6 +2,9 @@ import React from 'react';
 import { Shield, Users, TrendingUp, Award, Heart, Target } from 'lucide-react';
 import HomeNavbar from '../components/layout/HomeNavbar';
 import HomeFooter from '../components/layout/HomeFooter';
+import FeranmiImage from '../assets/images/Feranmi.jpeg';
+import BashiruImage from '../assets/images/Bashiru.jpeg';
+import KosiImage from '../assets/images/Kosi.jpeg';
 
 const About = () => {
   const values = [
@@ -41,31 +44,37 @@ const About = () => {
     {
       name: "Olanase Umar Ayobami",
       role: "CEO & Founder",
-      image: "https://media.licdn.com/dms/image/v2/D4E03AQFrS8pO9mQreg/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1730359211431?e=1778716800&v=beta&t=WchPt4K2E4cYcVCn44KnwHZCaoZeFgH_H7TdZaNjHls",
-      bio: "Former Goldman Sachs analyst with 10+ years in fintech"
+      image: "https://media.licdn.com/dms/image/v2/D4E03AQFrS8pO9mQreg/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1730359211431?e=1781136000&v=beta&t=G4ax2-QLfySXqwDtZiIpI3_byfshNW0xAWuGgiAdFTE",
+      bio: "General Project Lead, Brand/Identity Manager"
     },
     {
       name: "OluwaFeranmi Adeyemo",
       role: "Head of Operations",
-      image: "https://media.licdn.com/dms/image/v2/D4E12AQGjj1e1guW_Tg/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1682254771737?e=2147483647&v=beta&t=CRdK6YIxlq6jeIfjPN2bSwuwskJIDCeoeRo3M5M0Vao",
+      image: FeranmiImage,
       bio: "Operations expert with deep knowledge of Nigerian financial systems"
     },
     {
-      name: "Code circle foundation",
+      name: "Bashiru",
       role: "Head of Development",
-      image: "https://codecircle.com.ng/logo2.png",
+      image: BashiruImage,
       bio: "Co-developement process specialist and backend security expert"
     },
     {
       name: "Otika Nelson Somtochukwu",
       role: "Chief Technical Manager",
-      image: "https://media.licdn.com/dms/image/v2/D4E03AQEwJVzp2GuFng/profile-displayphoto-scale_400_400/B4EZ3CDeuuIAAg-/0/1777077186386?e=1778716800&v=beta&t=5I9Bu_QLtorJHco7fx7JYTnyMP2q2dMQYhTfc3qoXE4",
-      bio: "Technical developments expert with gross knowledge on Mobile processes and systems"
+      image: "https://media.licdn.com/dms/image/v2/D4E03AQFZv7eiFmkxog/profile-displayphoto-scale_400_400/B4EZ3VjNSjIcAg-/0/1777404283172?e=1781136000&v=beta&t=a76ScP9r89Of5bCU92XyC2DIejKIMu-I3bymL1JldM4",
+      bio: "Mobile developments Manager in processes and systems"
+    },
+    {
+      name: "Kosisochukwu",
+      role: "Chief Technical Manager",
+      image: KosiImage,
+      bio: "Technical developments expert"
     }
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white home-page-scrollbar">
       <HomeNavbar />
       
       <div className="container mx-auto px-4 py-16">

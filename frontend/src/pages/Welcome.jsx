@@ -12,7 +12,7 @@ const Welcome = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col home-page-scrollbar">
       {/* Top section with gradient circles */}
       <div className="flex-1 relative overflow-hidden flex items-center justify-center bg-white">
         {/* Semi-circle 1 - outer */}

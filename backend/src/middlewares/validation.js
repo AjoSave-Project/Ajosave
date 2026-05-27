@@ -59,8 +59,8 @@ const validateRegistration = [
   body('password')
     .isLength({ min: config.validation.password.minLength })
     .withMessage(`Password must be at least ${config.validation.password.minLength} characters long`)
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
-    .withMessage('Password must contain at least one uppercase letter, one lowercase letter, and one number')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^()_+\-=\[\]{};':"\\|,.<>\/])/)
+    .withMessage('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character')
     .custom((value) => {
       const weakPasswords = ['password', '123456', 'qwerty', 'abc123'];
       if (weakPasswords.includes(value.toLowerCase())) {
@@ -103,8 +103,8 @@ const validatePasswordUpdate = [
   body('newPassword')
     .isLength({ min: config.validation.password.minLength })
     .withMessage(`New password must be at least ${config.validation.password.minLength} characters long`)
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
-    .withMessage('New password must contain at least one uppercase letter, one lowercase letter, and one number')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^()_+\-=\[\]{};':"\\|,.<>\/])/)
+    .withMessage('New password must contain at least one uppercase letter, one lowercase letter, one number, and one special character')
     .custom((value, { req }) => {
       if (value === req.body.currentPassword) {
         throw new Error('New password must be different from current password');

@@ -153,6 +153,8 @@ const registerUser = asyncErrorHandler(async (req, res) => {
         existingUser.bvn = bvn;
         existingUser.nin = nin;
         existingUser.dateOfBirth = new Date(dateOfBirth);
+        existingUser.isVerified = true; // Mark as verified since email was verified in step 2
+        existingUser.verifiedAt = new Date();
         
         const savedUser = await existingUser.save();
         
@@ -171,17 +173,19 @@ const registerUser = asyncErrorHandler(async (req, res) => {
           await wallet.save();
         }
         
-        // Send OTP for phone verification
-        await createAndSendOtp(savedUser, 'verification');
+        // Generate JWT token
+        const token = jwt.sign(
+          { userId: savedUser._id, email: savedUser.email },
+          config.jwt.secret,
+          { expiresIn: config.jwt.expiresIn }
+        );
         
         return res.status(201).json({
           success: true,
-          message: 'Registration successful. Please check your email for verification code.',
+          message: 'Registration successful! Welcome to Ajosave.',
           data: {
-            requiresOtp: true,
-            email: savedUser.email,
-            phoneNumber: savedUser.phoneNumber,
-            userId: savedUser._id,
+            user: savedUser,
+            token,
           },
           timestamp: new Date().toISOString()
         });
@@ -231,14 +235,15 @@ const registerUser = asyncErrorHandler(async (req, res) => {
       phoneNumber,
       bvn,
       nin,
-      dateOfBirth: new Date(dateOfBirth)
+      dateOfBirth: new Date(dateOfBirth),
+      isVerified: true, // Mark as verified since email was verified in step 2
+      verifiedAt: new Date(),
     });
 
     // Save user to database
     const savedUser = await newUser.save();
 
-    // NEW: Create wallet for the user
-
+    // Create wallet for the user
     const newWallet = new Wallet({
       userId: savedUser._id,
       totalBalance: 0,
@@ -251,19 +256,19 @@ const registerUser = asyncErrorHandler(async (req, res) => {
 
     await newWallet.save();
 
-
-    // Send OTP to verify phone number
-    await createAndSendOtp(savedUser, 'verification');
-
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: savedUser._id, email: savedUser.email },
+      config.jwt.secret,
+      { expiresIn: config.jwt.expiresIn }
+    );
 
     res.status(201).json({
       success: true,
-      message: 'Registration successful. Please check your email for verification code.',
+      message: 'Registration successful! Welcome to Ajosave.',
       data: {
-        requiresOtp: true,
-        email: savedUser.email,
-        phoneNumber: savedUser.phoneNumber,
-        userId: savedUser._id,
+        user: savedUser,
+        token,
       },
       timestamp: new Date().toISOString()
     });

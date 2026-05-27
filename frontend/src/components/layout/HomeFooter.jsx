@@ -1,6 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import PlayStoreButton from '../common/PlayStoreButton';
+import AppStoreButton from '../common/AppStoreButton';
 import logo from '../../assets/images/logo.png';
 
 const HomeFooter = () => {
@@ -48,14 +50,20 @@ const HomeFooter = () => {
               <img 
                 src={logo} 
                 alt="AjoSave Logo" 
-                className="w-10 h-10 object-contain"
+                className="w-10 h-10 object-contain rounded-xl"
               />
               <span className="text-xl font-bold">AjoSave</span>
             </div>
             <p className="text-deepBlue-200 mb-6 max-w-md">
-              Digital Community Saving Made Simple, Secure, and Rewarding. 
-              Join thousands of Nigerians building their financial future together.
+              Building Nigeria's financial future through transparent, community-driven savings. 
+              Join our beta program and help shape the future of fintech.
             </p>
+            
+            {/* Download Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 mb-6">
+              <PlayStoreButton size="md" />
+              <AppStoreButton size="md" />
+            </div>
             
             {/* Contact Info */}
             <div className="space-y-3">
@@ -154,7 +162,7 @@ const HomeFooter = () => {
                 © {new Date().getFullYear()} AjoSave. All rights reserved.
               </p>
               <p className="text-deepBlue-400 text-xs mt-1">
-                Licensed by CBN • Deposits insured by NDIC
+                Beta Platform • Community-Driven Development
               </p>
             </div>
           </div>

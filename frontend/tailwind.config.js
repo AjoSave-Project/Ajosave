@@ -34,16 +34,16 @@ export default {
           800: '#075985',
           900: '#0c4a6e',
         }
-      }
-    },
-    keyframes: {
-      'slide-in': {
-        from: { opacity: '0', transform: 'translateX(100%)' },
-        to:   { opacity: '1', transform: 'translateX(0)' },
       },
-    },
-    animation: {
-      'slide-in': 'slide-in 0.2s ease-out',
+      keyframes: {
+        'slide-in': {
+          from: { opacity: '0', transform: 'translateX(100%)' },
+          to:   { opacity: '1', transform: 'translateX(0)' },
+        },
+      },
+      animation: {
+        'slide-in': 'slide-in 0.2s ease-out',
+      },
     },
   },
   plugins: [],
