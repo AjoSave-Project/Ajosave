@@ -640,7 +640,7 @@ const verifyFace = asyncErrorHandler(async (req, res) => {
  * @access  Public
  */
 const forgotPassword = asyncErrorHandler(async (req, res) => {
-  const { phoneNumber } = req.body;
+  const { phoneNumber, email } = req.body;
   if (!phoneNumber) throw new ValidationError('Phone number is required');
 
   const user = await User.findOne({ phoneNumber });
@@ -655,7 +655,22 @@ const forgotPassword = asyncErrorHandler(async (req, res) => {
     });
   }
 
+  // Use provided email if available, otherwise use user's registered email
+  const targetEmail = email || user.email;
+  
+  // Temporarily update user email if a different email was provided
+  const originalEmail = user.email;
+  if (email && email !== user.email) {
+    user.email = email;
+  }
+
   const { devOtp, method } = await createAndSendOtp(user, 'password-reset');
+
+  // Restore original email if it was temporarily changed
+  if (email && email !== originalEmail) {
+    user.email = originalEmail;
+    await user.save();
+  }
 
   const message = method === 'sms' 
     ? 'OTP sent to your registered phone number.'
@@ -667,7 +682,7 @@ const forgotPassword = asyncErrorHandler(async (req, res) => {
     data: {
       userId: user._id,
       phoneNumber: user.phoneNumber,
-      email: user.email,
+      email: targetEmail,
       method, // Include delivery method so frontend knows where user should check
     },
     timestamp: new Date().toISOString(),

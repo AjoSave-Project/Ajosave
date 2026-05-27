@@ -20,7 +20,7 @@ const hashOtp = (otp) => {
 };
 
 /**
- * Send OTP via Email or SMS
+ * Send OTP via SMS or Email
  * 
  * @param {string} email - User's email address
  * @param {string} phoneNumber - User's phone number
@@ -30,30 +30,40 @@ const hashOtp = (otp) => {
  * @returns {Promise<Object>} Result object
  */
 const sendOtpViaEmailOrSMS = async (email, phoneNumber, otp, firstName, purpose = 'verification') => {
-  try {
-    let result;
-    
-    // For password reset, send SMS to phone number
-    if (purpose === 'password-reset') {
+  let lastError = null;
+  
+  // For password reset, try SMS first, then email as fallback
+  if (purpose === 'password-reset') {
+    try {
+      const result = await sendOtpSMS(phoneNumber, otp, firstName, purpose);
+      console.log(`✅ Password reset OTP sent via SMS to ${phoneNumber}`);
+      return { success: true, method: 'sms' };
+    } catch (smsError) {
+      console.error(`⚠️ SMS delivery failed for ${phoneNumber}:`, smsError.message);
+      lastError = smsError;
+      
+      // Try email fallback
       try {
-        result = await sendOtpSMS(phoneNumber, otp, firstName, purpose);
-        console.log(`✅ Password reset OTP sent via SMS to ${phoneNumber}`);
-        return { success: true, method: 'sms' };
-      } catch (smsError) {
-        console.error(`⚠️ SMS delivery failed for ${phoneNumber}:`, smsError.message);
-        // Fallback to email if SMS fails
-        console.log(`📧 Falling back to email for ${email}`);
-        result = await sendPasswordResetEmail(email, otp, firstName);
+        console.log(`📧 Attempting email fallback for ${email}`);
+        const result = await sendPasswordResetEmail(email, otp, firstName);
+        console.log(`✅ Password reset OTP sent via email fallback to ${email}`);
         return { success: true, method: 'email' };
+      } catch (emailError) {
+        console.error(`⚠️ Email fallback also failed for ${email}:`, emailError.message);
+        // Both SMS and email failed - this is a critical error
+        throw new Error(`Failed to send OTP via SMS or email. SMS error: ${smsError.message}. Email error: ${emailError.message}`);
       }
-    } else {
-      // For verification, use email
-      result = await sendOtpEmail(email, otp, firstName);
-      return { success: true, method: 'email' };
     }
-  } catch (error) {
-    console.error(`⚠️ OTP delivery failed:`, error.message);
-    throw error;
+  } else {
+    // For verification, use email
+    try {
+      const result = await sendOtpEmail(email, otp, firstName);
+      console.log(`✅ Verification OTP sent via email to ${email}`);
+      return { success: true, method: 'email' };
+    } catch (emailError) {
+      console.error(`⚠️ Email delivery failed for ${email}:`, emailError.message);
+      throw emailError;
+    }
   }
 };
 
