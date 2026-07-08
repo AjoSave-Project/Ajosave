@@ -4,6 +4,8 @@ import HomeNavbar from '../components/layout/HomeNavbar';
 import HomeFooter from '../components/layout/HomeFooter';
 import FeranmiImage from '../assets/images/Feranmi.jpeg';
 import BashiruImage from '../assets/images/Bashiru.jpeg';
+import NelsonImage from '../assets/images/Nelson.jpeg';
+import TemiImage from '../assets/images/Temi.jpeg';
 import KosiImage from '../assets/images/Kosi.jpeg';
 
 const About = () => {
@@ -44,7 +46,7 @@ const About = () => {
     {
       name: "Olanase Umar Ayobami",
       role: "CEO & Founder",
-      image: "https://media.licdn.com/dms/image/v2/D4E03AQFrS8pO9mQreg/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1730359211431?e=1781136000&v=beta&t=G4ax2-QLfySXqwDtZiIpI3_byfshNW0xAWuGgiAdFTE",
+      image: TemiImage,
       bio: "General Project Lead, Brand/Identity Manager"
     },
     {
@@ -62,7 +64,7 @@ const About = () => {
     {
       name: "Otika Nelson Somtochukwu",
       role: "Chief Technical Manager",
-      image: "https://media.licdn.com/dms/image/v2/D4E03AQFZv7eiFmkxog/profile-displayphoto-scale_400_400/B4EZ3VjNSjIcAg-/0/1777404283172?e=1781136000&v=beta&t=a76ScP9r89Of5bCU92XyC2DIejKIMu-I3bymL1JldM4",
+      image: NelsonImage,
       bio: "Mobile developments Manager in processes and systems"
     },
     {
@@ -164,25 +166,52 @@ const About = () => {
           <h2 className="text-3xl font-bold text-center text-deepBlue-800 mb-12">
             Meet Our Team
           </h2>
-          <div className="grid md:grid-cols-4 gap-8">
-            {team.map((member, index) => (
-              <div key={index} className="text-center">
-                <img 
-                  src={member.image} 
-                  alt={member.name}
-                  className="w-32 h-32 rounded-full mx-auto mb-4 object-cover shadow-lg"
-                />
-                <h3 className="text-xl font-semibold text-deepBlue-800 mb-1">
-                  {member.name}
-                </h3>
-                <p className="text-deepBlue-600 font-medium mb-3">
-                  {member.role}
-                </p>
-                <p className="text-deepBlue-500 text-sm">
-                  {member.bio}
-                </p>
+          <div className="max-w-4xl mx-auto">
+            {/* First Row - 3 members */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 justify-items-center">
+              {team.slice(0, 3).map((member, index) => (
+                <div key={index} className="text-center">
+                  <img 
+                    src={member.image} 
+                    alt={member.name}
+                    className="w-32 h-32 rounded-full mx-auto mb-4 object-cover shadow-lg"
+                  />
+                  <h3 className="text-xl font-semibold text-deepBlue-800 mb-1">
+                    {member.name}
+                  </h3>
+                  <p className="text-deepBlue-600 font-medium mb-3">
+                    {member.role}
+                  </p>
+                  <p className="text-deepBlue-500 text-sm">
+                    {member.bio}
+                  </p>
+                </div>
+              ))}
+            </div>
+            
+            {/* Second Row - 2 members centered */}
+            <div className="flex justify-center">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 justify-items-center">
+                {team.slice(3, 5).map((member, index) => (
+                  <div key={index + 3} className="text-center">
+                    <img 
+                      src={member.image} 
+                      alt={member.name}
+                      className="w-32 h-32 rounded-full mx-auto mb-4 object-cover shadow-lg"
+                    />
+                    <h3 className="text-xl font-semibold text-deepBlue-800 mb-1">
+                      {member.name}
+                    </h3>
+                    <p className="text-deepBlue-600 font-medium mb-3">
+                      {member.role}
+                    </p>
+                    <p className="text-deepBlue-500 text-sm">
+                      {member.bio}
+                    </p>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
         </div>
 

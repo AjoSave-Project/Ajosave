@@ -674,7 +674,11 @@ const forgotPassword = asyncErrorHandler(async (req, res) => {
 
   const message = method === 'sms' 
     ? 'OTP sent to your registered phone number.'
-    : 'OTP sent to your registered email address.';
+    : method === 'email'
+    ? 'OTP sent to your registered email address.'
+    : method === 'console'
+    ? 'OTP generated successfully. Check server console for development OTP.'
+    : 'OTP sent successfully.';
 
   res.status(200).json({
     success: true,

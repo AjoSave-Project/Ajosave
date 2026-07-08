@@ -18,537 +18,298 @@ const Home = () => {
   const navigate = useNavigate()
   const { isAuthenticated, loading, user } = useAuth()
   const [showWelcomeBack, setShowWelcomeBack] = useState(false)
+  const [activeStep, setActiveStep] = useState(1)
 
-  // Handle session management and redirects
   useEffect(() => {
     if (isAuthenticated && user) {
-      // Show welcome back message briefly before redirecting
       setShowWelcomeBack(true)
       const timer = setTimeout(() => {
         navigate('/dashboard')
-      }, 2000) // 2 second delay to show welcome message
-      
+      }, 2000)
       return () => clearTimeout(timer)
     }
   }, [isAuthenticated, user, navigate])
 
-  // Show loading state while checking authentication
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-deepBlue-50 to-deepBlue-100 flex items-center justify-center">
+      <div className="min-h-screen bg-deepBlue-50/60 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-deepBlue-600 mx-auto mb-4"></div>
-          <p className="text-deepBlue-600 font-medium">Loading AjoSave...</p>
+          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-deepBlue-600 mx-auto mb-4"></div>
+          <p className="text-deepBlue-700 font-medium text-sm tracking-tight">Initializing AjoSave...</p>
         </div>
       </div>
     )
   }
 
-  // Show welcome back message for returning users
   if (showWelcomeBack && user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-deepBlue-50 to-deepBlue-100 flex items-center justify-center">
-        <div className="text-center bg-white rounded-2xl p-8 shadow-xl max-w-md mx-4">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle className="w-8 h-8 text-green-600" />
+      <div className="min-h-screen bg-deepBlue-50/60 flex items-center justify-center">
+        <div className="text-center bg-white border border-deepBlue-100 rounded-xl p-8 max-w-md mx-4 shadow-sm">
+          <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <CheckCircle className="w-6 h-6 text-green-600" />
           </div>
-          <h2 className="text-2xl font-bold text-deepBlue-800 mb-2">
-            Welcome back, {user.firstName}!
+          <h2 className="text-xl font-bold text-deepBlue-800 mb-1 tracking-tight">
+            Welcome back, {user.firstName}
           </h2>
-          <p className="text-deepBlue-600 mb-4">
-            Redirecting you to your dashboard...
+          <p className="text-sm text-deepBlue-600 mb-6">
+            Syncing your session and redirecting to your dashboard...
           </p>
-          <div className="animate-pulse">
-            <div className="h-2 bg-deepBlue-200 rounded-full">
-              <div className="h-2 bg-deepBlue-600 rounded-full animate-pulse" style={{width: '70%'}}></div>
-            </div>
+          <div className="w-full bg-deepBlue-50 h-1 rounded-full overflow-hidden">
+            <div className="bg-deepBlue-600 h-full w-2/3 rounded-full animate-pulse"></div>
           </div>
         </div>
       </div>
     )
   }
 
-  const handleGetStarted = () => {
-    // If not authenticated, go to onboarding/welcome page
-    navigate('/onboarding')
-  }
+  const stepsData = [
+    {
+      id: 1,
+      title: "1. Verified Account Creation",
+      desc: "Sign up securely with your phone number and identity validation, protected by strict data safety parameters.",
+      image: signupImage,
+      alt: "Secure Account Identity Setup"
+    },
+    {
+      id: 2,
+      title: "2. Clear Group Customization",
+      desc: "Evaluate existing rotating cycles or deploy a customized setup tracking target metrics, timeline orders, and specific member quotas.",
+      image: groupImage,
+      alt: "Community Cycle Setup Interface"
+    },
+    {
+      id: 3,
+      title: "3. Direct Transaction Logs",
+      desc: "Execute and automate manual or programmatic ledger collections with structural status logs updating instantly.",
+      image: paymentImage,
+      alt: "Transaction Pipeline Verification"
+    },
+    {
+      id: 4,
+      title: "4. Automated Wallet Settlement",
+      desc: "Track total baseline balances and route instant payouts straight into destination accounts exactly on your scheduled turn.",
+      image: walletImage,
+      alt: "Wallet Capital Routing Frame"
+    },
+    {
+      id: 5,
+      title: "5. Centralized System Dashboard",
+      desc: "Monitor group activity metrics, upcoming contributions, and cycle analytics straight from an integrated control board.",
+      image: dashboardImage,
+      alt: "Analytics Control Panel View"
+    }
+  ]
 
   return (
-    <div className="min-h-screen bg-white home-page-scrollbar">
+    <div className="min-h-screen bg-white text-deepBlue-800 antialiased home-page-scrollbar selection:bg-deepBlue-50">
       <HomeNavbar />
-      
-      {/* Add padding-top to account for fixed navbar */}
-      <div className="pt-16">
-        <div className="bg-gradient-to-br from-deepBlue-50 to-deepBlue-100">
-          {/* Hero Section */}
-          <div className="container mx-auto px-4 py-16">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+
+      {/* Hero Section */}
+      <div
+        className="relative pt-16 border-b border-deepBlue-100/60 h-screen flex items-center"
+        style={{
+          backgroundImage: `linear-gradient(rgba(17, 24, 39, 0.6), rgba(17, 24, 39, 0.6)), url(${heroImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center top',
+          backgroundRepeat: 'no-repeat',
+          paddingTop: '130px',
+          }}
+      >
+        <div className="max-w-6xl mx-auto px-4 relative z-10 w-full">
+          <div className="grid lg:grid-cols-12 gap-8 items-center">
             {/* Left Content */}
-            <div>
-              
-              <h1 className="text-5xl lg:text-6xl font-bold text-deepBlue-800 mb-6 leading-tight">
-                Building Nigeria's
-                <span className="text-deepBlue-600 block">Financial Future</span>
+            <div className="lg:col-span-12 space-y-4 text-center lg:text-left">
+              <h1 className="text-3xl lg:text-5xl font-extrabold tracking-tight text-white leading-[1.15] max-w-4xl mx-auto lg:mx-0">
+                Bringing structural transparency to traditional <span className="text-blue-300">Ajo.</span>
               </h1>
-              
-              <p className="text-xl text-deepBlue-600 mb-8 leading-relaxed">
-                A fintech solution dedicated to making community savings accessible, 
-                transparent, and secure for every Nigerian. Here's why you should trust us.
+
+              <p className="text-lg lg:text-xl text-white/90 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                AjoSave is built to digitize rotating group savings without compromising cultural accountability. We are creating the verifiable ledger infrastructure required to make community savings transparent and reliable.
               </p>
-              
-              {/* Download Buttons replacing the badges */}
-              <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <PlayStoreButton size="lg" />
-                <AppStoreButton size="lg" />
-              </div>
-              
-              <div className="flex flex-col sm:flex-row gap-4">
+
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2 justify-center lg:justify-start">
                 <button
-                  onClick={handleGetStarted}
-                  className="bg-deepBlue-600 text-white px-8 py-4 rounded-full font-semibold hover:bg-deepBlue-700 transform hover:scale-105 transition-all duration-200 flex items-center justify-center shadow-lg"
+                  onClick={() => navigate('/auth')}
+                  className="bg-white text-deepBlue-800 px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition-all flex items-center justify-center gap-2 text-sm shadow-lg backdrop-blur-sm"
                 >
-                  Get Started Today <ArrowRight className="ml-2 w-5 h-5" />
+                  Join the Beta Program <ArrowRight className="w-4 h-4" />
                 </button>
-                <button className="flex items-center justify-center space-x-2 text-deepBlue-600 hover:text-deepBlue-800 font-medium px-6 py-4 transition-colors">
-                  <Play className="w-5 h-5" />
-                  <span>Watch How It Works</span>
+                <button className="flex items-center justify-center gap-2 text-white hover:text-blue-300 font-medium px-5 py-3 text-sm transition-colors rounded-lg hover:bg-white/10 backdrop-blur-sm border border-white/20">
+                  <Play className="w-4 h-4 fill-current" />
+                  <span>System Walkthrough</span>
                 </button>
               </div>
-            </div>
 
-            {/* Right Content - Hero Image */}
-            <div className="relative">
-              <div className="relative z-10">
-                <img 
-                  src={heroImage}
-                  alt="African businesspeople discussing financial planning and savings" 
-                  className="rounded-2xl shadow-2xl w-full h-96 object-cover"
-                />
-                {/* Floating Stats Cards */}
-                <div className="absolute -bottom-6 -left-6 bg-white rounded-xl p-4 shadow-lg">
-                  <div className="text-2xl font-bold text-deepBlue-800">Beta</div>
-                  <div className="text-sm text-deepBlue-600">Early Access</div>
-                </div>
-                <div className="absolute -top-6 -right-6 bg-white rounded-xl p-4 shadow-lg">
-                  <div className="text-2xl font-bold text-green-600">100%</div>
-                  <div className="text-sm text-deepBlue-600">Transparent</div>
+              <div className="pt-4 border-t border-white/20 flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
+                <div className="flex gap-3 opacity-90">
+                  <PlayStoreButton size="sm" />
+                  <AppStoreButton size="sm" />
                 </div>
               </div>
-              {/* Background decoration */}
-              <div className="absolute inset-0 bg-gradient-to-r from-deepBlue-200 to-purple-200 rounded-2xl transform rotate-3 -z-10"></div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Step-by-Step Guide with Phone Mockups */}
-      <div className="bg-white py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-deepBlue-800 mb-4">
-              How to Get Started
-            </h2>
-            <p className="text-xl text-deepBlue-600 max-w-2xl mx-auto">
-              Simple, transparent steps to begin your savings journey with AjoSave
+      {/* Radical Transparency / Real System State Section */}
+      <div className="border-b border-deepBlue-100/60 py-20 bg-white">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="max-w-2xl mb-14">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-deepBlue-400 mb-2">Our Current Status</h2>
+            <p className="text-2xl font-bold tracking-tight text-deepBlue-800">
+              No sweeping promises. Just structured engineering to solve a real structural trust problem.
             </p>
           </div>
 
-          {/* Step 1: Create Account */}
-          <div className="mb-20">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="order-2 lg:order-1">
-                <div className="flex items-center mb-6">
-                  <div className="w-12 h-12 bg-deepBlue-600 text-white rounded-full flex items-center justify-center text-xl font-bold mr-4">
-                    1
-                  </div>
-                  <h3 className="text-3xl font-bold text-deepBlue-800">Create Your Account</h3>
-                </div>
-                <p className="text-lg text-deepBlue-600 mb-6">
-                  Sign up with your phone number and verify your identity. We use secure, encrypted processes 
-                  to protect your information every step of the way.
-                </p>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                    <span className="text-deepBlue-700">Phone number verification</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                    <span className="text-deepBlue-700">Secure identity verification</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                    <span className="text-deepBlue-700">Bank-level encryption</span>
-                  </div>
-                </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="p-6 border border-deepBlue-100 rounded-xl space-y-4">
+              <div className="w-8 h-8 bg-deepBlue-50 text-deepBlue-600 rounded-lg flex items-center justify-center">
+                <Monitor className="w-4 h-4" />
               </div>
-              <div className="order-1 lg:order-2 flex justify-center">
-                <div className="relative">
-                  {/* Phone Mockup - Cropped Design */}
-                  <div className="relative w-72 h-auto">
-                    <div className="bg-gradient-to-b from-gray-800 to-gray-900 rounded-3xl p-1 shadow-2xl">
-                      {/* Screen Bezel */}
-                      <div className="bg-black rounded-3xl p-1">
-                        {/* Screen Content */}
-                        <div className="bg-white rounded-2xl overflow-hidden relative">
-                          {/* Status Bar */}
-                          <div className="bg-white h-2"></div>
-                          <img 
-                            src={signupImage} 
-                            alt="AjoSave Signup Screen"
-                            className="w-full h-auto object-cover"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    {/* Floating Elements */}
-                    <div className="absolute -top-4 -right-4 bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold shadow-lg">
-                      ✓
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <h3 className="font-bold text-deepBlue-800 text-base">Shipped Architecture</h3>
+              <ul className="space-y-2.5 text-sm text-deepBlue-600">
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Real-time ledger sync
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Automated group rotation engine
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Cross-platform database state
+                </li>
+              </ul>
             </div>
-          </div>
 
-          {/* Step 2: Explore Groups */}
-          <div className="mb-20">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="flex justify-center">
-                <div className="relative">
-                  {/* Phone Mockup - Cropped Design */}
-                  <div className="relative w-72 h-auto">
-                    <div className="bg-gradient-to-b from-gray-800 to-gray-900 rounded-3xl p-1 shadow-2xl">
-                      {/* Screen Bezel */}
-                      <div className="bg-black rounded-3xl p-1">
-                        {/* Screen Content */}
-                        <div className="bg-white rounded-2xl overflow-hidden relative">
-                          {/* Status Bar */}
-                          <div className="bg-white h-2"></div>
-                          <img 
-                            src={groupImage} 
-                            alt="AjoSave Groups Screen"
-                            className="w-full h-auto object-cover"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    {/* Floating Elements */}
-                    <div className="absolute -top-4 -left-4 bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold shadow-lg">
-                      👥
-                    </div>
-                  </div>
-                </div>
+            <div className="p-6 border border-deepBlue-100 rounded-xl space-y-4">
+              <div className="w-8 h-8 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center">
+                <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
               </div>
-              <div>
-                <div className="flex items-center mb-6">
-                  <div className="w-12 h-12 bg-deepBlue-600 text-white rounded-full flex items-center justify-center text-xl font-bold mr-4">
-                    2
-                  </div>
-                  <h3 className="text-3xl font-bold text-deepBlue-800">Explore Or Create Savings Groups</h3>
-                </div>
-                <p className="text-lg text-deepBlue-600 mb-6">
-                  Browse available savings groups or create your own. See all details before joining, 
-                  including member information, contribution amounts, and payout schedules.
-                </p>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                    <span className="text-deepBlue-700">View group details and members</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                    <span className="text-deepBlue-700">Check contribution schedules</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                    <span className="text-deepBlue-700">Create your own group</span>
-                  </div>
-                </div>
-              </div>
+              <h3 className="font-bold text-deepBlue-800 text-base">In Active Production</h3>
+              <ul className="space-y-2.5 text-sm text-deepBlue-600">
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span> Webhook retries for payment failures
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span> Automated system alerts & notifications
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span> API performance optimization
+                </li>
+              </ul>
             </div>
-          </div>
 
-          {/* Step 3: Make Payments */}
-          <div className="mb-20">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="order-2 lg:order-1">
-                <div className="flex items-center mb-6">
-                  <div className="w-12 h-12 bg-deepBlue-600 text-white rounded-full flex items-center justify-center text-xl font-bold mr-4">
-                    3
-                  </div>
-                  <h3 className="text-3xl font-bold text-deepBlue-800">Make Contributions</h3>
-                </div>
-                <p className="text-lg text-deepBlue-600 mb-6">
-                  Set up automatic or manual contributions. Track every payment in real-time with 
-                  complete transparency and detailed transaction history.
-                </p>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                    <span className="text-deepBlue-700">Secure payment processing</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                    <span className="text-deepBlue-700">Real-time transaction tracking</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                    <span className="text-deepBlue-700">Automatic reminders</span>
-                  </div>
-                </div>
+            <div className="p-6 border border-deepBlue-100 rounded-xl space-y-4 bg-deepBlue-50/20">
+              <div className="w-8 h-8 bg-yellow-50 text-yellow-700 rounded-lg flex items-center justify-center">
+                <CheckCircle className="w-4 h-4" />
               </div>
-              <div className="order-1 lg:order-2 flex justify-center">
-                <div className="relative">
-                  {/* Phone Mockup - Cropped Design */}
-                  <div className="relative w-72 h-auto">
-                    <div className="bg-gradient-to-b from-gray-800 to-gray-900 rounded-3xl p-1 shadow-2xl">
-                      {/* Screen Bezel */}
-                      <div className="bg-black rounded-3xl p-1">
-                        {/* Screen Content */}
-                        <div className="bg-white rounded-2xl overflow-hidden relative">
-                          {/* Status Bar */}
-                          <div className="bg-white h-2"></div>
-                          <img 
-                            src={paymentImage} 
-                            alt="AjoSave Payment Screen"
-                            className="w-full h-auto object-cover"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    {/* Floating Elements */}
-                    <div className="absolute -top-4 -right-4 bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold shadow-lg">
-                      💳
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Step 4: Manage Wallet */}
-          <div className="mb-20">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="flex justify-center">
-                <div className="relative">
-                  {/* Phone Mockup - Cropped Design */}
-                  <div className="relative w-72 h-auto">
-                    <div className="bg-gradient-to-b from-gray-800 to-gray-900 rounded-3xl p-1 shadow-2xl">
-                      {/* Screen Bezel */}
-                      <div className="bg-black rounded-3xl p-1">
-                        {/* Screen Content */}
-                        <div className="bg-white rounded-2xl overflow-hidden relative">
-                          {/* Status Bar */}
-                          <div className="bg-white h-2"></div>
-                          <img 
-                            src={walletImage} 
-                            alt="AjoSave Wallet Screen"
-                            className="w-full h-auto object-cover"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    {/* Floating Elements */}
-                    <div className="absolute -top-4 -left-4 bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold shadow-lg">
-                      💰
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div className="flex items-center mb-6">
-                  <div className="w-12 h-12 bg-deepBlue-600 text-white rounded-full flex items-center justify-center text-xl font-bold mr-4">
-                    4
-                  </div>
-                  <h3 className="text-3xl font-bold text-deepBlue-800">Manage Your Wallet</h3>
-                </div>
-                <p className="text-lg text-deepBlue-600 mb-6">
-                  Track your savings, view transaction history, and receive payouts directly to your 
-                  bank account. Everything is transparent and happens automatically on your turn.
-                </p>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                    <span className="text-deepBlue-700">Real-time balance updates</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                    <span className="text-deepBlue-700">Automatic payout processing</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                    <span className="text-deepBlue-700">Complete transaction history</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Step 5: Dashboard Overview */}
-          <div className="mb-20">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="order-2 lg:order-1">
-                <div className="flex items-center mb-6">
-                  <div className="w-12 h-12 bg-deepBlue-600 text-white rounded-full flex items-center justify-center text-xl font-bold mr-4">
-                    5
-                  </div>
-                  <h3 className="text-3xl font-bold text-deepBlue-800">Track Your Progress</h3>
-                </div>
-                <p className="text-lg text-deepBlue-600 mb-6">
-                  Monitor all your savings activities from one central dashboard. Get insights into your 
-                  savings patterns, upcoming contributions, and group activities.
-                </p>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                    <span className="text-deepBlue-700">Comprehensive dashboard view</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                    <span className="text-deepBlue-700">Savings analytics and insights</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                    <span className="text-deepBlue-700">Group activity notifications</span>
-                  </div>
-                </div>
-              </div>
-              <div className="order-1 lg:order-2 flex justify-center">
-                <div className="relative">
-                  {/* Phone Mockup - Cropped Design */}
-                  <div className="relative w-72 h-auto">
-                    <div className="bg-gradient-to-b from-gray-800 to-gray-900 rounded-3xl p-1 shadow-2xl">
-                      {/* Screen Bezel */}
-                      <div className="bg-black rounded-3xl p-1">
-                        {/* Screen Content */}
-                        <div className="bg-white rounded-2xl overflow-hidden relative">
-                          {/* Status Bar */}
-                          <div className="bg-white h-2"></div>
-                          <img 
-                            src={dashboardImage} 
-                            alt="AjoSave Dashboard Screen"
-                            className="w-full h-auto object-cover"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    {/* Floating Elements */}
-                    <div className="absolute -top-4 -right-4 bg-indigo-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold shadow-lg">
-                      📊
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      {/* Web Dashboard Section */}
-      <div className="bg-gradient-to-br from-deepBlue-50 to-deepBlue-100 py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-deepBlue-800 mb-4">
-              Access Everything on the Web Too
-            </h2>
-            <p className="text-xl text-deepBlue-600 max-w-3xl mx-auto">
-              Prefer using your computer? No problem! Everything you can do on mobile can also be done 
-              through our comprehensive web dashboard. Manage your savings from any device, anywhere.
-            </p>
-          </div>
-
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h3 className="text-3xl font-bold text-deepBlue-800 mb-6">
-                Full-Featured Web Experience
-              </h3>
-              <p className="text-lg text-deepBlue-600 mb-8">
-                Our web dashboard provides the same powerful features as our mobile app, optimized for 
-                desktop and laptop use. Perfect for detailed analysis, bulk operations, and extended sessions.
+              <h3 className="font-bold text-deepBlue-800 text-base">Compliance Guardrail</h3>
+              <p className="text-xs text-deepBlue-500 leading-relaxed">
+                We respect your cash flow rules. We are actively finalizing operational partnerships with fully regulated financial institutions to ensure all cycle funds are securely processed in licensed environments.
               </p>
-              
-              <div className="grid md:grid-cols-2 gap-6 mb-8">
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <Monitor className="w-6 h-6 text-deepBlue-600" />
-                    <span className="text-deepBlue-700 font-medium">Desktop Optimized</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="w-6 h-6 text-green-500" />
-                    <span className="text-deepBlue-700 font-medium">Real-time Sync</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="w-6 h-6 text-green-500" />
-                    <span className="text-deepBlue-700 font-medium">Advanced Analytics</span>
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="w-6 h-6 text-green-500" />
-                    <span className="text-deepBlue-700 font-medium">Bulk Operations</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="w-6 h-6 text-green-500" />
-                    <span className="text-deepBlue-700 font-medium">Export Reports</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="w-6 h-6 text-green-500" />
-                    <span className="text-deepBlue-700 font-medium">Multi-tab Support</span>
-                  </div>
-                </div>
-              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-              <div className="bg-white rounded-xl p-6 shadow-lg">
-                <h4 className="text-lg font-bold text-deepBlue-800 mb-3">Cross-Platform Benefits</h4>
-                <ul className="space-y-2 text-deepBlue-600">
-                  <li>• Start on mobile, continue on web seamlessly</li>
-                  <li>• Larger screen for detailed group management</li>
-                  <li>• Enhanced data visualization and reports</li>
-                  <li>• Keyboard shortcuts for power users</li>
-                </ul>
-              </div>
+      {/* Dynamic Native Interface Proof Frame */}
+      <div className="bg-deepBlue-50/20 py-20 border-b border-deepBlue-100/60">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <h2 className="text-3xl font-bold tracking-tight text-deepBlue-800 mb-3">
+              One unified platform, optimized across devices.
+            </h2>
+            <p className="text-sm text-deepBlue-600">
+              Manage your rotating contribution cycles seamlessly. Every transaction, member rotation state, and timeline queue updates automatically across all user interfaces.
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-12 gap-4 items-center">
+            {/* System Features Tab Navigation */}
+            <div className="lg:col-span-5 space-y-7">
+              {stepsData.map((step) => (
+                <div
+                  key={step.id}
+                  onClick={() => setActiveStep(step.id)}
+                  className={`p-4 rounded-xl border transition-all cursor-pointer ${activeStep === step.id
+                      ? 'bg-white border-deepBlue-300 shadow-sm'
+                      : 'border-transparent hover:bg-white/60 hover:border-deepBlue-100'
+                    }`}
+                >
+                  <h4 className={`text-xl font-semibold mb-1 ${activeStep === step.id ? 'text-deepBlue-700' : 'text-deepBlue-800'}`}>
+                    {step.title}
+                  </h4>
+                  {activeStep === step.id && (
+                    <p className="text-lg text-deepBlue-600 leading-relaxed mt-1 animate-fadeIn">
+                      {step.desc}
+                    </p>
+                  )}
+                </div>
+              ))}
             </div>
 
-            <div className="flex justify-center">
-              <div className="relative">
-                {/* Laptop Mockup */}
-                <div className="relative">
-                  <div className="bg-gradient-to-b from-gray-800 to-gray-900 rounded-t-2xl p-2 shadow-2xl">
-                    {/* Screen */}
-                    <div className="bg-black rounded-t-xl p-1">
-                      <div className="bg-white rounded-t-lg overflow-hidden relative">
-                        {/* Browser Bar */}
-                        <div className="bg-gray-100 px-4 py-2 flex items-center space-x-2">
-                          <div className="flex space-x-1">
-                            <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-                            <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                            <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                          </div>
-                          <div className="flex-1 bg-white rounded px-3 py-1 text-xs text-gray-500">
-                            app.ajosave.com
-                          </div>
-                        </div>
-                        {/* Dashboard Screenshot */}
-                        <img 
-                          src={webDashboardImage} 
-                          alt="AjoSave Web Dashboard"
-                          className="w-full h-auto object-cover"
-                        />
-                      </div>
+            {/* Interactive Phone Mockup Card Frame */}
+            <div className="lg:col-span-7 flex justify-center lg:justify-end">
+              <div className="w-full max-w-[235px]">
+                <div className="bg-gray-900 rounded-[2rem] p-2 shadow-xl mx-auto">
+                  <div className="bg-white rounded-[1.5rem] overflow-hidden w-full h-[460px] flex flex-col">
+                    {/* Status Bar */}
+                    <div className="bg-gray-900 h-6 flex justify-center items-center flex-shrink-0">
+                      <div className="w-19 h-3 bg-black rounded-full"></div>
+                    </div>
+                    {/* Screen Content */}
+                    <div className="flex-1 bg-gray-50 flex items-center justify-center min-h-0">
+                      <img
+                        src={stepsData[activeStep - 1].image}
+                        alt={stepsData[activeStep - 1].alt}
+                        className="max-w-full max-h-full object-contain transition-opacity duration-300"
+                      />
                     </div>
                   </div>
-                  {/* Laptop Base */}
-                  <div className="bg-gradient-to-b from-gray-700 to-gray-800 h-4 rounded-b-2xl shadow-lg"></div>
-                  
-                  {/* Floating Elements */}
-                  <div className="absolute -top-6 -right-6 bg-blue-500 text-white rounded-full w-12 h-12 flex items-center justify-center text-lg font-bold shadow-lg">
-                    💻
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Web Extension Visual Presentation */}
+      <div className="bg-white py-20 border-b border-deepBlue-100/60">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid lg:grid-cols-12 gap-12 items-center">
+            <div className="lg:col-span-5 space-y-6">
+              <h3 className="text-2xl font-bold tracking-tight text-deepBlue-800">
+                Full-Featured Web Dashboard
+              </h3>
+              <p className="text-sm text-deepBlue-600 leading-relaxed">
+                Prefer a larger viewport? Access identical functional capabilities optimized directly for your laptop or desktop system. Perform bulk analytics operations and overview transaction histories systematically.
+              </p>
+
+              <div className="grid grid-cols-2 gap-4 text-xs font-medium text-deepBlue-700 pt-2">
+                <div className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-500" /> Desktop Optimized</div>
+                <div className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-500" /> Advanced Analytics</div>
+                <div className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-500" /> Real-time State Sync</div>
+                <div className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-500" /> Direct Data Export</div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-7">
+              <div className="bg-deepBlue-50/30 border border-deepBlue-100 rounded-xl p-2 shadow-sm">
+                <div className="bg-slate-900 rounded-lg overflow-hidden border border-slate-800 shadow-lg">
+                  <div className="bg-slate-800 px-4 py-2 flex items-center gap-3 border-b border-slate-700">
+                    <div className="flex gap-1.5">
+                      <div className="w-2 h-2 rounded-full bg-slate-600"></div>
+                      <div className="w-2 h-2 rounded-full bg-slate-600"></div>
+                      <div className="w-2 h-2 rounded-full bg-slate-600"></div>
+                    </div>
+                    <div className="flex-1 bg-slate-950/40 rounded px-3 py-0.5 text-[10px] text-slate-400 max-w-xs font-mono truncate">
+                      app.ajosave.com/dashboard
+                    </div>
                   </div>
-                  <div className="absolute -bottom-2 -left-6 bg-green-500 text-white rounded-xl px-3 py-2 text-sm font-bold shadow-lg">
-                    Web Ready
-                  </div>
+                  <img
+                    src={webDashboardImage}
+                    alt="AjoSave Production Web Interface"
+                    className="w-full h-auto object-cover opacity-95"
+                  />
                 </div>
               </div>
             </div>
@@ -556,170 +317,61 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Quality Assurance & Transparency Section */}
-      <div className="container mx-auto px-4 py-20">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-deepBlue-800 mb-4">
-            Our Quality Promise
-          </h2>
-          <p className="text-xl text-deepBlue-600">
-            Building trust through transparency and quality assurance
-          </p>
-        </div>
-        
-        <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
-          <div>
-            <h3 className="text-2xl font-bold text-deepBlue-800 mb-6">What We're Building</h3>
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <CheckCircle className="w-6 h-6 text-green-500 mt-1 flex-shrink-0" />
-                <div>
-                  <h4 className="font-semibold text-deepBlue-800">Secure Infrastructure</h4>
-                  <p className="text-deepBlue-600">End-to-end encryption, secure payment processing, and data protection</p>
-                </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <CheckCircle className="w-6 h-6 text-green-500 mt-1 flex-shrink-0" />
-                <div>
-                  <h4 className="font-semibold text-deepBlue-800">Transparent Operations</h4>
-                  <p className="text-deepBlue-600">Open communication about features, limitations, and development progress</p>
-                </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <CheckCircle className="w-6 h-6 text-green-500 mt-1 flex-shrink-0" />
-                <div>
-                  <h4 className="font-semibold text-deepBlue-800">Community Support</h4>
-                  <p className="text-deepBlue-600">Dedicated support team and community-driven feature development</p>
-                </div>
-              </div>
+      {/* Development Journey Metrics */}
+      <div className="bg-deepBlue-800 text-white py-16">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div className="space-y-1">
+              <div className="text-3xl font-extrabold text-green-400">6+</div>
+              <div className="text-xs text-deepBlue-200 uppercase tracking-wider font-semibold">Months in Dev</div>
             </div>
-          </div>
-          <div className="bg-gradient-to-br from-deepBlue-50 to-deepBlue-100 rounded-2xl p-8">
-            <h3 className="text-xl font-bold text-deepBlue-800 mb-4">Our Current Status</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-deepBlue-700">Platform Development</span>
-                <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-medium">Beta Ready</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-deepBlue-700">Security Testing</span>
-                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-medium">In Progress</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-deepBlue-700">Regulatory Compliance</span>
-                <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm font-medium">Preparing</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-deepBlue-700">Community Feedback</span>
-                <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-medium">Active</span>
-              </div>
+            <div className="space-y-1">
+              <div className="text-3xl font-extrabold text-green-400">100%</div>
+              <div className="text-xs text-deepBlue-200 uppercase tracking-wider font-semibold">Verifiable Code</div>
             </div>
-          </div>
-        </div>
-
-        <div className="bg-deepBlue-800 rounded-2xl p-8 text-white text-center">
-          <h3 className="text-2xl font-bold mb-4">Join Our Beta Community</h3>
-          <p className="text-deepBlue-100 mb-6 max-w-2xl mx-auto">
-            Be among the first to experience AjoSave. Your feedback helps us build a better platform for everyone. 
-            Early users get priority support and influence our development roadmap.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4 text-sm">
-            <span className="bg-deepBlue-700 px-3 py-1 rounded-full">✓ Priority Support</span>
-            <span className="bg-deepBlue-700 px-3 py-1 rounded-full">✓ Feature Influence</span>
-            <span className="bg-deepBlue-700 px-3 py-1 rounded-full">✓ Early Access</span>
-            <span className="bg-deepBlue-700 px-3 py-1 rounded-full">✓ Community Recognition</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Honest Stats Section */}
-      <div className="bg-deepBlue-800 py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-white mb-2">Our Journey So Far</h2>
-            <p className="text-deepBlue-200">Honest metrics from our development journey</p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
-            <div>
-              <div className="text-4xl font-bold text-green-400 mb-2">6+</div>
-              <div className="text-deepBlue-200">Months in Development</div>
+            <div className="space-y-1">
+              <div className="text-3xl font-extrabold text-green-400">24/7</div>
+              <div className="text-xs text-deepBlue-200 uppercase tracking-wider font-semibold">Support Channel</div>
             </div>
-            <div>
-              <div className="text-4xl font-bold text-green-400 mb-2">100%</div>
-              <div className="text-deepBlue-200">Open Source</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-green-400 mb-2">24/7</div>
-              <div className="text-deepBlue-200">Support Commitment</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-green-400 mb-2">Beta</div>
-              <div className="text-deepBlue-200">Current Status</div>
+            <div className="space-y-1">
+              <div className="text-3xl font-extrabold text-green-400">Beta</div>
+              <div className="text-xs text-deepBlue-200 uppercase tracking-wider font-semibold">Current State</div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Final CTA Section */}
-      <div className="container mx-auto px-4 py-20">
-        <div className="text-center bg-gradient-to-r from-deepBlue-600 to-deepBlue-700 rounded-2xl p-12 text-white">
-          <h2 className="text-4xl font-bold mb-4">
-            Ready to Join Our Beta?
-          </h2>
-          <p className="text-deepBlue-100 mb-8 max-w-2xl mx-auto text-lg">
-            Help us build the future of community savings in Nigeria. As a beta user, you'll get early access, 
-            priority support, and the chance to shape our platform's development.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+      {/* Clean Call to Action Grid */}
+      <div className="max-w-6xl mx-auto px-4 py-20">
+        <div className="border border-deepBlue-800 bg-deepBlue-800 text-white rounded-2xl p-8 lg:p-12 relative overflow-hidden grid md:grid-cols-12 gap-8 items-center">
+          <div className="md:col-span-8 space-y-4 z-10">
+            <h3 className="text-2xl font-bold tracking-tight">Help us build the absolute standard for transparent savings.</h3>
+            <p className="text-deepBlue-200 text-sm max-w-xl leading-relaxed">
+              We are actively looking for dedicated beta users to push our transaction queues, evaluate interface state flows, and tell us exactly where the engine breaks. Your critical feedback maps our direct code roadmap.
+            </p>
+            <div className="flex flex-wrap gap-x-6 gap-y-2 pt-2 text-xs text-deepBlue-100 font-mono">
+              <span className="flex items-center gap-1.5"><CheckCircle className="w-3.5 h-3.5 text-deepBlue-300" /> Free Platform Access</span>
+              <span className="flex items-center gap-1.5"><CheckCircle className="w-3.5 h-3.5 text-deepBlue-300" /> Influence Feature Specs</span>
+            </div>
+          </div>
+          <div className="md:col-span-4 flex flex-col sm:flex-row md:flex-col gap-3 md:items-end z-10">
             <button
-              onClick={handleGetStarted}
-              className="bg-white text-deepBlue-600 px-10 py-4 rounded-full font-semibold hover:bg-deepBlue-50 transform hover:scale-105 transition-all duration-200 shadow-lg"
+              onClick={() => navigate('/onboarding')}
+              className="bg-white text-deepBlue-800 px-6 py-3.5 rounded-lg font-semibold hover:bg-deepBlue-50 transition-colors text-sm shadow-sm whitespace-nowrap text-center w-full md:w-auto"
             >
-              Join Beta Program
+              Access Beta Environment
             </button>
-            <button 
-              onClick={() => navigate('/how-it-works')}
-              className="border-2 border-white text-white px-10 py-4 rounded-full font-semibold hover:bg-white hover:text-deepBlue-600 transition-all duration-200"
-            >
-              Learn More
-            </button>
-          </div>
-          
-          {/* Mobile App Downloads */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
-            <PlayStoreButton size="lg" />
-            <AppStoreButton size="lg" />
-          </div>
-          <div className="bg-deepBlue-800 rounded-lg p-4 mb-4">
-            <p className="text-deepBlue-100 text-sm font-medium mb-2">Beta Program Benefits:</p>
-            <div className="flex flex-wrap justify-center gap-3 text-xs">
-              <span className="bg-deepBlue-700 px-2 py-1 rounded">Free Access</span>
-              <span className="bg-deepBlue-700 px-2 py-1 rounded">Priority Support</span>
-              <span className="bg-deepBlue-700 px-2 py-1 rounded">Feature Requests</span>
-              <span className="bg-deepBlue-700 px-2 py-1 rounded">Community Recognition</span>
-            </div>
-          </div>
-          <p className="text-deepBlue-200 text-sm">
-            By continuing, you agree to our{' '}
-            <button 
-              onClick={() => navigate('/terms-conditions')}
-              className="underline hover:text-white"
-            >
-              Terms of Service
-            </button>
-            {' '}and{' '}
-            <button 
+            <button
               onClick={() => navigate('/privacy-policy')}
-              className="underline hover:text-white"
+              className="text-xs text-deepBlue-200 hover:text-white underline text-center pt-1"
             >
-              Privacy Policy
+              Review Privacy Terms
             </button>
-          </p>
+          </div>
         </div>
       </div>
 
       <HomeFooter />
-      </div>
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import { Mail, Phone, MapPin, Twitter, Linkedin } from 'lucide-react';
 import PlayStoreButton from '../common/PlayStoreButton';
 import AppStoreButton from '../common/AppStoreButton';
 import logo from '../../assets/images/logo.png';
@@ -33,27 +33,26 @@ const HomeFooter = () => {
   };
 
   const socialLinks = [
-    { icon: Facebook, href: 'https://facebook.com/ajosave', label: 'Facebook' },
     { icon: Twitter, href: 'https://twitter.com/ajosafe', label: 'Twitter' },
-    { icon: Instagram, href: 'https://instagram.com/ajosave', label: 'Instagram' },
     { icon: Linkedin, href: 'https://linkedin.com/company/ajosave', label: 'LinkedIn' }
   ];
 
   return (
-    <footer className="bg-deepBlue-900 text-white">
+    <footer 
+      className="relative text-white bg-deepBlue-900"
+      style={{
+        backgroundImage: `linear-gradient(rgba(17, 24, 39, 0.85), rgba(17, 24, 39, 0.85)), url('https://images.unsplash.com/photo-1650803321892-efba59b28a60?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
       <div className="container mx-auto px-4 py-12">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Brand Section */}
-          <div className="lg:col-span-2">
-            <div className="flex items-center space-x-2 mb-4">
-              <img 
-                src={logo} 
-                alt="AjoSave Logo" 
-                className="w-10 h-10 object-contain rounded-xl"
-              />
+          <div className="lg:col-span-2"> 
               <span className="text-xl font-bold">AjoSave</span>
-            </div>
             <p className="text-deepBlue-200 mb-6 max-w-md">
               Building Nigeria's financial future through transparent, community-driven savings. 
               Join our beta program and help shape the future of fintech.
