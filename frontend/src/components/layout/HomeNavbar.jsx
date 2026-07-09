@@ -9,8 +9,8 @@ const HomeNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   
-  // Check if we're on the home page
-  const isHomePage = location.pathname === '/';
+  // Check if we're on pages that should have transparent navbar
+  const isTransparentNavPage = location.pathname === '/' || location.pathname === '/about';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -30,16 +30,17 @@ const HomeNavbar = () => {
   ];
 
   return (
-    <nav 
+    <>
+      <nav 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isHomePage && !isScrolled
+        isTransparentNavPage && !isScrolled
           ? 'bg-black/2' 
           : isScrolled 
             ? 'shadow-lg' 
             : 'shadow-sm'
       }`}
       style={{
-        backgroundImage: isHomePage && !isScrolled 
+        backgroundImage: isTransparentNavPage && !isScrolled 
           ? 'none' 
           : `linear-gradient(rgba(17, 24, 39, 0.85), rgba(17, 24, 39, 0.85)), url('https://images.unsplash.com/photo-1650803321892-efba59b28a60?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')`,
         backgroundSize: 'cover',
@@ -141,6 +142,10 @@ const HomeNavbar = () => {
         )}
       </div>
     </nav>
+    
+    {/* Content spacer for pages that don't have transparent navbar */}
+    {!isTransparentNavPage && <div className="h-16 w-full"></div>}
+  </>
   );
 };
 
