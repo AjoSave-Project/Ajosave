@@ -356,7 +356,7 @@ const Home = () => {
           </div>
           <div className="md:col-span-4 flex flex-col sm:flex-row md:flex-col gap-3 md:items-end z-10">
             <button
-              onClick={() => navigate('/onboarding')}
+              onClick={() => navigate('/auth')}
               className="bg-white text-deepBlue-800 px-6 py-3.5 rounded-lg font-semibold hover:bg-deepBlue-50 transition-colors text-sm shadow-sm whitespace-nowrap text-center w-full md:w-auto"
             >
               Access Beta Environment
