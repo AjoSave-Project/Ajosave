@@ -12,7 +12,7 @@
   [![Expo](https://img.shields.io/badge/Expo-52-000020?logo=expo)](https://expo.dev/)
   [![Node.js](https://img.shields.io/badge/Node.js-20+-339933?logo=node.js)](https://nodejs.org/)
   
-  [Live Demo](https://ajosave-gby5ey6l9-otikanelsons-projects.vercel.app) • [Download APK](#) • [Report Bug](https://github.com/otikanelson/Ajosave/issues)
+  [Live Demo](https://ajosavings.vercel.app/) • [Download APK](#) • [Report Bug](https://github.com/otikanelson/Ajosave/issues)
   
 </div>
 
