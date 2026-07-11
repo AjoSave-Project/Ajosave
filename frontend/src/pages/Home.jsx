@@ -19,51 +19,51 @@ import webDashboardImage from '../assets/images/webDashboard.png'
 const STEPS_DATA = [
   {
     id: 1,
-    title: "1. Verified Account Creation",
-    desc: "Sign up securely with your phone number and identity validation, protected by strict data safety parameters.",
+    title: "1. Create Your Account",
+    desc: "Sign up securely with your phone number. We verify your identity to keep everyone safe and build trust in the community.",
     image: signupImage,
-    alt: "Secure Account Identity Setup"
+    alt: "Secure Account Setup"
   },
   {
     id: 2,
-    title: "2. Clear Group Customization",
-    desc: "Evaluate existing rotating cycles or deploy a customized setup tracking target metrics, timeline orders, and specific member quotas.",
+    title: "2. Join or Start a Group",
+    desc: "Find an existing savings group that fits your goals, or create your own with friends, family, or colleagues.",
     image: groupImage,
-    alt: "Community Cycle Setup Interface"
+    alt: "Savings Group Setup"
   },
   {
     id: 3,
-    title: "3. Direct Transaction Logs",
-    desc: "Execute and automate manual or programmatic ledger collections with structural status logs updating instantly.",
+    title: "3. Make Regular Contributions",
+    desc: "Set up automatic payments or contribute manually. Every transaction is tracked and visible to all group members.",
     image: paymentImage,
-    alt: "Transaction Pipeline Verification"
+    alt: "Easy Payment Process"
   },
   {
     id: 4,
-    title: "4. Automated Wallet Settlement",
-    desc: "Track total baseline balances and route instant payouts straight into destination accounts exactly on your scheduled turn.",
+    title: "4. Receive Your Payout",
+    desc: "When it's your turn in the rotation, receive the full pot directly into your bank account. No delays, no complications.",
     image: walletImage,
-    alt: "Wallet Capital Routing Frame"
+    alt: "Secure Wallet Management"
   },
   {
     id: 5,
-    title: "5. Centralized System Dashboard",
-    desc: "Monitor group activity metrics, upcoming contributions, and cycle analytics straight from an integrated control board.",
+    title: "5. Track Your Progress",
+    desc: "See your savings grow, monitor group activity, and stay on top of upcoming contributions with our simple dashboard.",
     image: dashboardImage,
-    alt: "Analytics Control Panel View"
+    alt: "Easy-to-Use Dashboard"
   }
 ]
 
 const SYSTEM_STATUS_CARDS = [
   {
     icon: Monitor,
-    title: "Shipped Architecture",
+    title: "What's Working Now",
     bgColor: "bg-blue-100",
     iconColor: "text-deepBlue-600",
     features: [
-      "Real-time ledger sync",
-      "Automated group rotation engine",
-      "Cross-platform database state"
+      "Live balance updates",
+      "Automatic group rotations",
+      "Works on all your devices"
     ],
     statusColor: "emerald-400"
   },
@@ -71,22 +71,22 @@ const SYSTEM_STATUS_CARDS = [
     icon: () => (
       <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
     ),
-    title: "In Active Production",
+    title: "Currently Improving",
     bgColor: "bg-blue-100",
     iconColor: "text-blue-600",
     features: [
-      "Webhook retries for payment failures",
-      "Automated system alerts & notifications",
-      "API performance optimization"
+      "Better payment reliability",
+      "Faster notifications",
+      "Improved app performance"
     ],
     statusColor: "blue-400"
   },
   {
     icon: CheckCircle,
-    title: "Compliance Guardrail",
+    title: "Your Money is Safe",
     bgColor: "bg-yellow-100",
     iconColor: "text-yellow-700",
-    description: "We respect your cash flow rules. We are actively finalizing operational partnerships with fully regulated financial institutions to ensure all cycle funds are securely processed in licensed environments."
+    description: "We work with licensed financial institutions to ensure all your savings are processed securely and protected by banking regulations."
   }
 ]
 
@@ -98,10 +98,10 @@ const METRICS_DATA = [
 ]
 
 const WEB_FEATURES = [
-  "Desktop Optimized",
-  "Advanced Analytics", 
-  "Real-time State Sync",
-  "Direct Data Export"
+  "Works Great on Computers",
+  "Detailed Savings Reports", 
+  "Always Up to Date",
+  "Download Your Data"
 ]
 
 const Home = () => {
@@ -213,7 +213,7 @@ const Home = () => {
             <div className="max-w-2xl mb-14">
               <h2 className="text-xs font-bold uppercase tracking-widest text-blue-300 mb-2">Our Current Status</h2>
               <p className="text-2xl font-bold tracking-tight text-white">
-                No sweeping promises. Just structured Development to solve a real trust problem.
+                Simple, reliable savings technology built for real communities.
               </p>
             </div>
 
@@ -245,10 +245,10 @@ const Home = () => {
           <div className="max-w-6xl mx-auto px-4">
             <div className="text-center max-w-2xl mx-auto mb-16">
               <h2 className="text-3xl font-bold tracking-tight text-deepBlue-800 mb-3">
-                One unified platform, optimized across devices.
+                One app that works everywhere you do.
               </h2>
               <p className="text-sm text-deepBlue-600">
-                Manage your rotating contribution cycles seamlessly. Every transaction, member rotation state, and timeline queue updates automatically across all user interfaces.
+                Save money with your group from your phone, tablet, or computer. Everything stays in sync so you're always up to date.
               </p>
             </div>
 
@@ -302,10 +302,10 @@ const Home = () => {
             <div className="grid lg:grid-cols-12 gap-12 items-center">
               <div className="lg:col-span-5 space-y-6">
                 <h3 className="text-2xl font-bold tracking-tight text-deepBlue-800">
-                  Full-Featured Web Dashboard
+                  Use AjoSave on Your Computer Too
                 </h3>
                 <p className="text-sm text-deepBlue-600 leading-relaxed">
-                  Prefer a larger viewport? Access identical functional capabilities optimized directly for your laptop or desktop system. Perform bulk analytics operations and overview transaction histories systematically.
+                  Need a bigger screen? Access all the same features on your laptop or desktop. Perfect for reviewing your savings history or managing multiple groups.
                 </p>
 
                 <div className="grid grid-cols-2 gap-4 text-xs font-medium text-deepBlue-700 pt-2">
@@ -358,13 +358,13 @@ const Home = () => {
         <div className="max-w-6xl mx-auto px-4 py-20">
           <div className="border border-deepBlue-800 bg-deepBlue-800 text-white rounded-2xl p-8 lg:p-12 relative overflow-hidden grid md:grid-cols-12 gap-8 items-center">
             <div className="md:col-span-8 space-y-4 z-10">
-              <h3 className="text-2xl font-bold tracking-tight">Help us build the absolute standard for transparent savings.</h3>
+              <h3 className="text-2xl font-bold tracking-tight">Help us build the best savings platform for your community.</h3>
               <p className="text-deepBlue-200 text-sm max-w-xl leading-relaxed">
-                We are actively looking for dedicated beta users to push our transaction queues, evaluate interface state flows, and tell us exactly where the engine breaks. Your critical feedback maps our direct code roadmap.
+                We're looking for people to try our platform and tell us how to make it better. Your feedback helps us create something that really works for everyone.
               </p>
               <div className="flex flex-wrap gap-x-6 gap-y-2 pt-2 text-xs text-deepBlue-100 font-mono">
-                <span className="flex items-center gap-1.5"><CheckCircle className="w-3.5 h-3.5 text-deepBlue-300" /> Free Platform Access</span>
-                <span className="flex items-center gap-1.5"><CheckCircle className="w-3.5 h-3.5 text-deepBlue-300" /> Influence Feature Specs</span>
+                <span className="flex items-center gap-1.5"><CheckCircle className="w-3.5 h-3.5 text-deepBlue-300" /> Free to Use</span>
+                <span className="flex items-center gap-1.5"><CheckCircle className="w-3.5 h-3.5 text-deepBlue-300" /> Help Shape Features</span>
               </div>
             </div>
             <div className="md:col-span-4 flex flex-col sm:flex-row md:flex-col gap-3 md:items-end z-10">

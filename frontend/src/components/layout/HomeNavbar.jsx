@@ -9,7 +9,6 @@ const HomeNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   
-  // Check if we're on pages that should have transparent navbar
   const isTransparentNavPage = location.pathname === '/' || location.pathname === '/about';
 
   useEffect(() => {
@@ -24,9 +23,9 @@ const HomeNavbar = () => {
 
   const navItems = [
     { label: 'Home', path: '/' },
-    { label: 'About', path: '/about' },
     { label: 'How It Works', path: '/how-it-works' },
-    { label: 'Contact', path: '/contact' }
+    { label: 'Contact', path: '/contact' },
+    { label: 'About', path: '/about' }
   ];
 
   return (
@@ -59,7 +58,7 @@ const HomeNavbar = () => {
             <img 
               src={logo} 
               alt="AjoSave Logo" 
-              className="w-10 h-10 rounded-xl object-contain"
+              className="w-8 h-8 rounded-xl object-contain"
             />
             <span className="text-lg font-bold text-white">AjoSave</span>
           </div>

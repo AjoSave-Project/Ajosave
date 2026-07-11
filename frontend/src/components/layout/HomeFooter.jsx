@@ -20,15 +20,11 @@ const HomeFooter = () => {
       { label: 'Contact Us', path: '/contact' },
     ],
     legal: [
-      { label: 'Privacy Policy', path: '/privacy-policy' },
-      { label: 'Terms & Conditions', path: '/terms-conditions' },
+      { label: 'Terms of Service', path: '/terms' },
       { label: 'Refund Policy', path: '/refund-policy' }
     ],
     support: [
-      { label: 'Help Center', path: '/help' },
-      { label: 'Security', path: '/security' },
-      { label: 'Trust & Safety', path: '/trust-safety' },
-      { label: 'Community Guidelines', path: '/community-guidelines' }
+      { label: 'Help Center', path: '/help' }
     ]
   };
 
