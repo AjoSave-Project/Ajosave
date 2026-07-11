@@ -100,13 +100,14 @@ const Header = () => {
   return (
     <>
       <SettingsSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} user={user} onLogout={handleLogout} />
-      <div className={`fixed top-0 left-0 right-0 z-50 px-4 py-3 transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-deepBlue-200' 
-          : 'bg-white border-b border-deepBlue-200'
-      }`}>
-        <div className="container mx-auto flex items-center justify-between">
-          <h1 className="text-xl font-bold text-deepBlue-600">AjoSave</h1>
+      <div className="fixed top-4 left-4 right-4 z-50">
+        <div className={`mx-auto max-w-6xl rounded-2xl transform -skew-x-1 px-4 py-2 transition-all duration-300 ${
+          isScrolled 
+            ? 'bg-white/95 backdrop-blur-md shadow-xl border border-deepBlue-200' 
+            : 'bg-white shadow-lg border border-deepBlue-200'
+        }`}>
+        <div className="container mx-auto flex items-center justify-between transform skew-x-1">
+          <h1 className="text-lg font-bold text-deepBlue-600">AjoSave</h1>
           {user && (
             <button onClick={() => setSidebarOpen(true)}
               className="flex items-center space-x-2 hover:bg-deepBlue-50 rounded-xl px-2 py-1 transition">
@@ -120,6 +121,7 @@ const Header = () => {
               </div>
             </button>
           )}
+        </div>
         </div>
       </div>
     </>

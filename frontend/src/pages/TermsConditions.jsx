@@ -7,7 +7,7 @@ const TermsConditions = () => {
     <div className="min-h-screen bg-white">
       <HomeNavbar />
       
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-24">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold text-deepBlue-800 mb-8">Terms & Conditions</h1>
           

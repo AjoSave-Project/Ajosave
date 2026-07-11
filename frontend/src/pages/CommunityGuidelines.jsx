@@ -108,7 +108,7 @@ const CommunityGuidelines = () => {
     <div className="min-h-screen bg-white">
       <HomeNavbar />
       
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-24">
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-bold text-deepBlue-800 mb-4">

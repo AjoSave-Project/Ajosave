@@ -59,7 +59,7 @@ const RefundPolicy = () => {
     <div className="min-h-screen bg-white">
       <HomeNavbar />
       
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-24">
         {/* Header */}
         <div className="mb-12">
           <button
