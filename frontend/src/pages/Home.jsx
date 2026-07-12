@@ -522,14 +522,6 @@ const Home = () => {
       <div ref={thirdSectionRef} className="bg-deepBlue-50/20 border-b border-deepBlue-100/60 relative min-h-screen">
         <div className="max-w-6xl mx-auto px-4 h-screen flex flex-col justify-center">
           {/* Title section */}
-          <div className="text-center max-w-2xl mx-auto mb-8 md:mb-16">
-            <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-deepBlue-800 mb-3">
-              One app that works everywhere you do.
-            </h2>
-            <p className="text-sm text-deepBlue-600">
-              Save money with your group from your phone, tablet, or computer. Everything stays in sync so you're always up to date.
-            </p>
-          </div>
 
           {/* Responsive layout */}
           <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-4 items-center overflow-visible flex-1">
