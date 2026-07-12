@@ -166,20 +166,6 @@ const Home = () => {
   const [openFAQ, setOpenFAQ] = useState(null)
   const [navbarCollapsed, setNavbarCollapsed] = useState(false)
 
-  // Responsive hooks for mobile detection
-  const [isMobile, setIsMobile] = useState(false)
-  
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768) // Tailwind's md breakpoint
-    }
-    
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
-
   // Refs for GSAP animations
   const heroSectionRef = useRef(null)
   const secondSectionRef = useRef(null)
@@ -189,6 +175,9 @@ const Home = () => {
   const stepContentRefs = useRef([])
   const phoneImageRef = useRef(null)
   const currentStepRef = useRef(1) // Track current step to avoid stale closure
+  const mobileStepsRef = useRef(null) // For mobile swipe handling
+  const touchStartX = useRef(0)
+  const touchStartY = useRef(0)
 
   // Memoize navigation handlers to prevent recreation
   const handleJoinBeta = useCallback(() => navigate('/auth'), [navigate])
@@ -199,6 +188,44 @@ const Home = () => {
   // Memoize FAQ toggle handler
   const toggleFAQ = useCallback((faqId) => {
     setOpenFAQ(prev => prev === faqId ? null : faqId)
+  }, [])
+
+  // Mobile swipe handlers
+  const handleTouchStart = useCallback((e) => {
+    touchStartX.current = e.touches[0].clientX
+    touchStartY.current = e.touches[0].clientY
+  }, [])
+
+  const handleTouchEnd = useCallback((e) => {
+    if (!touchStartX.current || !touchStartY.current) return
+    
+    const touchEndX = e.changedTouches[0].clientX
+    const touchEndY = e.changedTouches[0].clientY
+    const diffX = touchStartX.current - touchEndX
+    const diffY = touchStartY.current - touchEndY
+    
+    // Only trigger swipe if horizontal movement is greater than vertical
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+      if (diffX > 0 && activeStep < STEPS_DATA.length) {
+        // Swipe left - next step
+        const newStep = activeStep + 1
+        setActiveStep(newStep)
+        currentStepRef.current = newStep
+      } else if (diffX < 0 && activeStep > 1) {
+        // Swipe right - previous step
+        const newStep = activeStep - 1
+        setActiveStep(newStep)
+        currentStepRef.current = newStep
+      }
+    }
+    
+    touchStartX.current = 0
+    touchStartY.current = 0
+  }, [activeStep])
+
+  const goToStep = useCallback((stepNumber) => {
+    setActiveStep(stepNumber)
+    currentStepRef.current = stepNumber
   }, [])
 
   // Memoize current step data to prevent unnecessary recalculations
@@ -254,7 +281,7 @@ const Home = () => {
           y: 30
         })
 
-        const pinDuration = EXTENDED_STEPS_DATA.length * (isMobile ? 100 : 125) // Shorter scrolling on mobile
+        const pinDuration = EXTENDED_STEPS_DATA.length * 700
         
         // Fade-in animation
         ScrollTrigger.create({
@@ -278,17 +305,6 @@ const Home = () => {
             }, 0.1)
         })
 
-        // Early navbar collapse - when title comes into view
-        ScrollTrigger.create({
-          trigger: thirdSectionRef.current,
-          start: 'top 60%', // Earlier collapse when title text comes into view
-          end: 'bottom 20%', // Extends past the pinned section
-          onEnter: () => setNavbarCollapsed(true),
-          onLeave: () => setNavbarCollapsed(false),
-          onEnterBack: () => setNavbarCollapsed(true),
-          onLeaveBack: () => setNavbarCollapsed(false)
-        })
-
         ScrollTrigger.create({
           trigger: thirdSectionRef.current,
           start: 'top top',
@@ -297,19 +313,13 @@ const Home = () => {
           pinSpacing: true,
           scrub: false,
           onEnter: () => {
-            // Don't collapse navbar here anymore - handled by earlier trigger
+            setNavbarCollapsed(true)
             setActiveStep(1)
             currentStepRef.current = 1 // Keep ref in sync
           },
-          onLeave: () => {
-            // Don't uncollapse navbar here anymore - handled by earlier trigger
-          },
-          onEnterBack: () => {
-            // Don't collapse navbar here anymore - handled by earlier trigger
-          },
-          onLeaveBack: () => {
-            // Don't uncollapse navbar here anymore - handled by earlier trigger
-          },
+          onLeave: () => setNavbarCollapsed(false),
+          onEnterBack: () => setNavbarCollapsed(true),
+          onLeaveBack: () => setNavbarCollapsed(false),
           onUpdate: (self) => {
             const progress = self.progress
             const adjustedProgress = Math.max(0, Math.min(progress, 0.999))
@@ -336,7 +346,7 @@ const Home = () => {
     })
 
     return () => ctx.revert()
-  }, [isMobile]) // Include isMobile in dependencies for responsive behavior
+  }, []) // ✅ Remove activeStep dependency to prevent recreation
 
   useEffect(() => {
     if (!loading && !showWelcomeBack) {
@@ -509,67 +519,43 @@ const Home = () => {
         </div>
       </div>
 
-      <div className="text-center max-w-2xl mx-auto mt-20 mb-16">
-        <h2 className="text-3xl font-bold tracking-tight text-deepBlue-800 mb-3">
-          One app that works everywhere you do. 
-        </h2>
-        <p className="text-sm text-deepBlue-600">
-          Save money with your group from your phone, tablet, or computer. Everything stays in sync so you're always up to date.
-        </p>
-      </div>
 
+      <div ref={thirdSectionRef} className="bg-deepBlue-50/20 py-20 border-b border-deepBlue-100/60 relative lg:min-h-screen">
+        <div className="max-w-6xl mx-auto px-4 lg:h-screen lg:flex lg:flex-col lg:justify-center">
+          <div className="text-center max-w-2xl mx-auto my-16">
+            <h2 className="text-3xl font-bold tracking-tight text-deepBlue-800 mb-3">
+              One app that works everywhere you do.
+            </h2>
+            <p className="text-sm text-deepBlue-600">
+              Save money with your group from your phone, tablet, or computer. Everything stays in sync so you're always up to date.
+            </p>
+          </div>
 
-      <div ref={thirdSectionRef} className="bg-deepBlue-50/20 border-b border-deepBlue-100/60 relative min-h-screen">
-        <div className="max-w-6xl mx-auto px-4 h-screen flex flex-col justify-center">
-          {/* Title section */}
-
-          {/* Responsive layout */}
-          <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-4 items-center overflow-visible flex-1">
-            {/* Mobile: Phone first, then steps */}
-            <div ref={phoneImageRef} className="lg:hidden w-full max-w-[180px] sm:max-w-[200px] mx-auto mb-6 relative z-10 order-1">
-              <div className="bg-gray-900 rounded-[2rem] p-2 shadow-xl">
-                <div className="bg-white rounded-[1.5rem] overflow-hidden w-full h-[320px] sm:h-[360px] flex flex-col">
-                  <div className="bg-gray-900 h-4 sm:h-5 flex justify-center items-center flex-shrink-0">
-                    <div className="w-12 sm:w-16 h-2 sm:h-2.5 bg-black rounded-full"></div>
-                  </div>
-                  <div className="flex-1 bg-gray-50 flex items-center justify-center min-h-0">
-                    <img
-                      src={currentStepData?.image}
-                      alt={currentStepData?.alt}
-                      className="max-w-full max-h-full object-contain transition-opacity duration-300"
-                    />
-                  </div>
+          {/* Desktop Layout - Hidden on mobile */}
+          <div className="hidden lg:grid lg:grid-cols-12 gap-4 items-center overflow-visible flex-1">
+            <div ref={el => stepContentRefs.current[0] = el} className="lg:col-span-5 space-y-7 relative z-10">
+              {STEPS_DATA.map((step) => (
+                <div
+                  key={step.id}
+                  onClick={() => goToStep(step.id)}
+                  className={`p-4 rounded-xl border transition-all cursor-pointer ${activeStep === step.id
+                      ? 'bg-white border-deepBlue-300 shadow-sm'
+                      : 'border-transparent hover:bg-white/60 hover:border-deepBlue-100'
+                    }`}
+                >
+                  <h4 className={`text-lg font-semibold mb-1 ${activeStep === step.id ? 'text-deepBlue-700' : 'text-deepBlue-800'}`}>
+                    {step.title}
+                  </h4>
+                  {activeStep === step.id && (
+                    <p className="text-lg text-deepBlue-600 leading-relaxed mt-1 animate-fadeIn">
+                      {step.desc}
+                    </p>
+                  )}
                 </div>
-              </div>
+              ))}
             </div>
 
-            {/* Steps section - responsive */}
-            <div ref={el => stepContentRefs.current[0] = el} className="lg:col-span-5 w-full relative z-10 order-2">
-              <div className="space-y-3 sm:space-y-4 md:space-y-6 lg:space-y-7">
-                {STEPS_DATA.map((step) => (
-                  <div
-                    key={step.id}
-                    onClick={() => handleSetActiveStep(step.id)}
-                    className={`p-3 sm:p-4 rounded-xl border transition-all cursor-pointer ${activeStep === step.id
-                        ? 'bg-white border-deepBlue-300 shadow-sm'
-                        : 'border-transparent hover:bg-white/60 hover:border-deepBlue-100'
-                      }`}
-                  >
-                    <h4 className={`text-base sm:text-lg md:text-xl font-semibold mb-1 ${activeStep === step.id ? 'text-deepBlue-700' : 'text-deepBlue-800'}`}>
-                      {step.title}
-                    </h4>
-                    {activeStep === step.id && (
-                      <p className="text-sm sm:text-base md:text-lg text-deepBlue-600 leading-relaxed mt-1 animate-fadeIn">
-                        {step.desc}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Desktop: Phone on the right */}
-            <div className="hidden lg:flex lg:col-span-7 justify-center lg:justify-end relative z-10">
+            <div ref={phoneImageRef} className="lg:col-span-7 flex justify-center lg:justify-end relative z-10">
               <div className="w-full max-w-[235px]">
                 <div className="bg-gray-900 rounded-[2rem] p-2 shadow-xl mx-auto">
                   <div className="bg-white rounded-[1.5rem] overflow-hidden w-full h-[460px] flex flex-col">
@@ -585,6 +571,99 @@ const Home = () => {
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile Layout - Hidden on desktop */}
+          <div className="lg:hidden">
+            {/* Mobile Phone Display */}
+            <div 
+              ref={mobileStepsRef}
+              className="mb-8"
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+            >
+              <div className="w-full max-w-[280px] mx-auto">
+                <div className="bg-gray-900 rounded-[2rem] p-2 shadow-xl">
+                  <div className="bg-white rounded-[1.5rem] overflow-hidden w-full h-[500px] flex flex-col">
+                    <div className="bg-gray-900 h-6 flex justify-center items-center flex-shrink-0">
+                      <div className="w-19 h-3 bg-black rounded-full"></div>
+                    </div>
+                    <div className="flex-1 bg-gray-50 flex items-center justify-center min-h-0 relative">
+                      <img
+                        src={currentStepData?.image}
+                        alt={currentStepData?.alt}
+                        className="max-w-full max-h-full object-contain transition-opacity duration-300"
+                      />
+                      {/* Swipe indicator */}
+                      <div className="absolute bottom-4 left-0 right-0 flex justify-center">
+                        <div className="bg-black/20 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1">
+                          <div className="text-xs text-gray-600 font-medium">Swipe</div>
+                          <div className="flex gap-1">
+                            <div className="w-1 h-1 bg-gray-400 rounded-full animate-pulse"></div>
+                            <div className="w-1 h-1 bg-gray-400 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+                            <div className="w-1 h-1 bg-gray-400 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile Step Content */}
+            <div className="text-center px-4">
+              <h3 className="text-xl font-bold text-deepBlue-800 mb-3 tracking-tight">
+                {currentStepData?.title}
+              </h3>
+              <p className="text-deepBlue-600 leading-relaxed mb-6 max-w-md mx-auto">
+                {currentStepData?.desc}
+              </p>
+
+              {/* Step indicators */}
+              <div className="flex justify-center items-center gap-2 mb-4">
+                {STEPS_DATA.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => goToStep(index + 1)}
+                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                      activeStep === index + 1
+                        ? 'bg-deepBlue-600 w-6'
+                        : 'bg-deepBlue-200 hover:bg-deepBlue-300'
+                    }`}
+                  />
+                ))}
+              </div>
+
+              {/* Navigation arrows */}
+              <div className="flex justify-center items-center gap-4">
+                <button
+                  onClick={() => activeStep > 1 && goToStep(activeStep - 1)}
+                  disabled={activeStep === 1}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all text-sm ${
+                    activeStep === 1
+                      ? 'text-gray-400 cursor-not-allowed'
+                      : 'text-deepBlue-600 hover:text-deepBlue-800 hover:bg-deepBlue-50'
+                  }`}
+                >
+                  ← Previous
+                </button>
+                <div className="text-xs text-deepBlue-400 font-mono">
+                  {activeStep} / {STEPS_DATA.length}
+                </div>
+                <button
+                  onClick={() => activeStep < STEPS_DATA.length && goToStep(activeStep + 1)}
+                  disabled={activeStep === STEPS_DATA.length}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all text-sm ${
+                    activeStep === STEPS_DATA.length
+                      ? 'text-gray-400 cursor-not-allowed'
+                      : 'text-deepBlue-600 hover:text-deepBlue-800 hover:bg-deepBlue-50'
+                  }`}
+                >
+                  Next →
+                </button>
               </div>
             </div>
           </div>
