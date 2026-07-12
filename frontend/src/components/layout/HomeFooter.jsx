@@ -1,9 +1,7 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Phone, MapPin, Twitter, Linkedin } from 'lucide-react';
 import PlayStoreButton from '../common/PlayStoreButton';
 import AppStoreButton from '../common/AppStoreButton';
-import logo from '../../assets/images/logo.png';
 
 const HomeFooter = () => {
   const navigate = useNavigate();
@@ -17,14 +15,14 @@ const HomeFooter = () => {
     company: [
       { label: 'About Us', path: '/about' },
       { label: 'How It Works', path: '/how-it-works' },
-      { label: 'Contact Us', path: '/contact' },
     ],
     legal: [
       { label: 'Terms of Service', path: '/terms' },
       { label: 'Refund Policy', path: '/refund-policy' }
     ],
     support: [
-      { label: 'Help Center', path: '/help' }
+      { label: 'Contact Us', path: '/contact' },
+      { label: 'Community', href: 'https://reddit.com/r/ajosave' }
     ]
   };
 
@@ -55,7 +53,7 @@ const HomeFooter = () => {
             </p>
             
             {/* Download Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 mb-6">
+            <div className="flex sm:flex-row gap-3 mb-6">
               <PlayStoreButton size="md" />
               <AppStoreButton size="md" />
             </div>
@@ -115,14 +113,25 @@ const HomeFooter = () => {
           <div>
             <h3 className="font-semibold text-white mb-4">Support</h3>
             <ul className="space-y-2">
-              {footerLinks.support.map((link) => (
-                <li key={link.path}>
-                  <button
-                    onClick={() => handleNavigation(link.path)}
-                    className="text-deepBlue-200 hover:text-white transition-colors text-left"
-                  >
-                    {link.label}
-                  </button>
+              {footerLinks.support.map((link, index) => (
+                <li key={index}>
+                  {link.href ? (
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-deepBlue-200 hover:text-white transition-colors"
+                    >
+                      {link.label}
+                    </a>
+                  ) : (
+                    <button
+                      onClick={() => handleNavigation(link.path)}
+                      className="text-deepBlue-200 hover:text-white transition-colors text-left"
+                    >
+                      {link.label}
+                    </button>
+                  )}
                 </li>
               ))}
             </ul>

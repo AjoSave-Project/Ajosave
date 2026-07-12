@@ -1,293 +1,313 @@
-import { useEffect, useState } from 'react';
-import { UserPlus, Users, CreditCard, Wallet, Shield, CheckCircle, User } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { UserPlus, Users, CreditCard, Wallet, Shield, CheckCircle, ArrowRight, Play } from 'lucide-react';
 import HomeNavbar from '../components/layout/HomeNavbar';
 import HomeFooter from '../components/layout/HomeFooter';
+import AjoCycleAnimation from '../components/animations/AjoCycleAnimation';
 
 const HowItWorks = () => {
-  const [activeProfile, setActiveProfile] = useState(0);
-  
-  // Customer profiles for the rotation animation
-  const profiles = [
-    { id: 1, name: "Adunni", avatar: "A", color: "bg-blue-500", position: "receive" },
-    { id: 2, name: "Bola", avatar: "B", color: "bg-green-500", position: "contribute" },
-    { id: 3, name: "Chika", avatar: "C", color: "bg-purple-500", position: "contribute" },
-    { id: 4, name: "Dayo", avatar: "D", color: "bg-yellow-500", position: "contribute" },
-    { id: 5, name: "Emeka", avatar: "E", color: "bg-red-500", position: "contribute" },
-    { id: 6, name: "Fatima", avatar: "F", color: "bg-indigo-500", position: "contribute" }
+  const heroTextRef = useRef(null);
+  const heroAnimationRef = useRef(null);
+  const heroLeftRef = useRef(null);
+  const stepsContainerRef = useRef(null);
+  const stepRefs = useRef([]);
+  const featureSectionRef = useRef(null);
+  const featureCardsRef = useRef([]);
+
+  const [activeStepIndex, setActiveStepIndex] = useState(0);
+
+  // Curated, impactful copywriting matching the animation context
+  const narrations = [
+    {
+      title: "Identity Onboarding",
+      body: "Secure verification pipelines authenticate the user using biometrics and localized registries, establishing baseline trust parameters inside the node network instantly."
+    },
+    {
+      title: "Circle Integration",
+      body: "Algorithmic placement synchronizes your savings pathing into active community pools, aligning rotation turns perfectly with your timeline goals."
+    },
+    {
+      title: "Smart Contributions",
+      body: "Automated billing bridges collect set allocations transparently. The funds bypass middle systems, updating the cryptographic shared ledger in real time."
+    },
+    {
+      title: "Disposal Liquidation",
+      body: "When the cycle shifts position to your index, the consolidated smart-escrow pool triggers a flawless, single-transaction payout directly into your target bank account."
+    }
   ];
 
-  // Rotate the receiving member every 3 seconds
+  // GSAP Entrance Choreography
   useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveProfile((prev) => (prev + 1) % profiles.length);
-    }, 3000);
+    // Register ScrollTrigger plugin
+    gsap.registerPlugin(ScrollTrigger);
 
-    return () => clearInterval(interval);
-  }, [profiles.length]);
+    // 1. Hero Text Entrance: Slide in from the right (on page load)
+    gsap.fromTo(heroTextRef.current,
+      { opacity: 0, x: 50 },
+      {
+        opacity: 1,
+        x: 0,
+        duration: 1.0,
+        ease: 'power3.out',
+        delay: 0.2
+      }
+    );
+
+    // 2. Hero Animation Section: Triggered when scrolling to animation area
+    gsap.fromTo(heroAnimationRef.current,
+      { opacity: 0, y: 60 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 1.2,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: heroAnimationRef.current,
+          start: 'top 80%',
+          end: 'top 50%',
+          toggleActions: 'play none none none'
+        }
+      }
+    );
+
+    // 3. Hero Interactive Elements: Slide animation for the centered container
+    gsap.fromTo(heroLeftRef.current,
+      { opacity: 0, y: 60 },
+      { 
+        opacity: 1, 
+        y: 0, 
+        duration: 1.2, 
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: heroAnimationRef.current,
+          start: 'top 75%',
+          end: 'top 45%',
+          toggleActions: 'play none none none'
+        }
+      }
+    );
+
+    // 4. Steps Entrance: Individual steps slide up one by one
+    if (stepRefs.current.length > 0) {
+      gsap.fromTo(stepRefs.current,
+        { y: 60 },
+        {
+          y: 0,
+          duration: 0.8,
+          stagger: 0.2,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: stepsContainerRef.current,
+            start: 'top 80%',
+            end: 'top 50%',
+            toggleActions: 'play none none none'
+          }
+        }
+      );
+    }
+
+    // 5. Features Section: Staggered animation when reaching the section
+    if (featureCardsRef.current.length > 0) {
+      gsap.fromTo(featureCardsRef.current,
+        { opacity: 0, scale: 0.9, y: 40 },
+        {
+          opacity: 1,
+          scale: 1,
+          y: 0,
+          duration: 0.8,
+          stagger: 0.2,
+          ease: 'back.out(1.2)',
+          scrollTrigger: {
+            trigger: featureSectionRef.current,
+            start: 'top 80%',
+            end: 'top 50%',
+            toggleActions: 'play none none none'
+          }
+        }
+      );
+    }
+  }, []);
+
   const steps = [
     {
-      icon: <UserPlus className="w-12 h-12 text-deepBlue-600" />,
+      icon: <UserPlus className="w-6 h-6 text-deepBlue-600" />,
       title: "Sign Up & Verify",
-      description: "Create your account with your phone number, verify your identity, and set up your profile securely.",
-      details: [
-        "Phone number verification",
-        "Identity verification with BVN/NIN",
-        "Secure profile setup"
-      ]
+      description: "Secure profile configuration backed by secure identity verification.",
+      details: ["BVN/NIN validation", "Secure profile setup"]
     },
     {
-      icon: <Users className="w-12 h-12 text-green-600" />,
-      title: "Join or Create a Group",
-      description: "Browse existing savings groups or create your own with friends, family, or like-minded savers.",
-      details: [
-        "Browse verified groups",
-        "Create custom groups",
-        "Set group rules and schedules"
-      ]
+      icon: <Users className="w-6 h-6 text-deepBlue-600" />,
+      title: "Join a Circle",
+      description: "Match with optimized rotation timelines tailored to your goals.",
+      details: ["Custom group terms", "Automated scheduling"]
     },
     {
-      icon: <CreditCard className="w-12 h-12 text-purple-600" />,
-      title: "Make Regular Contributions",
-      description: "Contribute your agreed amount on schedule. All payments are secure and tracked transparently.",
-      details: [
-        "Automated payment reminders",
-        "Multiple payment methods",
-        "Real-time transaction tracking"
-      ]
+      icon: <CreditCard className="w-6 h-6 text-deepBlue-600" />,
+      title: "Contribute Funds",
+      description: "Punctual automation tracks contributions without manual friction.",
+      details: ["Payment reminders", "Real-time ledger shifts"]
     },
     {
-      icon: <Wallet className="w-12 h-12 text-yellow-600" />,
-      title: "Receive Your Payout",
-      description: "When it's your turn, receive the full collection amount directly to your bank account.",
-      details: [
-        "Guaranteed payout schedule",
-        "Direct bank transfers",
-        "Instant notifications"
-      ]
+      icon: <Wallet className="w-6 h-6 text-deepBlue-600" />,
+      title: "Collect Pool",
+      description: "Instant disbursement directly into your bank account on cycle turn.",
+      details: ["Guaranteed turns", "Zero withdrawal lag"]
     }
   ];
 
   const features = [
     {
-      icon: <Shield className="w-8 h-8 text-deepBlue-600" />,
-      title: "Bank-Level Security",
-      description: "Your funds are protected with enterprise-grade security and regulatory compliance."
+      icon: <Shield className="w-7 h-7 text-deepBlue-600" />,
+      title: "Escrow Assurance",
+      description: "Funds reside safely within secured capital pools protected by enterprise-grade cryptographic guardrails."
     },
     {
-      icon: <CheckCircle className="w-8 h-8 text-green-600" />,
-      title: "Verified Members",
-      description: "All group members are verified with government-issued IDs for your peace of mind."
+      icon: <CheckCircle className="w-7 h-7 text-deepBlue-600" />,
+      title: "Verified Nodes",
+      description: "100% ID-mapped user profiles prevent network dropouts and ensure continuous cycle health."
     },
     {
-      icon: <Users className="w-8 h-8 text-purple-600" />,
-      title: "Community Support",
-      description: "Join a supportive community of savers working towards similar financial goals."
+      icon: <ArrowRight className="w-7 h-7 text-deepBlue-600" />,
+      title: "Unified Yield",
+      description: "Eliminate typical individual banking fees by grouping rotational capital dynamically."
     }
   ];
 
   return (
-    <div className="min-h-screen bg-white home-page-scrollbar">
+    <div className="min-h-screen bg-white text-deepBlue-800 overflow-x-hidden selection:bg-deepBlue-100 flex flex-col justify-between font-sans antialiased">
       <HomeNavbar />
-      
-      <div className="container mx-auto px-4 py-24">
-        {/* Hero Section */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-deepBlue-800 mb-6">
-            How AjoSave Works
-          </h1>
-          <p className="text-xl text-deepBlue-600 max-w-3xl mx-auto leading-relaxed">
-            Simple, secure, and transparent community saving. Join thousands of Nigerians 
-            building their financial future together.
+
+      <section className="container mx-auto px-6 lg:px-16 pt-16 pb-12">
+        <div ref={heroTextRef} className="max-w-4xl opacity-0">
+          <h1 className="text-4xl md:text-6xl font-black tracking-tight text-deepBlue-800 leading-[1.1] mb-6">
+            A system built on absolute <span className="underline decoration-deepBlue-500 decoration-wavy decoration-2 underline-offset-4">transparency</span>.
+          </h1> 
+          <p className="text-lg text-deepBlue-600 max-w-2xl font-normal leading-relaxed">
+            Witness how decentralized rotary savings operate. Our simulator charts live ledger balances while our automation engine drives secure capital pools forward.
           </p>
         </div>
+      </section>
 
-        {/* Steps Section - Modified Layout */}
-        <div className="mb-20">
-          <h2 className="text-3xl font-bold text-center text-deepBlue-800 mb-12">
-            Get Started in 4 Simple Steps
-          </h2>
-          <div className="max-w-4xl mx-auto">
-            {steps.map((step, index) => (
-              <div key={index} className="relative">
-                {/* Step Content */}
-                <div className="flex items-center space-x-8 py-8">
-                  {/* Icon */}
-                  <div className="flex-shrink-0">
-                    <div className="w-16 h-16 bg-deepBlue-50 rounded-xl flex items-center justify-center">
-                      {step.icon}
-                    </div>
-                  </div>
-                  
-                  {/* Content */}
-                  <div className="flex-1">
-                    <h3 className="text-2xl font-semibold text-deepBlue-800 mb-2">
-                      {step.title}
-                    </h3>
-                    <p className="text-deepBlue-600 mb-3">
-                      {step.description}
-                    </p>
-                    <ul className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                      {step.details.map((detail, idx) => (
-                        <li key={idx} className="flex items-center text-sm text-deepBlue-500">
-                          <CheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
-                          {detail}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+      <section 
+        ref={heroAnimationRef} 
+        className="relative py-5 opacity-0"
+        style={{
+          backgroundImage: `linear-gradient(rgba(17, 24, 39, 0.85), rgba(17, 24, 39, 0.85)), url('https://images.unsplash.com/photo-1650803321892-efba59b28a60?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+        <div className="container mx-auto px-6 lg:px-16">
+          {/* Single centered animation */}
+          <div className="flex justify-center items-center min-h-[600px]">
+            <div 
+              ref={heroLeftRef}
+              className="w-full max-w-5xl opacity-0"
+            >
+              {/* Animation component */}
+              <div className="w-full">
+                <AjoCycleAnimation />
+              </div>
+
+              {/* Stepper Controller */}
+              <div className="flex items-center justify-center gap-2 mt-8 bg-deepBlue-100 p-1.5 rounded-xl border border-deepBlue-200/40 max-w-fit mx-auto">
+                {narrations.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setActiveStepIndex(idx)}
+                    className={`flex items-center justify-center font-mono text-xs font-bold w-9 h-9 rounded-lg transition-all ${
+                      activeStepIndex === idx 
+                        ? 'bg-deepBlue-800 text-white shadow-md' 
+                        : 'text-deepBlue-400 hover:text-deepBlue-800 hover:bg-deepBlue-200/50'
+                    }`}
+                  >
+                    0{idx + 1}
+                  </button>
+                ))}
+              </div>
+
+              {/* Narrator info below animation */}
+              <div className="mt-8 bg-deepBlue-50/50 border border-deepBlue-100 rounded-xl p-6">
+                <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-wider text-deepBlue-400 uppercase mb-4">
+                  <Play className="w-3 h-3 text-deepBlue-500 fill-deepBlue-500" />
+                  <span>Live Simulation Narrator</span>
                 </div>
                 
-                {/* Divider - Don't show after last step */}
-                {index < steps.length - 1 && (
-                  <div className="border-b border-deepBlue-100"></div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Features Section */}
-        <div className="mb-20">
-          <h2 className="text-3xl font-bold text-center text-deepBlue-800 mb-12">
-            Why Choose AjoSave?
-          </h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
-              <div key={index} className="text-center">
-                <div className="flex justify-center mb-4">
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-semibold text-deepBlue-800 mb-3">
-                  {feature.title}
+                <h3 className="text-xl font-black text-deepBlue-800 tracking-tight mb-3 transition-all duration-300">
+                  {narrations[activeStepIndex].title}
                 </h3>
-                <p className="text-deepBlue-600">
-                  {feature.description}
+                <p className="text-sm text-deepBlue-800 font-normal leading-relaxed transition-all duration-500">
+                  {narrations[activeStepIndex].body}
                 </p>
-              </div>
-            ))}
-          </div>
-        </div>
 
-        {/* Rotational Ajo System Animation */}
-        <div className="bg-gradient-to-r from-deepBlue-50 to-deepBlue-100 rounded-2xl p-8 md:p-12 mb-16">
-          <h2 className="text-3xl font-bold text-deepBlue-800 mb-8 text-center">
-            How the Rotational Ajo System Works
-          </h2>
-          
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left Side - Explanation Text */}
-            <div className="space-y-6">
-              <div>
-                <h3 className="text-2xl font-semibold text-deepBlue-800 mb-4">
-                  Traditional Ajo, Digitally Secured
-                </h3>
-                <p className="text-deepBlue-700 leading-relaxed mb-4">
-                  In a traditional Ajo system, members take turns receiving the total contributions. 
-                  AjoSave digitizes this time-tested method with modern security and transparency.
-                </p>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 shadow-sm">
-                <h4 className="text-lg font-semibold text-deepBlue-800 mb-3">
-                  Example: 6-Member Group
-                </h4>
-                <ul className="space-y-3 text-deepBlue-700">
-                  <li className="flex items-start">
-                    <div className="w-2 h-2 bg-deepBlue-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                    <span><strong>Weekly Contribution:</strong> ₦10,000 per member</span>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="w-2 h-2 bg-deepBlue-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                    <span><strong>Total Pool:</strong> ₦60,000 each week</span>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="w-2 h-2 bg-deepBlue-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                    <span><strong>Rotation:</strong> Each member receives ₦60,000 once during the 6-week cycle</span>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <div className="flex items-center mb-2">
-                  <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
-                  <span className="font-medium text-green-800">Currently Receiving:</span>
+                <div className="mt-6 pt-4 border-t border-deepBlue-200 border-dashed flex items-center justify-between text-xs font-mono text-deepBlue-400 font-bold">
+                  <span>SEGMENT: 0{activeStepIndex + 1} // 04</span>
+                  <span className="text-deepBlue-300 tracking-wider">SYNC ACTIVE</span>
                 </div>
-                <p className="text-green-700 text-lg font-semibold">
-                  {profiles[activeProfile].name} receives ₦60,000 this week
-                </p>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
 
-            {/* Right Side - Customer Profile Animation */}
-            <div className="flex justify-center">
-              <div className="relative w-96 h-96">
-                {/* Member Circles arranged in a circle */}
-                {profiles.map((profile, index) => {
-                  const angle = (index * 60) - 90; // 60 degrees apart, starting from top
-                  const radius = 140; // Increased from 100 to 140 for more spacing
-                  const x = Math.cos(angle * Math.PI / 180) * radius;
-                  const y = Math.sin(angle * Math.PI / 180) * radius;
-                  const isActive = index === activeProfile;
+      <section
+        ref={stepsContainerRef}
+        className="bg-white border-y border-deepBlue-200/80 my-16"
+      >
+        <div className="container mx-auto px-6 lg:px-16 py-20 flex flex-col items-center">
+          {/* Steps Horizontal Grid Stack */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-0 items-stretch w-full">
+            {steps.map((step, index) => (
+              <div
+                key={index}
+                ref={el => stepRefs.current[index] = el}
+                onClick={() => setActiveStepIndex(index)}
+                className={`group p-8 flex flex-col justify-between transition-all duration-300 cursor-pointer hover:bg-deepBlue-50/60 relative ${index < steps.length - 1
+                    ? 'border-b border-deepBlue-100 lg:border-b-0 lg:border-r-2 lg:border-l-0 lg:border-deepBlue-100'
+                    : ''
+                  }`}
+              >
+                {/* Micro Step Overlay Floating Tag */}
+                <div className="absolute top-6 right-8 font-mono text-xs font-bold text-deepBlue-300 group-hover:text-deepBlue-400 transition-colors">
+                  [0{index + 1}]
+                </div>
 
-                  return (
-                    <div
-                      key={profile.id}
-                      className={`absolute w-16 h-16 rounded-full flex items-center justify-center text-white font-semibold transition-all duration-300 ${
-                        isActive 
-                          ? `${profile.color} scale-110 shadow-xl` 
-                          : `${profile.color} opacity-75`
-                      }`}
-                      style={{
-                        left: `calc(50% + ${x}px - 2rem)`,
-                        top: `calc(50% + ${y}px - 2rem)`,
-                      }}
-                    >
-                      {profile.avatar}
-                      
-                      {/* Member name */}
-                      <div 
-                        className={`absolute text-sm font-medium whitespace-nowrap ${
-                          isActive ? 'text-deepBlue-800' : 'text-deepBlue-600'
-                        }`}
-                        style={{
-                          top: '4.5rem',
-                          left: '50%',
-                          transform: 'translateX(-50%)'
-                        }}
-                      >
-                        {profile.name}
-                      </div>
+                <div>
+                  <div className="w-12 h-12 bg-deepBlue-50 border border-deepBlue-100 rounded-xl flex items-center justify-center mb-6 shadow-sm group-hover:scale-105 transition-transform">
+                    {step.icon}
+                  </div>
+                  <h3 className="text-lg font-bold text-deepBlue-800 mb-2 tracking-tight">
+                    {step.title}
+                  </h3>
+                  <p className="text-xs text-deepBlue-600 leading-relaxed font-normal mb-6">
+                    {step.description}
+                  </p>
+                </div>
 
-                      {/* Receiving indicator */}
-                      {isActive && (
-                        <div 
-                          className="absolute bg-green-500 text-white px-2 py-1 rounded text-xs font-medium"
-                          style={{
-                            top: '-2.5rem',
-                            left: '50%',
-                            transform: 'translateX(-50%)'
-                          }}
-                        >
-                          Receives ₦60K
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-
-                {/* Central info */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-                  <div className="bg-white rounded-lg p-4 shadow-lg border border-deepBlue-200">
-                    <div className="text-2xl font-bold text-deepBlue-800">Week {activeProfile + 1}</div>
-                    <div className="text-sm text-deepBlue-600">of 6</div>
+                <div className="pt-4 border-t border-dashed border-deepBlue-100 mt-auto">
+                  <div className="flex flex-wrap gap-1.5">
+                    {step.details.map((detail, dIdx) => (
+                      <span key={dIdx} className="inline-flex items-center text-[10px] font-medium bg-deepBlue-100 text-deepBlue-600 px-2 py-0.5 rounded-md">
+                        {detail}
+                      </span>
+                    ))}
                   </div>
                 </div>
               </div>
-            </div>
+            ))}
+          </div>
+
+          {/* Centered Go / Call to Action Trigger */}
+          <div className="mt-14">
+            <button className="inline-flex items-center gap-2 px-8 py-3.5 bg-deepBlue-900 text-white rounded-xl font-medium tracking-wide shadow-md shadow-slate-950/10 hover:bg-slate-900 transition-all duration-300 hover:scale-[1.02] active:scale-98">
+              <span>Get Started Now</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
           </div>
         </div>
-
-      </div>
+      </section>
 
       <HomeFooter />
     </div>

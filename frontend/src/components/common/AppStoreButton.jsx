@@ -29,7 +29,7 @@ const AppStoreButton = ({ size = 'md', className = '' }) => {
       </svg>
       <div className="text-left">
         <div className={`text-gray-400 ${size === 'sm' ? 'text-xs' : size === 'lg' ? 'text-sm' : 'text-xs'}`}>
-          Download on the
+          GET IT ON
         </div>
         <div className={`font-semibold ${size === 'sm' ? 'text-xs' : size === 'lg' ? 'text-base' : 'text-sm'}`}>
           App Store

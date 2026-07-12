@@ -1,12 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, useCallback, useMemo, memo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowRight, CheckCircle, Play, Monitor } from 'lucide-react'
+import { ArrowRight, CheckCircle, Play, Monitor, ChevronDown, ExternalLink, MessageCircle, User } from 'lucide-react'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 import { useAuth } from '../context/AuthContext'
 import HomeNavbar from '../components/layout/HomeNavbar'
 import HomeFooter from '../components/layout/HomeFooter'
 import PlayStoreButton from '../components/common/PlayStoreButton'
 import AppStoreButton from '../components/common/AppStoreButton'
+
+// Register GSAP ScrollTrigger plugin
+gsap.registerPlugin(ScrollTrigger)
 
 import heroImage from '../assets/images/vitaly-gariev-uFF_apyZ-l8-unsplash.jpg'
 import signupImage from '../assets/images/Signup.jpeg'
@@ -16,6 +21,7 @@ import walletImage from '../assets/images/Wallet.jpeg'
 import dashboardImage from '../assets/images/Dashboard.jpeg'
 import webDashboardImage from '../assets/images/webDashboard.png'
 
+// Move static data outside component to prevent recreation on every render
 const STEPS_DATA = [
   {
     id: 1,
@@ -54,6 +60,23 @@ const STEPS_DATA = [
   }
 ]
 
+// Memoized extended steps data
+const EXTENDED_STEPS_DATA = [
+  {
+    id: 0,
+    title: "Initial",
+    desc: "Starting point",
+    image: signupImage,
+    alt: "Initial Step"
+  },
+  ...STEPS_DATA
+]
+
+// Memoized spinner component to prevent recreation
+const SpinnerIcon = memo(() => (
+  <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+))
+
 const SYSTEM_STATUS_CARDS = [
   {
     icon: Monitor,
@@ -68,9 +91,7 @@ const SYSTEM_STATUS_CARDS = [
     statusColor: "emerald-400"
   },
   {
-    icon: () => (
-      <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-    ),
+    icon: SpinnerIcon,
     title: "Currently Improving",
     bgColor: "bg-blue-100",
     iconColor: "text-blue-600",
@@ -99,9 +120,42 @@ const METRICS_DATA = [
 
 const WEB_FEATURES = [
   "Works Great on Computers",
-  "Detailed Savings Reports", 
+  "Detailed Savings Reports",
   "Always Up to Date",
   "Download Your Data"
+]
+
+const FAQ_DATA = [
+  {
+    id: 1,
+    question: "How is this different from traditional Ajo?",
+    answer: "AjoSave brings the trusted concept of traditional Ajo (rotating savings groups) online with full transparency. Every contribution, payout, and group activity is tracked digitally, making it easier to manage and more secure than cash-based systems."
+  },
+  {
+    id: 2,
+    question: "Is my money safe with AjoSave?",
+    answer: "Yes. We partner with licensed financial institutions and follow banking regulations to ensure your money is protected. All transactions are encrypted and we never store your funds - they move directly between verified group members."
+  },
+  {
+    id: 3,
+    question: "What happens if someone doesn't pay?",
+    answer: "We have several built-in protections: identity verification for all members, payment reminders, and group accountability features. If issues arise, our support team helps resolve them, and we're developing additional safeguards based on beta user feedback."
+  },
+  {
+    id: 4,
+    question: "Can I leave a group early?",
+    answer: "Group policies vary, but generally you can leave after receiving your payout or by mutual agreement with other members. The app shows each group's specific rules before you join, so there are no surprises."
+  },
+  {
+    id: 5,
+    question: "How do I know when it's my turn to receive money?",
+    answer: "The app automatically tracks the rotation schedule and sends notifications before your turn. You can also see the full schedule in your dashboard, so you always know exactly when to expect your payout."
+  },
+  {
+    id: 6,
+    question: "What devices can I use AjoSave on?",
+    answer: "AjoSave works on smartphones (iOS and Android), tablets, and computers. Everything syncs across all your devices so you can check your savings progress anywhere."
+  }
 ]
 
 const Home = () => {
@@ -109,6 +163,48 @@ const Home = () => {
   const { isAuthenticated, loading, user } = useAuth()
   const [showWelcomeBack, setShowWelcomeBack] = useState(false)
   const [activeStep, setActiveStep] = useState(1)
+  const [openFAQ, setOpenFAQ] = useState(null)
+  const [navbarCollapsed, setNavbarCollapsed] = useState(false)
+
+  // Responsive hooks for mobile detection
+  const [isMobile, setIsMobile] = useState(false)
+  
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768) // Tailwind's md breakpoint
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  // Refs for GSAP animations
+  const heroSectionRef = useRef(null)
+  const secondSectionRef = useRef(null)
+  const thirdSectionRef = useRef(null)
+  const stepsContainerRef = useRef(null)
+  const navbarRef = useRef(null)
+  const stepContentRefs = useRef([])
+  const phoneImageRef = useRef(null)
+  const currentStepRef = useRef(1) // Track current step to avoid stale closure
+
+  // Memoize navigation handlers to prevent recreation
+  const handleJoinBeta = useCallback(() => navigate('/auth'), [navigate])
+  const handleHowItWorks = useCallback(() => navigate('/how-it-works'), [navigate])
+  const handleContact = useCallback(() => navigate('/contact'), [navigate])
+  const handlePrivacyPolicy = useCallback(() => navigate('/privacy-policy'), [navigate])
+
+  // Memoize FAQ toggle handler
+  const toggleFAQ = useCallback((faqId) => {
+    setOpenFAQ(prev => prev === faqId ? null : faqId)
+  }, [])
+
+  // Memoize current step data to prevent unnecessary recalculations
+  const currentStepData = useMemo(() => {
+    return STEPS_DATA[activeStep - 1]
+  }, [activeStep])
 
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -120,12 +216,182 @@ const Home = () => {
     }
   }, [isAuthenticated, user, navigate])
 
+  // Memoize GSAP animation setup to prevent unnecessary recreations
+  const initializeAnimations = useCallback(() => {
+    const ctx = gsap.context(() => {
+      // Initially position the second section below the viewport
+      gsap.set(secondSectionRef.current, {
+        y: '100vh',
+        opacity: 0
+      })
+
+      // Second section animation (blue status section)
+      gsap.to(secondSectionRef.current, {
+        y: 0,
+        opacity: 1,
+        duration: 1.2,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: heroSectionRef.current,
+          start: 'bottom 90%',
+          end: 'bottom 50%',
+          toggleActions: 'play none none none',
+          scrub: false,
+        }
+      })
+
+      // Third section animations
+      if (stepContentRefs.current[0] && phoneImageRef.current) {
+        // Initially hide for entrance animation
+        gsap.set(stepContentRefs.current[0], {
+          opacity: 0,
+          scale: 0.9,
+          y: 30
+        })
+        gsap.set(phoneImageRef.current, {
+          opacity: 0,
+          scale: 0.9,
+          y: 30
+        })
+
+        const pinDuration = EXTENDED_STEPS_DATA.length * (isMobile ? 100 : 125) // Shorter scrolling on mobile
+        
+        // Fade-in animation
+        ScrollTrigger.create({
+          trigger: thirdSectionRef.current,
+          start: 'top 80%',
+          toggleActions: 'play none none none',
+          animation: gsap.timeline()
+            .to(stepContentRefs.current[0], {
+              opacity: 1,
+              scale: 1,
+              y: 0,
+              duration: 0.6,
+              ease: 'power2.out'
+            })
+            .to(phoneImageRef.current, {
+              opacity: 1,
+              scale: 1,
+              y: 0,
+              duration: 0.6,
+              ease: 'power2.out'
+            }, 0.1)
+        })
+
+        // Early navbar collapse - when title comes into view
+        ScrollTrigger.create({
+          trigger: thirdSectionRef.current,
+          start: 'top 60%', // Earlier collapse when title text comes into view
+          end: 'bottom 20%', // Extends past the pinned section
+          onEnter: () => setNavbarCollapsed(true),
+          onLeave: () => setNavbarCollapsed(false),
+          onEnterBack: () => setNavbarCollapsed(true),
+          onLeaveBack: () => setNavbarCollapsed(false)
+        })
+
+        ScrollTrigger.create({
+          trigger: thirdSectionRef.current,
+          start: 'top top',
+          end: `+=${pinDuration}vh`,
+          pin: true,
+          pinSpacing: true,
+          scrub: false,
+          onEnter: () => {
+            // Don't collapse navbar here anymore - handled by earlier trigger
+            setActiveStep(1)
+            currentStepRef.current = 1 // Keep ref in sync
+          },
+          onLeave: () => {
+            // Don't uncollapse navbar here anymore - handled by earlier trigger
+          },
+          onEnterBack: () => {
+            // Don't collapse navbar here anymore - handled by earlier trigger
+          },
+          onLeaveBack: () => {
+            // Don't uncollapse navbar here anymore - handled by earlier trigger
+          },
+          onUpdate: (self) => {
+            const progress = self.progress
+            const adjustedProgress = Math.max(0, Math.min(progress, 0.999))
+            const stepIndex = Math.floor(adjustedProgress * EXTENDED_STEPS_DATA.length)
+            
+            let displayStep
+            if (stepIndex <= 1) {
+              displayStep = 1  // Both invisible step 0 AND step 1 show display step 1
+            } else {
+              displayStep = stepIndex  // Step 2+ map directly
+            }
+            
+            // Ensure we're within valid display range (1-5)
+            const clampedDisplayStep = Math.max(1, Math.min(displayStep, STEPS_DATA.length))
+            
+            // Use ref to avoid stale closure issue
+            if (clampedDisplayStep !== currentStepRef.current) {
+              currentStepRef.current = clampedDisplayStep
+              setActiveStep(clampedDisplayStep)
+            }
+          }
+        })
+      }
+    })
+
+    return () => ctx.revert()
+  }, [isMobile]) // Include isMobile in dependencies for responsive behavior
+
+  useEffect(() => {
+    if (!loading && !showWelcomeBack) {
+      return initializeAnimations()
+    }
+  }, [loading, showWelcomeBack, initializeAnimations])
+
+  // Clean up ScrollTrigger on unmount
+  useEffect(() => {
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
+    }
+  }, [])
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-deepBlue-50/60 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-deepBlue-600 mx-auto mb-4"></div>
-          <p className="text-deepBlue-700 font-medium text-sm tracking-tight">Initializing AjoSave...</p>
+          {/* Profile Cards Carousel */}
+          <div className="relative mb-6">
+            {/* Top divider */}
+            <div className="w-48 h-px bg-white/30 mx-auto mb-6"></div>
+
+            <div className="relative w-48 h-16 mx-auto overflow-hidden">
+              <div className="absolute inset-0 flex items-center animate-slide-carousel">
+                {/* Card 1 - Blue */}
+                <div className="flex-shrink-0 w-12 h-12 bg-deepBlue-600 rounded-lg flex items-center justify-center mx-2 shadow-sm">
+                  <User className="w-6 h-6 text-white" />
+                </div>
+                {/* Card 2 - White */}
+                <div className="flex-shrink-0 w-12 h-12 bg-white border-2 border-deepBlue-200 rounded-lg flex items-center justify-center mx-2 shadow-sm">
+                  <User className="w-6 h-6 text-deepBlue-600" />
+                </div>
+                {/* Card 3 - Dark Blue */}
+                <div className="flex-shrink-0 w-12 h-12 bg-deepBlue-800 rounded-lg flex items-center justify-center mx-2 shadow-sm">
+                  <User className="w-6 h-6 text-white" />
+                </div>
+                {/* Duplicate cards for seamless loop */}
+                <div className="flex-shrink-0 w-12 h-12 bg-deepBlue-600 rounded-lg flex items-center justify-center mx-2 shadow-sm">
+                  <User className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-shrink-0 w-12 h-12 bg-white border-2 border-deepBlue-200 rounded-lg flex items-center justify-center mx-2 shadow-sm">
+                  <User className="w-6 h-6 text-deepBlue-600" />
+                </div>
+                <div className="flex-shrink-0 w-12 h-12 bg-deepBlue-800 rounded-lg flex items-center justify-center mx-2 shadow-sm">
+                  <User className="w-6 h-6 text-white" />
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom divider */}
+            <div className="w-48 h-px bg-white/30 mx-auto mt-6"></div>
+          </div>
+
+          <p className="text-deepBlue-700 font-medium text-sm tracking-tight">Loading</p>
         </div>
       </div>
     )
@@ -133,7 +399,7 @@ const Home = () => {
 
   if (showWelcomeBack && user) {
     return (
-      <div className="min-h-screen bg-deepBlue-50/60 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center bg-white border border-deepBlue-100 rounded-xl p-8 max-w-md mx-4 shadow-sm">
           <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="w-6 h-6 text-green-600" />
@@ -153,142 +419,177 @@ const Home = () => {
   }
 
   return (
-      <div className="min-h-screen bg-white text-deepBlue-800 antialiased home-page-scrollbar selection:bg-deepBlue-50">
-        <HomeNavbar />
+    <div className="min-h-screen bg-white text-deepBlue-800 antialiased home-page-scrollbar selection:bg-deepBlue-50">
+      <HomeNavbar isCollapsed={navbarCollapsed} />
 
-        <div
-          className="relative pt-24 pb-32 min-h-screen flex items-center overflow-hidden"
-          style={{
-            backgroundImage: `linear-gradient(rgba(17, 24, 39, 0.6), rgba(17, 24, 39, 0.6)), url(${heroImage})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center top',
-            backgroundRepeat: 'no-repeat',
-            paddingTop: '140px',
-            clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 4vw), 0 100%)',
-          }}
-        >
-          <div className="max-w-6xl mx-auto px-4 relative z-10 w-full">
-            <div className="grid lg:grid-cols-12 gap-8 items-center">
-              <div className="lg:col-span-12 space-y-4 text-center">
-                <h1 className="text-3xl lg:text-5xl font-extrabold tracking-tight text-white leading-[1.15] max-w-4xl mx-auto">
-                  Bringing transparency to traditional <span className="text-blue-300">Ajo.</span>
-                </h1>
+      <div
+        ref={heroSectionRef}
+        className="relative pt-24 pb-32 min-h-screen flex items-center overflow-hidden"
+        style={{
+          backgroundImage: `linear-gradient(rgba(17, 24, 39, 0.6), rgba(17, 24, 39, 0.6)), url(${heroImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center top',
+          backgroundRepeat: 'no-repeat',
+          paddingTop: '140px',
+          clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 4vw), 0 100%)',
+        }}
+      >
+        <div className="max-w-6xl mx-auto px-4 relative z-10 w-full">
+          <div className="grid lg:grid-cols-12 gap-8 items-center">
+            <div className="lg:col-span-12 space-y-4 text-center">
+              <h1 className="text-3xl lg:text-5xl font-extrabold tracking-tight text-white leading-[1.15] max-w-4xl mx-auto">
+                Bringing transparency to traditional <span className="text-blue-300">Ajo.</span>
+              </h1>
 
-                <p className="text-lg lg:text-xl text-white/90 leading-relaxed max-w-2xl mx-auto animate-matte-reveal">
-                  We're building a digital platform that brings traditional group savings into the modern age, making it easier to save money with your community.
-                </p>
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2 justify-center">
-                  <button
-                    onClick={() => navigate('/auth')}
-                    className="bg-white text-deepBlue-800 px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition-all flex items-center justify-center gap-2 text-sm shadow-lg backdrop-blur-sm"
-                  >
-                    Join the Beta Program <ArrowRight className="w-4 h-4" />
-                  </button>
-                  <button 
-                  onClick={() => navigate('/how-it-works')}
+              <p className="text-lg lg:text-xl text-white/90 leading-relaxed max-w-2xl mx-auto animate-matte-reveal">
+                We're building a digital platform that brings traditional group savings into the modern age, making it easier to save money with your community.
+              </p>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2 justify-center">
+                <button
+                  onClick={handleJoinBeta}
+                  className="bg-white text-deepBlue-800 px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition-all flex items-center justify-center gap-2 text-sm shadow-lg backdrop-blur-sm"
+                >
+                  Join the Beta Program <ArrowRight className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={handleHowItWorks}
                   className="flex items-center justify-center gap-2 text-white hover:text-blue-300 font-medium px-5 py-3 text-sm transition-colors rounded-lg hover:bg-white/10 backdrop-blur-sm border border-white/20">
-                    <Play className="w-4 h-4 fill-current" />
-                    <span>System Walkthrough</span>
-                  </button>
-                </div>
+                  <Play className="w-4 h-4 fill-current" />
+                  <span>System Walkthrough</span>
+                </button>
+              </div>
 
-                <div className="pt-4 border-t border-white/20 flex flex-col sm:flex-row items-center gap-4 justify-center">
-                  <div className="flex gap-3 opacity-90">
-                    <PlayStoreButton size="sm" />
-                    <AppStoreButton size="sm" />
-                  </div>
+              <div className="pt-4 flex flex-col sm:flex-row items-center gap-4 justify-center">
+                <div className="flex gap-3 opacity-90">
+                  <PlayStoreButton size="sm" />
+                  <AppStoreButton size="sm" />
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <div 
-          className="relative bg-deepBlue-600 pt-32 pb-36 overflow-hidden -mt-[4vw]"
-          style={{
-            clipPath: 'polygon(0 4vw, 100% 0, 100% calc(100% - 4vw), 0 100%)',
-          }}
-        >
-          <div className="relative z-10 max-w-6xl mx-auto px-4">
-            <div className="max-w-2xl mb-14">
-              <h2 className="text-xs font-bold uppercase tracking-widest text-blue-300 mb-2">Our Current Status</h2>
-              <p className="text-2xl font-bold tracking-tight text-white">
-                Simple, reliable savings technology built for real communities.
-              </p>
-            </div>
+      <div
+        ref={secondSectionRef}
+        className="relative bg-deepBlue-600 pt-32 pb-36 overflow-hidden -mt-[4vw]"
+        style={{
+          clipPath: 'polygon(0 4vw, 100% 0, 100% calc(100% - 4vw), 0 100%)',
+        }}
+      >
+        <div className="relative z-10 max-w-6xl mx-auto px-4">
+          <div className="max-w-2xl mb-14">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-blue-300 mb-2">Our Current Status</h2>
+            <p className="text-2xl font-bold tracking-tight text-white">
+              Simple, reliable savings technology built for real communities.
+            </p>
+          </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
-              {SYSTEM_STATUS_CARDS.map((card, index) => (
-                <div key={index} className="p-6 border border-white/20 bg-white/10 backdrop-blur-sm rounded-xl space-y-4">
-                  <div className={`w-8 h-8 ${card.bgColor} ${card.iconColor} rounded-lg flex items-center justify-center`}>
-                    <card.icon className="w-4 h-4" />
-                  </div>
-                  <h3 className="font-bold text-white text-base">{card.title}</h3>
-                  {card.features ? (
-                    <ul className="space-y-2.5 text-sm text-blue-100">
-                      {card.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="flex items-center gap-2">
-                          <span className={`w-1.5 h-1.5 rounded-full bg-${card.statusColor}`}></span> {feature}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-xs text-blue-100 leading-relaxed">{card.description}</p>
-                  )}
+          <div className="grid md:grid-cols-3 gap-6">
+            {SYSTEM_STATUS_CARDS.map((card, index) => (
+              <div key={index} className="p-6 border border-white/20 bg-white/10 backdrop-blur-sm rounded-xl space-y-4">
+                <div className={`w-8 h-8 ${card.bgColor} ${card.iconColor} rounded-lg flex items-center justify-center`}>
+                  <card.icon className="w-4 h-4" />
                 </div>
-              ))}
-            </div>
+                <h3 className="font-bold text-white text-base">{card.title}</h3>
+                {card.features ? (
+                  <ul className="space-y-2.5 text-sm text-blue-100">
+                    {card.features.map((feature, featureIndex) => (
+                      <li key={featureIndex} className="flex items-center gap-2">
+                        <span className={`w-1.5 h-1.5 rounded-full bg-${card.statusColor}`}></span> {feature}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-xs text-blue-100 leading-relaxed">{card.description}</p>
+                )}
+              </div>
+            ))}
           </div>
         </div>
+      </div>
 
-        <div className="bg-deepBlue-50/20 py-20 border-b border-deepBlue-100/60">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="text-center max-w-2xl mx-auto mb-16">
-              <h2 className="text-3xl font-bold tracking-tight text-deepBlue-800 mb-3">
-                One app that works everywhere you do.
-              </h2>
-              <p className="text-sm text-deepBlue-600">
-                Save money with your group from your phone, tablet, or computer. Everything stays in sync so you're always up to date.
-              </p>
+      <div className="text-center max-w-2xl mx-auto mt-20 mb-16">
+        <h2 className="text-3xl font-bold tracking-tight text-deepBlue-800 mb-3">
+          One app that works everywhere you do. 
+        </h2>
+        <p className="text-sm text-deepBlue-600">
+          Save money with your group from your phone, tablet, or computer. Everything stays in sync so you're always up to date.
+        </p>
+      </div>
+
+
+      <div ref={thirdSectionRef} className="bg-deepBlue-50/20 border-b border-deepBlue-100/60 relative min-h-screen">
+        <div className="max-w-6xl mx-auto px-4 h-screen flex flex-col justify-center">
+          {/* Title section */}
+          <div className="text-center max-w-2xl mx-auto mb-8 md:mb-16">
+            <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-deepBlue-800 mb-3">
+              One app that works everywhere you do.
+            </h2>
+            <p className="text-sm text-deepBlue-600">
+              Save money with your group from your phone, tablet, or computer. Everything stays in sync so you're always up to date.
+            </p>
+          </div>
+
+          {/* Responsive layout */}
+          <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-4 items-center overflow-visible flex-1">
+            {/* Mobile: Phone first, then steps */}
+            <div ref={phoneImageRef} className="lg:hidden w-full max-w-[180px] sm:max-w-[200px] mx-auto mb-6 relative z-10 order-1">
+              <div className="bg-gray-900 rounded-[2rem] p-2 shadow-xl">
+                <div className="bg-white rounded-[1.5rem] overflow-hidden w-full h-[320px] sm:h-[360px] flex flex-col">
+                  <div className="bg-gray-900 h-4 sm:h-5 flex justify-center items-center flex-shrink-0">
+                    <div className="w-12 sm:w-16 h-2 sm:h-2.5 bg-black rounded-full"></div>
+                  </div>
+                  <div className="flex-1 bg-gray-50 flex items-center justify-center min-h-0">
+                    <img
+                      src={currentStepData?.image}
+                      alt={currentStepData?.alt}
+                      className="max-w-full max-h-full object-contain transition-opacity duration-300"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="grid lg:grid-cols-12 gap-4 items-center">
-              <div className="lg:col-span-5 space-y-7">
+            {/* Steps section - responsive */}
+            <div ref={el => stepContentRefs.current[0] = el} className="lg:col-span-5 w-full relative z-10 order-2">
+              <div className="space-y-3 sm:space-y-4 md:space-y-6 lg:space-y-7">
                 {STEPS_DATA.map((step) => (
                   <div
                     key={step.id}
-                    onClick={() => setActiveStep(step.id)}
-                    className={`p-4 rounded-xl border transition-all cursor-pointer ${activeStep === step.id
+                    onClick={() => handleSetActiveStep(step.id)}
+                    className={`p-3 sm:p-4 rounded-xl border transition-all cursor-pointer ${activeStep === step.id
                         ? 'bg-white border-deepBlue-300 shadow-sm'
                         : 'border-transparent hover:bg-white/60 hover:border-deepBlue-100'
                       }`}
                   >
-                    <h4 className={`text-xl font-semibold mb-1 ${activeStep === step.id ? 'text-deepBlue-700' : 'text-deepBlue-800'}`}>
+                    <h4 className={`text-base sm:text-lg md:text-xl font-semibold mb-1 ${activeStep === step.id ? 'text-deepBlue-700' : 'text-deepBlue-800'}`}>
                       {step.title}
                     </h4>
                     {activeStep === step.id && (
-                      <p className="text-lg text-deepBlue-600 leading-relaxed mt-1 animate-fadeIn">
+                      <p className="text-sm sm:text-base md:text-lg text-deepBlue-600 leading-relaxed mt-1 animate-fadeIn">
                         {step.desc}
                       </p>
                     )}
                   </div>
                 ))}
               </div>
+            </div>
 
-              <div className="lg:col-span-7 flex justify-center lg:justify-end">
-                <div className="w-full max-w-[235px]">
-                  <div className="bg-gray-900 rounded-[2rem] p-2 shadow-xl mx-auto">
-                    <div className="bg-white rounded-[1.5rem] overflow-hidden w-full h-[460px] flex flex-col">
-                      <div className="bg-gray-900 h-6 flex justify-center items-center flex-shrink-0">
-                        <div className="w-19 h-3 bg-black rounded-full"></div>
-                      </div>
-                      <div className="flex-1 bg-gray-50 flex items-center justify-center min-h-0">
-                        <img
-                          src={STEPS_DATA[activeStep - 1].image}
-                          alt={STEPS_DATA[activeStep - 1].alt}
-                          className="max-w-full max-h-full object-contain transition-opacity duration-300"
-                        />
-                      </div>
+            {/* Desktop: Phone on the right */}
+            <div className="hidden lg:flex lg:col-span-7 justify-center lg:justify-end relative z-10">
+              <div className="w-full max-w-[235px]">
+                <div className="bg-gray-900 rounded-[2rem] p-2 shadow-xl mx-auto">
+                  <div className="bg-white rounded-[1.5rem] overflow-hidden w-full h-[460px] flex flex-col">
+                    <div className="bg-gray-900 h-6 flex justify-center items-center flex-shrink-0">
+                      <div className="w-19 h-3 bg-black rounded-full"></div>
+                    </div>
+                    <div className="flex-1 bg-gray-50 flex items-center justify-center min-h-0">
+                      <img
+                        src={currentStepData?.image}
+                        alt={currentStepData?.alt}
+                        className="max-w-full max-h-full object-contain transition-opacity duration-300"
+                      />
                     </div>
                   </div>
                 </div>
@@ -296,96 +597,171 @@ const Home = () => {
             </div>
           </div>
         </div>
-
-        <div className="bg-white py-20 border-b border-deepBlue-100/60">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="grid lg:grid-cols-12 gap-12 items-center">
-              <div className="lg:col-span-5 space-y-6">
-                <h3 className="text-2xl font-bold tracking-tight text-deepBlue-800">
-                  Use AjoSave on Your Computer Too
-                </h3>
-                <p className="text-sm text-deepBlue-600 leading-relaxed">
-                  Need a bigger screen? Access all the same features on your laptop or desktop. Perfect for reviewing your savings history or managing multiple groups.
-                </p>
-
-                <div className="grid grid-cols-2 gap-4 text-xs font-medium text-deepBlue-700 pt-2">
-                  {WEB_FEATURES.map((feature, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-500" /> {feature}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="lg:col-span-7">
-                <div className="bg-deepBlue-50/30 border border-deepBlue-100 rounded-xl p-2 shadow-sm">
-                  <div className="bg-slate-900 rounded-lg overflow-hidden border border-slate-800 shadow-lg">
-                    <div className="bg-slate-800 px-4 py-2 flex items-center gap-3 border-b border-slate-700">
-                      <div className="flex gap-1.5">
-                        <div className="w-2 h-2 rounded-full bg-slate-600"></div>
-                        <div className="w-2 h-2 rounded-full bg-slate-600"></div>
-                        <div className="w-2 h-2 rounded-full bg-slate-600"></div>
-                      </div>
-                      <div className="flex-1 bg-slate-950/40 rounded px-3 py-0.5 text-[10px] text-slate-400 max-w-xs font-mono truncate">
-                        app.ajosave.com/dashboard
-                      </div>
-                    </div>
-                    <img
-                      src={webDashboardImage}
-                      alt="AjoSave Production Web Interface"
-                      className="w-full h-auto object-cover opacity-95"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-deepBlue-800 text-white py-16">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-              {METRICS_DATA.map((metric, index) => (
-                <div key={index} className="space-y-1">
-                  <div className="text-3xl font-extrabold text-green-400">{metric.value}</div>
-                  <div className="text-xs text-deepBlue-200 uppercase tracking-wider font-semibold">{metric.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="max-w-6xl mx-auto px-4 py-20">
-          <div className="border border-deepBlue-800 bg-deepBlue-800 text-white rounded-2xl p-8 lg:p-12 relative overflow-hidden grid md:grid-cols-12 gap-8 items-center">
-            <div className="md:col-span-8 space-y-4 z-10">
-              <h3 className="text-2xl font-bold tracking-tight">Help us build the best savings platform for your community.</h3>
-              <p className="text-deepBlue-200 text-sm max-w-xl leading-relaxed">
-                We're looking for people to try our platform and tell us how to make it better. Your feedback helps us create something that really works for everyone.
-              </p>
-              <div className="flex flex-wrap gap-x-6 gap-y-2 pt-2 text-xs text-deepBlue-100 font-mono">
-                <span className="flex items-center gap-1.5"><CheckCircle className="w-3.5 h-3.5 text-deepBlue-300" /> Free to Use</span>
-                <span className="flex items-center gap-1.5"><CheckCircle className="w-3.5 h-3.5 text-deepBlue-300" /> Help Shape Features</span>
-              </div>
-            </div>
-            <div className="md:col-span-4 flex flex-col sm:flex-row md:flex-col gap-3 md:items-end z-10">
-              <button
-                onClick={() => navigate('/auth')}
-                className="bg-white text-deepBlue-800 px-6 py-3.5 rounded-lg font-semibold hover:bg-deepBlue-50 transition-colors text-sm shadow-sm whitespace-nowrap text-center w-full md:w-auto"
-              >
-                Access Beta Environment
-              </button>
-              <button
-                onClick={() => navigate('/privacy-policy')}
-                className="text-xs text-deepBlue-200 hover:text-white underline text-center pt-1"
-              >
-                Review Privacy Terms
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <HomeFooter />
       </div>
+
+      <div className="bg-white py-20 border-b border-deepBlue-100/60">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid lg:grid-cols-12 gap-12 items-center">
+            <div className="lg:col-span-5 space-y-6">
+              <h3 className="text-2xl font-bold tracking-tight text-deepBlue-800">
+                Use AjoSave on Your Computer Too
+              </h3>
+              <p className="text-sm text-deepBlue-600 leading-relaxed">
+                Need a bigger screen? Access all the same features on your laptop or desktop. Perfect for reviewing your savings history or managing multiple groups.
+              </p>
+
+              <div className="grid grid-cols-2 gap-4 text-xs font-medium text-deepBlue-700 pt-2">
+                {WEB_FEATURES.map((feature, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500" /> {feature}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="lg:col-span-7">
+              <div className="bg-deepBlue-50/30 border border-deepBlue-100 rounded-xl p-2 shadow-sm">
+                <div className="bg-slate-900 rounded-lg overflow-hidden border border-slate-800 shadow-lg">
+                  <div className="bg-slate-800 px-4 py-2 flex items-center gap-3 border-b border-slate-700">
+                    <div className="flex gap-1.5">
+                      <div className="w-2 h-2 rounded-full bg-slate-600"></div>
+                      <div className="w-2 h-2 rounded-full bg-slate-600"></div>
+                      <div className="w-2 h-2 rounded-full bg-slate-600"></div>
+                    </div>
+                    <div className="flex-1 bg-slate-950/40 rounded px-3 py-0.5 text-[10px] text-slate-400 max-w-xs font-mono truncate">
+                      app.ajosave.com/dashboard
+                    </div>
+                  </div>
+                  <img
+                    src={webDashboardImage}
+                    alt="AjoSave Production Web Interface"
+                    className="w-full h-auto object-cover opacity-95"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-deepBlue-800 text-white py-16">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            {METRICS_DATA.map((metric, index) => (
+              <div key={index} className="space-y-1">
+                <div className="text-3xl font-extrabold">{metric.value}</div>
+                <div className="text-xs text-deepBlue-200 uppercase tracking-wider font-semibold">{metric.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* FAQ Section */}
+      <div className="bg-gradient-to-br from-deepBlue-50/40 to-blue-50/60 py-20 border-b border-deepBlue-100/60">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold tracking-tight text-deepBlue-800 mb-4">
+              We know you have questions
+            </h2>
+            <p className="text-deepBlue-600 mb-6 max-w-2xl mx-auto leading-relaxed">
+              Get quick answers to common questions, or join our community for deeper discussions and support.
+            </p>
+
+            {/* Reddit Community Link */}
+            <div className="inline-flex items-center gap-3 bg-white border border-deepBlue-200 rounded-xl px-4 py-3 hover:border-deepBlue-300 transition-all group cursor-pointer shadow-sm">
+              <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                <MessageCircle className="w-4 h-4 text-white" />
+              </div>
+              <div className="text-left">
+                <div className="text-sm font-semibold text-deepBlue-800 group-hover:text-deepBlue-900">
+                  Join r/AjoSave Community
+                </div>
+                <div className="text-xs text-deepBlue-600">
+                  Get help from other users and our team
+                </div>
+              </div>
+              <ExternalLink className="w-4 h-4 text-deepBlue-400 group-hover:text-deepBlue-600" />
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            {FAQ_DATA.map((faq) => (
+              <div
+                key={faq.id}
+                className="bg-white border border-deepBlue-100 rounded-xl overflow-hidden hover:border-deepBlue-200 transition-all shadow-sm"
+              >
+                <button
+                  onClick={() => setOpenFAQ(openFAQ === faq.id ? null : faq.id)}
+                  className="w-full px-6 py-5 text-left flex items-center justify-between hover:bg-deepBlue-50/30 transition-colors"
+                >
+                  <span className="font-semibold text-deepBlue-800 pr-4">
+                    {faq.question}
+                  </span>
+                  <ChevronDown
+                    className={`w-5 h-5 text-deepBlue-500 transition-transform flex-shrink-0 ${openFAQ === faq.id ? 'rotate-180' : ''
+                      }`}
+                  />
+                </button>
+                {openFAQ === faq.id && (
+                  <div className="px-6 pb-5 animate-fadeIn">
+                    <div className="pt-2 border-t border-deepBlue-100/50">
+                      <p className="text-deepBlue-600 leading-relaxed">
+                        {faq.answer}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Additional Help */}
+          <div className="text-center mt-8 pt-6 border-t border-deepBlue-200/50">
+            <p className="text-sm text-deepBlue-600 mb-3">
+              Still have questions? We're here to help.
+            </p>
+            <button
+              onClick={handleContact}
+              className="text-deepBlue-700 hover:text-deepBlue-800 font-medium text-sm underline underline-offset-2 hover:underline-offset-4 transition-all"
+            >
+              Contact our support team
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto px-4 py-20">
+        <div className="border border-deepBlue-800 bg-deepBlue-800 text-white rounded-2xl p-8 lg:p-12 relative overflow-hidden grid md:grid-cols-12 gap-8 items-center">
+          <div className="md:col-span-8 space-y-4 z-10">
+            <h3 className="text-2xl font-bold tracking-tight">Help us build the best savings platform for your community.</h3>
+            <p className="text-deepBlue-200 text-sm max-w-xl leading-relaxed">
+              We're looking for people to try our platform and tell us how to make it better. Your feedback helps us create something that really works for everyone.
+            </p>
+            <div className="flex flex-wrap gap-x-6 gap-y-2 pt-2 text-xs text-deepBlue-100 font-mono">
+              <span className="flex items-center gap-1.5"><CheckCircle className="w-3.5 h-3.5 text-deepBlue-300" /> Free to Use</span>
+              <span className="flex items-center gap-1.5"><CheckCircle className="w-3.5 h-3.5 text-deepBlue-300" /> Help Shape Features</span>
+            </div>
+          </div>
+          <div className="md:col-span-4 flex flex-col sm:flex-row md:flex-col gap-3 md:items-end z-10">
+            <button
+              onClick={handleJoinBeta}
+              className="bg-white text-deepBlue-800 px-6 py-3.5 rounded-lg font-semibold hover:bg-deepBlue-50 transition-colors text-sm shadow-sm whitespace-nowrap text-center w-full md:w-auto"
+            >
+              Access Beta Environment
+            </button>
+            <button
+              onClick={handlePrivacyPolicy}
+              className="text-xs text-deepBlue-200 hover:text-white underline text-center pt-1"
+            >
+              Review Privacy Terms
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <HomeFooter />
+    </div>
   )
 }
 

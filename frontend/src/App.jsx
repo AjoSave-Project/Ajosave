@@ -14,7 +14,6 @@ import HowItWorks from './pages/HowItWorks'
 import Contact from './pages/Contact'
 import Terms from './pages/Terms'
 import RefundPolicy from './pages/RefundPolicy'
-import HelpCenter from './pages/HelpCenter'
 import Auth from './pages/Auth'
 import Onboarding from './pages/Onboarding'
 import Welcome from './pages/Welcome'
@@ -45,7 +44,6 @@ const ProtectedRoute = ({ children }) => {
     )
   }
   
-  // If OTP is pending, send back to /auth to complete verification
   if (isAuthenticated && pendingOtp) return <Navigate to="/auth" replace />
   
   return isAuthenticated ? children : <Navigate to="/auth" replace />
@@ -62,9 +60,6 @@ const PublicRoute = ({ children }) => {
       </div>
     )
   }
-  
-  // Don't redirect if OTP is still pending — user needs to complete verification
-  // Auth.jsx handles the redirect once isAuthenticated=true and pendingOtp=false
   return children
 }
 
@@ -92,7 +87,6 @@ const AppContent = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/refund-policy" element={<RefundPolicy />} />
-        <Route path="/help" element={<HelpCenter />} />
         
         {/* Onboarding Routes */}
         <Route 
