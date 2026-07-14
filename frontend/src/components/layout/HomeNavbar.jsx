@@ -70,15 +70,22 @@ const HomeNavbar = ({ isCollapsed = false }) => {
           {/* Desktop Navigation */}
           {!isCollapsed && (
             <div className="hidden md:flex items-center space-x-8">
-              {navItems.map((item) => (
-                <button
-                  key={item.path}
-                  onClick={() => navigate(item.path)}
-                  className="text-white hover:text-blue-200 font-medium transition-colors px-3 py-1.5 rounded-lg text-sm"
-                >
-                  {item.label}
-                </button>
-              ))}
+              {navItems.map((item) => {
+                const isActive = location.pathname === item.path;
+                return (
+                  <button
+                    key={item.path}
+                    onClick={() => navigate(item.path)}
+                    className={`font-medium transition-all px-3 py-1.5 rounded-lg text-sm relative ${
+                      isActive 
+                        ? ' text-blue-200' 
+                        : ' text-white hover:text-blue-200'
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                );
+              })}
             </div>
           )}
 
@@ -115,18 +122,28 @@ const HomeNavbar = ({ isCollapsed = false }) => {
         {isMenuOpen && !isCollapsed && (
           <div className={`md:hidden border-t border-white/20 py-4 bg-black/20 backdrop-blur-sm rounded-b-lg mt-2`}>
             <div className="flex flex-col space-y-4">
-              {navItems.map((item) => (
-                <button
-                  key={item.path}
-                  onClick={() => {
-                    navigate(item.path);
-                    setIsMenuOpen(false);
-                  }}
-                  className="text-white hover:text-blue-200 font-medium text-left px-4 py-1.5 transition-colors rounded-lg text-sm"
-                >
-                  {item.label}
-                </button>
-              ))}
+              {navItems.map((item) => {
+                const isActive = location.pathname === item.path;
+                return (
+                  <button
+                    key={item.path}
+                    onClick={() => {
+                      navigate(item.path);
+                      setIsMenuOpen(false);
+                    }}
+                    className={`font-medium text-left px-4 py-1.5 transition-all rounded-lg text-sm relative ${
+                      isActive 
+                        ? 'text-white bg-white/20 shadow-lg' 
+                        : 'text-white/80 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    {item.label}
+                    {isActive && (
+                      <div className="absolute left-1 top-1/2 transform -translate-y-1/2 w-1 h-4 bg-blue-300 rounded-full"></div>
+                    )}
+                  </button>
+                );
+              })}
               <div className="flex flex-col space-y-2 pt-4 border-t border-white/20">
                 <button
                   onClick={() => {

@@ -175,7 +175,6 @@ const Home = () => {
   const stepContentRefs = useRef([])
   const phoneImageRef = useRef(null)
   const currentStepRef = useRef(1) // Track current step to avoid stale closure
-  const mobileStepsRef = useRef(null) // For mobile swipe handling
   const touchStartX = useRef(0)
   const touchStartY = useRef(0)
 
@@ -307,7 +306,7 @@ const Home = () => {
 
         ScrollTrigger.create({
           trigger: thirdSectionRef.current,
-          start: 'top top',
+          start: 'top+=200 top',
           end: `+=${pinDuration}vh`,
           pin: true,
           pinSpacing: true,
@@ -575,94 +574,191 @@ const Home = () => {
             </div>
           </div>
 
-          {/* Mobile Layout - Hidden on desktop */}
-          <div className="lg:hidden">
-            {/* Mobile Phone Display */}
-            <div 
-              ref={mobileStepsRef}
-              className="mb-8"
-              onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}
-            >
-              <div className="w-full max-w-[280px] mx-auto">
-                <div className="bg-gray-900 rounded-[2rem] p-2 shadow-xl">
-                  <div className="bg-white rounded-[1.5rem] overflow-hidden w-full h-[500px] flex flex-col">
-                    <div className="bg-gray-900 h-6 flex justify-center items-center flex-shrink-0">
-                      <div className="w-19 h-3 bg-black rounded-full"></div>
+          {/* Mobile Layout - Completely New Design */}
+          <div className="lg:hidden min-h-screen flex flex-col">
+            {/* Mobile Card Stack Layout */}
+            <div className="flex-1 relative overflow-hidden py-8">
+              {/* Background Pattern */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-gradient-to-br from-deepBlue-200 to-blue-200 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-1/3 right-1/4 w-24 h-24 bg-gradient-to-br from-purple-200 to-pink-200 rounded-full blur-2xl"></div>
+              </div>
+
+              {/* Card Stack Container */}
+              <div 
+                className="relative z-10 h-full flex items-center justify-center px-4"
+                onTouchStart={handleTouchStart}
+                onTouchEnd={handleTouchEnd}
+              >
+                <div className="w-full max-w-sm mx-auto relative">
+                  {/* Progress Ring */}
+                  <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 z-20">
+                    <div className="relative w-16 h-16">
+                      {/* Background circle */}
+                      <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 64 64">
+                        <circle
+                          cx="32"
+                          cy="32"
+                          r="28"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="none"
+                          className="text-deepBlue-100"
+                        />
+                        {/* Progress circle */}
+                        <circle
+                          cx="32"
+                          cy="32"
+                          r="28"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="none"
+                          strokeDasharray={`${(activeStep / STEPS_DATA.length) * 175.93} 175.93`}
+                          className="text-deepBlue-600 transition-all duration-500 ease-out"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                      {/* Step number */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-lg font-bold text-deepBlue-800">{activeStep}</span>
+                      </div>
                     </div>
-                    <div className="flex-1 bg-gray-50 flex items-center justify-center min-h-0 relative">
-                      <img
-                        src={currentStepData?.image}
-                        alt={currentStepData?.alt}
-                        className="max-w-full max-h-full object-contain transition-opacity duration-300"
-                      />
-                      {/* Swipe indicator */}
-                      <div className="absolute bottom-4 left-0 right-0 flex justify-center">
-                        <div className="bg-black/20 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1">
-                          <div className="text-xs text-gray-600 font-medium">Swipe</div>
-                          <div className="flex gap-1">
-                            <div className="w-1 h-1 bg-gray-400 rounded-full animate-pulse"></div>
-                            <div className="w-1 h-1 bg-gray-400 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-                            <div className="w-1 h-1 bg-gray-400 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+                  </div>
+
+                  {/* Main Card */}
+                  <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-deepBlue-100">
+                    {/* Card Header */}
+                    <div className="bg-gradient-to-r from-deepBlue-600 to-deepBlue-700 px-6 py-4 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16"></div>
+                      <div className="relative z-10">
+                        <div className="text-white/80 text-xs font-semibold uppercase tracking-wide mb-1">
+                          Step {activeStep} of {STEPS_DATA.length}
+                        </div>
+                        <h3 className="text-white font-bold text-lg leading-tight">
+                          {currentStepData?.title.replace(/^\d+\.\s*/, '')}
+                        </h3>
+                      </div>
+                    </div>
+
+                    {/* Phone Mock-up */}
+                    <div className="p-6 bg-gradient-to-b from-gray-50 to-white">
+                      <div className="bg-gray-900 rounded-[2rem] p-2 shadow-lg mx-auto max-w-[220px]">
+                        <div className="bg-white rounded-[1.5rem] overflow-hidden h-[380px] flex flex-col">
+                          {/* Phone notch */}
+                          <div className="bg-gray-900 h-5 flex justify-center items-center flex-shrink-0 relative">
+                            <div className="w-16 h-2.5 bg-black rounded-full"></div>
+                            <div className="absolute right-2 top-1 flex gap-1">
+                              <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
+                              <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
+                              <div className="w-1 h-1 bg-green-500 rounded-full"></div>
+                            </div>
+                          </div>
+                          
+                          {/* Phone content */}
+                          <div className="flex-1 bg-gray-50 flex items-center justify-center min-h-0 relative">
+                            <img
+                              src={currentStepData?.image}
+                              alt={currentStepData?.alt}
+                              className="max-w-full max-h-full object-contain transition-all duration-500 transform scale-95 hover:scale-100"
+                            />
+                            
+                            {/* Floating badge */}
+                            <div className="absolute top-3 right-3 bg-deepBlue-600 text-white text-xs px-2 py-1 rounded-full font-semibold shadow-lg">
+                              Live
+                            </div>
                           </div>
                         </div>
                       </div>
+                    </div>
+
+                    {/* Card Content */}
+                    <div className="px-6 pb-6">
+                      <p className="text-deepBlue-600 leading-relaxed text-sm mb-6">
+                        {currentStepData?.desc}
+                      </p>
+
+                      {/* Action Buttons */}
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => activeStep > 1 && goToStep(activeStep - 1)}
+                          disabled={activeStep === 1}
+                          className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-semibold transition-all text-sm ${
+                            activeStep === 1
+                              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                              : 'bg-deepBlue-50 text-deepBlue-700 hover:bg-deepBlue-100 active:scale-95'
+                          }`}
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                          </svg>
+                          Previous
+                        </button>
+                        
+                        <button
+                          onClick={() => activeStep < STEPS_DATA.length && goToStep(activeStep + 1)}
+                          disabled={activeStep === STEPS_DATA.length}
+                          className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-semibold transition-all text-sm ${
+                            activeStep === STEPS_DATA.length
+                              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                              : 'bg-deepBlue-600 text-white hover:bg-deepBlue-700 active:scale-95 shadow-lg shadow-deepBlue-200'
+                          }`}
+                        >
+                          Next
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Step Indicators */}
+                  <div className="flex justify-center items-center gap-2 mt-6">
+                    {STEPS_DATA.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => goToStep(index + 1)}
+                        className={`transition-all duration-300 rounded-full ${
+                          activeStep === index + 1
+                            ? 'w-8 h-2 bg-deepBlue-600'
+                            : 'w-2 h-2 bg-deepBlue-200 hover:bg-deepBlue-300 active:scale-125'
+                        }`}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Swipe Hint */}
+                  <div className="flex items-center justify-center mt-4 opacity-60">
+                    <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 border border-deepBlue-100">
+                      <div className="flex gap-1">
+                        <div className="w-1 h-1 bg-deepBlue-400 rounded-full animate-bounce"></div>
+                        <div className="w-1 h-1 bg-deepBlue-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                        <div className="w-1 h-1 bg-deepBlue-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                      </div>
+                      <span className="text-xs text-deepBlue-600 font-medium">Swipe to explore</span>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Mobile Step Content */}
-            <div className="text-center px-4">
-              <h3 className="text-xl font-bold text-deepBlue-800 mb-3 tracking-tight">
-                {currentStepData?.title}
-              </h3>
-              <p className="text-deepBlue-600 leading-relaxed mb-6 max-w-md mx-auto">
-                {currentStepData?.desc}
-              </p>
-
-              {/* Step indicators */}
-              <div className="flex justify-center items-center gap-2 mb-4">
-                {STEPS_DATA.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => goToStep(index + 1)}
-                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                      activeStep === index + 1
-                        ? 'bg-deepBlue-600 w-6'
-                        : 'bg-deepBlue-200 hover:bg-deepBlue-300'
-                    }`}
-                  />
-                ))}
+            {/* Bottom CTA Section */}
+            <div className="bg-gradient-to-r from-deepBlue-600 to-deepBlue-700 px-4 py-6 relative overflow-hidden">
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-2 left-2 w-2 h-2 bg-white rounded-full"></div>
+                <div className="absolute top-8 right-8 w-1 h-1 bg-white rounded-full"></div>
+                <div className="absolute bottom-4 left-8 w-1.5 h-1.5 bg-white rounded-full"></div>
+                <div className="absolute bottom-8 right-4 w-2 h-2 bg-white rounded-full"></div>
               </div>
-
-              {/* Navigation arrows */}
-              <div className="flex justify-center items-center gap-4">
+              <div className="relative z-10 text-center">
+                <p className="text-white/90 text-sm mb-3 font-medium">
+                  Ready to start saving with your community?
+                </p>
                 <button
-                  onClick={() => activeStep > 1 && goToStep(activeStep - 1)}
-                  disabled={activeStep === 1}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all text-sm ${
-                    activeStep === 1
-                      ? 'text-gray-400 cursor-not-allowed'
-                      : 'text-deepBlue-600 hover:text-deepBlue-800 hover:bg-deepBlue-50'
-                  }`}
+                  onClick={handleJoinBeta}
+                  className="bg-white text-deepBlue-800 px-6 py-3 rounded-xl font-bold text-sm hover:bg-deepBlue-50 transition-all active:scale-95 shadow-lg"
                 >
-                  ← Previous
-                </button>
-                <div className="text-xs text-deepBlue-400 font-mono">
-                  {activeStep} / {STEPS_DATA.length}
-                </div>
-                <button
-                  onClick={() => activeStep < STEPS_DATA.length && goToStep(activeStep + 1)}
-                  disabled={activeStep === STEPS_DATA.length}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all text-sm ${
-                    activeStep === STEPS_DATA.length
-                      ? 'text-gray-400 cursor-not-allowed'
-                      : 'text-deepBlue-600 hover:text-deepBlue-800 hover:bg-deepBlue-50'
-                  }`}
-                >
-                  Next →
+                  Join Beta Program
                 </button>
               </div>
             </div>

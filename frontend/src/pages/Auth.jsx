@@ -150,13 +150,13 @@ const Auth = () => {
                         </button>
                         <button
                           onClick={() => setActiveTab('signup')}
-                          className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-all duration-200 text-sm ${
+                          className={`flex-1 py-3 px-5 rounded-lg font-semibold transition-all duration-200 text-sm ${
                             activeTab === 'signup'
                               ? 'bg-deepBlue-600 text-white shadow-lg'
                               : 'text-deepBlue-600 hover:text-deepBlue-700 hover:bg-white/50'
                           }`}
                         >
-                          Join Beta
+                          Sign Up
                         </button>
                       </div>
                     </div>
