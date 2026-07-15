@@ -472,12 +472,12 @@ const Home = () => {
         <div className="max-w-6xl mx-auto px-4 relative z-10 w-full">
           <div className="grid lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-12 space-y-4 text-center">
-              <h1 className="text-3xl lg:text-5xl font-extrabold tracking-tight text-white leading-[1.15] max-w-4xl mx-auto overflow-hidden">
+              <h1 className="text-3xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.15] max-w-4xl mx-auto overflow-hidden">
                 <span className="block animate-slideUpReveal">Bringing transparency to traditional <span className="text-blue-300">Ajo.</span></span>
               </h1>
 
               <p className="text-lg lg:text-xl text-white/90 leading-relaxed max-w-2xl mx-auto animate-matte-reveal">
-                We're building a digital platform that brings traditional group savings into the modern age, making it easier to save money with your community.
+                A digital platform that brings traditional group savings into the modern age.
               </p>
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2 justify-center">
                 <button
@@ -548,7 +548,7 @@ const Home = () => {
       <div ref={thirdSectionRef} className="bg-deepBlue-50/20 py-20 border-b border-deepBlue-100/60 relative lg:min-h-screen">
         <div className="max-w-6xl mx-auto px-4 lg:h-screen lg:flex lg:flex-col lg:justify-center">
           <div className="text-center max-w-2xl mx-auto my-16">
-            <h2 className="text-3xl font-bold text-deepBlue-800 mt-48 mb-3 overflow-hidden">
+            <h2 className="text-3xl font-bold text-deepBlue-800 mt-28 mb-3 overflow-hidden">
               <span className="block animate-slideUpReveal-scroll third-section-header">One app that works everywhere you do.</span>
             </h2>
             <p className="text-sm text-deepBlue-600">
