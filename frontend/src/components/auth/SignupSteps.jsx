@@ -200,8 +200,8 @@ const SignupSteps = () => {
     return (
       <div className="text-center py-8">
         <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-        <h3 className="text-xl font-semibold text-deepBlue-800 mb-2">Account Created!</h3>
-        <p className="text-deepBlue-600 mb-2">Your wallet has been created automatically.</p>
+        <h3 className="text-xl font-semibold text-white mb-2">Account Created!</h3>
+        <p className="text-white/80 mb-2">Your wallet has been created automatically.</p>
         <LoadingSpinner size="md" text="Redirecting to dashboard..." />
       </div>
     );
@@ -210,7 +210,7 @@ const SignupSteps = () => {
   if (otpState) {
     return (
       <div>
-        <h3 className="text-lg font-semibold text-deepBlue-800 text-center mb-2">Verify Your Phone</h3>
+        <h3 className="text-lg font-semibold text-white text-center mb-2">Verify Your Phone</h3>
         <OtpVerification
           userId={otpState.userId}
           phoneNumber={otpState.phoneNumber}
@@ -225,7 +225,7 @@ const SignupSteps = () => {
   const hasErr = (f) => !!fieldErrors[f];
   const getErr = (f) => fieldErrors[f];
   const inputCls = (f) => `w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition duration-200 ${
-    hasErr(f) ? 'border-red-500 focus:ring-red-500 bg-red-50' : 'border-deepBlue-200 focus:ring-deepBlue-500'
+    hasErr(f) ? 'border-red-500 focus:ring-red-500 bg-red-50/20' : 'border-white/20 focus:ring-white/40 bg-transparent text-white placeholder:text-white/60'
   }`;
 
   return (
@@ -236,14 +236,14 @@ const SignupSteps = () => {
           <div key={step} className="flex items-center flex-1">
             <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition duration-200 ${
               step < currentStep ? 'bg-green-500 text-white' :
-              step === currentStep ? 'bg-deepBlue-600 text-white' :
-              'bg-deepBlue-100 text-deepBlue-600'
+              step === currentStep ? 'bg-white/20 text-white border-2 border-white/40' :
+              'bg-white/10 text-white/60'
             }`}>
               {step < currentStep ? <CheckCircle size={20} /> : step}
             </div>
             {step < 3 && (
               <div className={`flex-1 h-1 mx-2 transition duration-200 ${
-                step < currentStep ? 'bg-green-500' : 'bg-deepBlue-100'
+                step < currentStep ? 'bg-green-500' : 'bg-white/20'
               }`} />
             )}
           </div>
@@ -254,44 +254,44 @@ const SignupSteps = () => {
         {/* Step 1: Basic Info */}
         {currentStep === 1 && (
           <>
-            <h2 className="text-2xl font-bold text-deepBlue-800 mb-6">Create Your Account</h2>
+            <h2 className="text-2xl font-bold text-white mb-6">Create Your Account</h2>
             
             <div className="grid grid-cols-2 gap-4">
               {[['firstName', 'First Name', 'John', 'given-name'], ['lastName', 'Last Name', 'Doe', 'family-name']].map(([name, label, ph, ac]) => (
                 <div key={name}>
-                  <label className="block text-sm font-medium text-deepBlue-700 mb-2">{label} *</label>
+                  <label className="block text-sm font-medium text-white mb-2">{label} *</label>
                   <input type="text" name={name} value={formData[name]} onChange={handleChange} placeholder={ph} className={inputCls(name)} disabled={isLoading} autoComplete={ac} />
-                  {hasErr(name) && <p className="text-xs text-red-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr(name)}</p>}
+                  {hasErr(name) && <p className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr(name)}</p>}
                 </div>
               ))}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-deepBlue-700 mb-2">Email Address *</label>
+              <label className="block text-sm font-medium text-white mb-2">Email Address *</label>
               <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="john@example.com" className={inputCls('email')} disabled={isLoading} autoComplete="email" />
-              {hasErr('email') && <p className="text-xs text-red-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('email')}</p>}
+              {hasErr('email') && <p className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('email')}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-deepBlue-700 mb-2">Phone Number *</label>
-              <div className={`flex items-center border rounded-lg overflow-hidden transition duration-200 ${hasErr('localPhone') ? 'border-red-500 bg-red-50' : 'border-deepBlue-200'}`}>
-                <span className="px-3 py-3 bg-gray-50 border-r border-deepBlue-200 text-sm font-medium text-deepBlue-700 whitespace-nowrap">🇳🇬 +234</span>
-                <input type="tel" name="localPhone" value={formData.localPhone} onChange={handleChange} placeholder="8012345678" className="flex-1 px-3 py-3 focus:outline-none bg-transparent" disabled={isLoading} maxLength={10} />
+              <label className="block text-sm font-medium text-white mb-2">Phone Number *</label>
+              <div className={`flex items-center border rounded-lg overflow-hidden transition duration-200 ${hasErr('localPhone') ? 'border-red-500 bg-red-50/20' : 'border-white/20'}`}>
+                <span className="px-3 py-3 bg-white/10 border-r border-white/20 text-sm font-medium text-white whitespace-nowrap">🇳🇬 +234</span>
+                <input type="tel" name="localPhone" value={formData.localPhone} onChange={handleChange} placeholder="8012345678" className="flex-1 px-3 py-3 focus:outline-none bg-transparent text-white placeholder:text-white/60" disabled={isLoading} maxLength={10} />
               </div>
-              {hasErr('localPhone') ? <p className="text-xs text-red-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('localPhone')}</p>
-                : <p className="text-xs text-deepBlue-500 mt-1 flex items-center gap-1"><Info className="w-3 h-3" />10-digit number after +234</p>}
+              {hasErr('localPhone') ? <p className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('localPhone')}</p>
+                : <p className="text-xs text-white/60 mt-1 flex items-center gap-1"><Info className="w-3 h-3" />10-digit number after +234</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-deepBlue-700 mb-2">Password *</label>
-              <div className={`relative border rounded-lg transition duration-200 ${hasErr('password') ? 'border-red-500 bg-red-50' : 'border-deepBlue-200'}`}>
-                <input type={formData.showPassword ? 'text' : 'password'} name="password" value={formData.password} onChange={handleChange} placeholder="Create a strong password" className="w-full px-4 py-3 focus:outline-none bg-transparent pr-12 rounded-lg" disabled={isLoading} autoComplete="new-password" />
-                <button type="button" onClick={() => setFormData(prev => ({ ...prev, showPassword: !prev.showPassword }))} className="absolute right-3 top-1/2 -translate-y-1/2 text-deepBlue-400 hover:text-deepBlue-600" tabIndex={-1}>
+              <label className="block text-sm font-medium text-white mb-2">Password *</label>
+              <div className={`relative border rounded-lg transition duration-200 ${hasErr('password') ? 'border-red-500 bg-red-50/20' : 'border-white/20'}`}>
+                <input type={formData.showPassword ? 'text' : 'password'} name="password" value={formData.password} onChange={handleChange} placeholder="Create a strong password" className="w-full px-4 py-3 focus:outline-none bg-transparent pr-12 rounded-lg text-white placeholder:text-white/60" disabled={isLoading} autoComplete="new-password" />
+                <button type="button" onClick={() => setFormData(prev => ({ ...prev, showPassword: !prev.showPassword }))} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white" tabIndex={-1}>
                   {formData.showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
-              {hasErr('password') ? <p className="text-xs text-red-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('password')}</p>
-                : <p className="text-xs text-deepBlue-500 mt-1">At least 6 characters with uppercase, lowercase, and number</p>}
+              {hasErr('password') ? <p className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('password')}</p>
+                : <p className="text-xs text-white/60 mt-1">At least 6 characters with uppercase, lowercase, and number</p>}
             </div>
           </>
         )}
@@ -299,49 +299,49 @@ const SignupSteps = () => {
         {/* Step 2: KYC Verification */}
         {currentStep === 2 && (
           <>
-            <h2 className="text-2xl font-bold text-deepBlue-800 mb-6">Verify Your Identity</h2>
+            <h2 className="text-2xl font-bold text-white mb-6">Verify Your Identity</h2>
             
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-              <p className="text-sm text-blue-800">We need to verify your identity using your BVN and NIN for security purposes.</p>
+            <div className="bg-white/10 border border-white/20 rounded-lg p-4 mb-6 backdrop-blur-sm">
+              <p className="text-sm text-white/90">We need to verify your identity using your BVN and NIN for security purposes.</p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-deepBlue-700 mb-2">BVN (11 digits) *</label>
+              <label className="block text-sm font-medium text-white mb-2">BVN (11 digits) *</label>
               <div className="flex gap-2">
                 <input type="text" name="bvn" value={kycData.bvn} onChange={handleChange} placeholder="12345678901" maxLength={11} className={`flex-1 ${inputCls('bvn')}`} disabled={isLoading || verificationStatus.bvn?.verified} />
                 <button type="button" onClick={handleVerifyBVN} disabled={isLoading || kycData.bvn.length !== 11 || verificationStatus.bvn?.verified} className={`px-4 py-3 rounded-lg font-semibold transition duration-200 ${
                   verificationStatus.bvn?.verified ? 'bg-green-500 text-white' :
-                  isLoading || kycData.bvn.length !== 11 ? 'bg-gray-300 text-gray-600 cursor-not-allowed' :
-                  'bg-deepBlue-600 hover:bg-deepBlue-700 text-white'
+                  isLoading || kycData.bvn.length !== 11 ? 'bg-white/10 text-white/60 cursor-not-allowed' :
+                  'bg-white/20 hover:bg-white/30 text-white border border-white/40'
                 }`}>
                   {isLoading ? <Loader size={18} className="animate-spin" /> : verificationStatus.bvn?.verified ? '✓ Verified' : 'Verify'}
                 </button>
               </div>
-              {hasErr('bvn') ? <p className="text-xs text-red-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('bvn')}</p>
-                : <p className="text-xs text-deepBlue-500 mt-1">11-digit Bank Verification Number ({kycData.bvn.length}/11)</p>}
+              {hasErr('bvn') ? <p className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('bvn')}</p>
+                : <p className="text-xs text-white/60 mt-1">11-digit Bank Verification Number ({kycData.bvn.length}/11)</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-deepBlue-700 mb-2">NIN (11 digits) *</label>
+              <label className="block text-sm font-medium text-white mb-2">NIN (11 digits) *</label>
               <div className="flex gap-2">
                 <input type="text" name="nin" value={kycData.nin} onChange={handleChange} placeholder="12345678901" maxLength={11} className={`flex-1 ${inputCls('nin')}`} disabled={isLoading || verificationStatus.nin?.verified} />
                 <button type="button" onClick={handleVerifyNIN} disabled={isLoading || kycData.nin.length !== 11 || !kycData.dateOfBirth || verificationStatus.nin?.verified} className={`px-4 py-3 rounded-lg font-semibold transition duration-200 ${
                   verificationStatus.nin?.verified ? 'bg-green-500 text-white' :
-                  isLoading || kycData.nin.length !== 11 || !kycData.dateOfBirth ? 'bg-gray-300 text-gray-600 cursor-not-allowed' :
-                  'bg-deepBlue-600 hover:bg-deepBlue-700 text-white'
+                  isLoading || kycData.nin.length !== 11 || !kycData.dateOfBirth ? 'bg-white/10 text-white/60 cursor-not-allowed' :
+                  'bg-white/20 hover:bg-white/30 text-white border border-white/40'
                 }`}>
                   {isLoading ? <Loader size={18} className="animate-spin" /> : verificationStatus.nin?.verified ? '✓ Verified' : 'Verify'}
                 </button>
               </div>
-              {hasErr('nin') ? <p className="text-xs text-red-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('nin')}</p>
-                : <p className="text-xs text-deepBlue-500 mt-1">11-digit National Identification Number ({kycData.nin.length}/11)</p>}
+              {hasErr('nin') ? <p className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('nin')}</p>
+                : <p className="text-xs text-white/60 mt-1">11-digit National Identification Number ({kycData.nin.length}/11)</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-deepBlue-700 mb-2">Date of Birth *</label>
+              <label className="block text-sm font-medium text-white mb-2">Date of Birth *</label>
               <input type="text" name="dateOfBirth" value={kycData.dateOfBirth} onChange={handleChange} placeholder="YYYY-MM-DD" maxLength={10} className={inputCls('dateOfBirth')} disabled={isLoading} inputMode="numeric" />
-              {hasErr('dateOfBirth') ? <p className="text-xs text-red-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('dateOfBirth')}</p>
-                : <p className="text-xs text-deepBlue-500 mt-1">You must be at least 18 years old</p>}
+              {hasErr('dateOfBirth') ? <p className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('dateOfBirth')}</p>
+                : <p className="text-xs text-white/60 mt-1">You must be at least 18 years old</p>}
             </div>
           </>
         )}
@@ -349,46 +349,46 @@ const SignupSteps = () => {
         {/* Step 3: Review */}
         {currentStep === 3 && (
           <>
-            <h2 className="text-2xl font-bold text-deepBlue-800 mb-6">Review Your Information</h2>
+            <h2 className="text-2xl font-bold text-white mb-6">Review Your Information</h2>
             
-            <div className="space-y-4 bg-gray-50 p-6 rounded-lg mb-6">
+            <div className="space-y-4 bg-white/10 p-6 rounded-lg mb-6 backdrop-blur-sm">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-xs text-deepBlue-600 font-semibold">First Name</p>
-                  <p className="text-sm text-deepBlue-800">{formData.firstName}</p>
+                  <p className="text-xs text-white/80 font-semibold">First Name</p>
+                  <p className="text-sm text-white">{formData.firstName}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-deepBlue-600 font-semibold">Last Name</p>
-                  <p className="text-sm text-deepBlue-800">{formData.lastName}</p>
+                  <p className="text-xs text-white/80 font-semibold">Last Name</p>
+                  <p className="text-sm text-white">{formData.lastName}</p>
                 </div>
               </div>
               <div>
-                <p className="text-xs text-deepBlue-600 font-semibold">Email</p>
-                <p className="text-sm text-deepBlue-800">{formData.email}</p>
+                <p className="text-xs text-white/80 font-semibold">Email</p>
+                <p className="text-sm text-white">{formData.email}</p>
               </div>
               <div>
-                <p className="text-xs text-deepBlue-600 font-semibold">Phone</p>
-                <p className="text-sm text-deepBlue-800">{fullPhone}</p>
+                <p className="text-xs text-white/80 font-semibold">Phone</p>
+                <p className="text-sm text-white">{fullPhone}</p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-xs text-deepBlue-600 font-semibold">BVN</p>
-                  <p className="text-sm text-deepBlue-800">{kycData.bvn}</p>
+                  <p className="text-xs text-white/80 font-semibold">BVN</p>
+                  <p className="text-sm text-white">{kycData.bvn}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-deepBlue-600 font-semibold">NIN</p>
-                  <p className="text-sm text-deepBlue-800">{kycData.nin}</p>
+                  <p className="text-xs text-white/80 font-semibold">NIN</p>
+                  <p className="text-sm text-white">{kycData.nin}</p>
                 </div>
               </div>
             </div>
 
             {verificationStatus.bvn?.verified && verificationStatus.nin?.verified && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+              <div className="bg-green-500/20 border border-green-400/30 rounded-lg p-4 mb-6 backdrop-blur-sm">
                 <div className="flex items-center gap-2 mb-2">
-                  <CheckCircle className="w-5 h-5 text-green-600" />
-                  <span className="text-green-700 font-semibold">All verifications passed</span>
+                  <CheckCircle className="w-5 h-5 text-green-400" />
+                  <span className="text-green-300 font-semibold">All verifications passed</span>
                 </div>
-                <p className="text-sm text-green-600">Your identity has been verified successfully.</p>
+                <p className="text-sm text-green-200">Your identity has been verified successfully.</p>
               </div>
             )}
           </>
@@ -397,19 +397,19 @@ const SignupSteps = () => {
         {/* Navigation Buttons */}
         <div className="flex gap-4 pt-6">
           {currentStep > 1 && (
-            <button type="button" onClick={() => setCurrentStep(currentStep - 1)} disabled={isLoading} className="flex-1 py-3 rounded-lg font-semibold border-2 border-deepBlue-600 text-deepBlue-600 hover:bg-deepBlue-50 transition duration-200 disabled:opacity-50">
+            <button type="button" onClick={() => setCurrentStep(currentStep - 1)} disabled={isLoading} className="flex-1 py-3 rounded-lg font-semibold border-2 border-white/40 text-white hover:bg-white/10 transition duration-200 disabled:opacity-50">
               Back
             </button>
           )}
           {currentStep < 3 && (
-            <button type="button" onClick={handleNextStep} disabled={isLoading} className={`flex-1 py-3 rounded-lg font-semibold transition duration-200 ${isLoading ? 'bg-deepBlue-300 cursor-not-allowed' : 'bg-deepBlue-600 hover:bg-deepBlue-700 text-white'}`}>
+            <button type="button" onClick={handleNextStep} disabled={isLoading} className={`flex-1 py-3 rounded-lg font-semibold transition duration-200 ${isLoading ? 'bg-white/20 cursor-not-allowed text-white/60' : 'bg-white/20 hover:bg-white/30 text-white border border-white/40'}`}>
               {isLoading ? <div className="flex items-center justify-center gap-2"><LoadingSpinner size="sm" text="" /><span>Processing...</span></div> : 'Continue'}
             </button>
           )}
           {currentStep === 3 && (
             <button type="submit" disabled={isLoading || !verificationStatus.bvn?.verified || !verificationStatus.nin?.verified} className={`flex-1 py-3 rounded-lg font-semibold transition duration-200 ${
               isLoading || !verificationStatus.bvn?.verified || !verificationStatus.nin?.verified
-                ? 'bg-gray-300 cursor-not-allowed text-gray-600'
+                ? 'bg-white/10 cursor-not-allowed text-white/60'
                 : 'bg-green-600 hover:bg-green-700 text-white'
             }`}>
               {isLoading ? <div className="flex items-center justify-center gap-2"><LoadingSpinner size="sm" text="" /><span>Creating Account...</span></div> : 'Create Account'}

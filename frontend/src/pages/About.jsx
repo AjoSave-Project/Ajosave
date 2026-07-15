@@ -85,46 +85,105 @@ const About = () => {
     <div className="min-h-screen bg-white home-page-scrollbar">
       <HomeNavbar />
       
-      {/* Hero Carousel Section */}
-      <div className="relative h-screen overflow-hidden hidden md:block">
-        <div 
-          className={`flex h-full ${isTransitioning ? 'transition-transform duration-1000 ease-in-out' : ''}`}
-          style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-        >
-          {/* Render original slides plus one duplicate for seamless loop */}
-          {[...heroSlides, heroSlides[0]].map((slide, index) => (
-            <div
+{/* Editorial/Magazine-Style About Hero Section */}
+<section className="relative min-h-screen bg-gradient-to-br from-deepBlue-900 via-deepBlue-800 to-deepBlue-700 text-white flex items-center px-4 sm:px-8 py-20 overflow-hidden">
+  
+  {/* Structural Grid lines for an architectural, custom-built look */}
+  <div className="absolute inset-0 grid grid-cols-4 md:grid-cols-12 pointer-events-none opacity-[0.05]">
+    {[...Array(12)].map((_, i) => (
+      <div key={i} className="border-r border-blue-300 h-full last:border-r-0" />
+    ))}
+  </div>
+
+  <div className="max-w-7xl mx-auto w-full relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-end">
+    
+    {/* Left Side: Overlapping Editorial Typography & Copy */}
+    <div className="lg:col-span-7 flex flex-col justify-center h-full space-y-12 lg:space-y-24 order-2 lg:order-1">
+
+      {/* Main Copy Area */}
+      <div className="space-y-6 max-w-xl">
+        <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white leading-snug">
+          <span className="block animate-slideUpReveal">We believe the best financial futures are built together, with trust and transparency.</span>
+        </h2>
+        <p className="text-sm sm:text-base text-blue-100 leading-relaxed">
+          Founded by passionate Nigerians, we reimagined traditional Ajo for the digital age. 
+          No gimmicks, just secure community savings that honor our cultural heritage while embracing modern technology.
+        </p>
+      </div>
+
+      {/* Editorial Footer / Link block */}
+      <div className="pt-4 border-t border-blue-400/20 grid grid-cols-2 gap-4 text-xs text-blue-200">
+        <div>
+          <span className="block text-blue-300/70 mb-1">THE VISION</span>
+          <p className="text-blue-100 text-sm">Empowering Nigerian Communities</p>
+        </div>
+        <div className="flex items-end justify-end">
+          <a href="#story" className="group flex items-center gap-2 hover:text-white transition-colors duration-200">
+            <span>EXPLORE OUR STORY</span>
+            <span className="transform group-hover:translate-x-1 transition-transform duration-200">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {/* Right Side: High-Contrast Minimalist Frame */}
+    <div className="lg:col-span-5 relative order-1 lg:order-2 w-full">
+      
+      {/* Giant subtle backdrop typographic element that goes behind the image */}
+      <div className="absolute -top-16 -left-12 text-[12vw] text-deepBlue-600/20 select-none tracking-tighter leading-none pointer-events-none z-0 hidden lg:block">
+        AJO
+      </div>
+
+      {/* Frame Container with strict, sharp geometry */}
+      <div className="relative z-10 aspect-[3/4] w-full max-w-md mx-auto lg:max-w-none bg-deepBlue-800 overflow-hidden border border-blue-400/30 shadow-2xl shadow-deepBlue-900/50 p-3">
+        
+        {/* Inner frame outline */}
+        <div className="absolute inset-5 border border-blue-300/10 pointer-events-none z-20" />
+        
+        {/* Image element */}
+        <div className="w-full h-full overflow-hidden bg-deepBlue-900">
+          <img
+            src={heroSlides[currentSlide]?.image || AjosaveImage}
+            alt="AjoSave Team"
+            className="w-full h-full object-cover hover:scale-105 transition-all duration-700 ease-out"
+          />
+        </div>
+
+        {/* Minimal Stamp Label */}
+        <div className="absolute bottom-6 right-6 z-20 bg-deepBlue-900/90 backdrop-blur-md px-3 py-1.5 border border-blue-400/30 text-[9px] tracking-widest text-blue-300 uppercase">
+          © AJOSAVE 2024
+        </div>
+
+        {/* Slide indicator dots */}
+        <div className="absolute bottom-6 left-6 z-20 flex gap-2">
+          {heroSlides.map((_, index) => (
+            <button
               key={index}
-              className="min-w-full h-full flex-shrink-0"
-              style={{
-                backgroundImage: `linear-gradient(rgba(17, 24, 39, 0.6), rgba(17, 24, 39, 0.6)), url(${slide.image})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center top',
-                backgroundRepeat: 'no-repeat'
-              }}
-            >
-              <div className="flex items-center justify-center h-full">
-                <div className="max-w-6xl mx-auto px-4 text-center">
-                  <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight overflow-hidden">
-                    <span className="block animate-slideUpReveal">{slide.title}</span>
-                  </h1>
-                  <p className="text-xl md:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed">
-                    {slide.subtitle}
-                  </p>
-                </div>
-              </div>
-            </div>
+              onClick={() => setCurrentSlide(index)}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                index === currentSlide 
+                  ? 'bg-blue-300 w-6' 
+                  : 'bg-blue-300/30 hover:bg-blue-300/60'
+              }`}
+            />
           ))}
         </div>
       </div>
+    </div>
+
+  </div>
+</section>
 
       <div className="container mx-auto px-4 py-20">
 
         {/* Story Section */}
-        <div className="bg-white rounded-2xl p-8 md:p-12 mb-16 border border-deepBlue-100">
-          <h2 className="text-3xl font-bold text-deepBlue-800 mb-6 text-center">
-            Our Story
-          </h2>
+        <div id="story" className="bg-gradient-to-r from-deepBlue-50 to-blue-50/60 rounded-2xl p-8 md:p-12 mb-16 border border-deepBlue-200/50 shadow-lg">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-deepBlue-800 mb-3">
+              Our Story
+            </h2>
+            <div className="w-16 h-0.5 bg-deepBlue-600 mx-auto"></div>
+          </div>
           <div className="max-w-4xl mx-auto">
             <p className="text-deepBlue-700 text-lg leading-relaxed mb-6">
               AjoSave was born from a simple observation: traditional Ajo (community saving) has helped 
@@ -132,12 +191,12 @@ const About = () => {
               and convenience that modern savers deserve.
             </p>
             <p className="text-deepBlue-700 text-lg leading-relaxed mb-6">
-              Founded in 2023 by a team of fintech veterans and community saving enthusiasts, we set out 
+              Founded in 2024 by a team of fintech veterans and community saving enthusiasts, we set out 
               to digitize this time-tested savings method while preserving its community spirit and 
               adding layers of security and transparency.
             </p>
             <p className="text-deepBlue-700 text-lg leading-relaxed">
-              Today, we're proud to serve thousands of savers across Nigeria, helping them achieve their 
+              Today, we're building to serve thousands of savers across Nigeria, helping them achieve their 
               financial goals through our secure, regulated, and user-friendly platform.
             </p>
           </div>

@@ -81,12 +81,12 @@ const Login = () => {
         <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
           <CheckCircle className="w-8 h-8 text-green-600" />
         </div>
-        <h3 className="text-xl font-bold text-deepBlue-800 mb-3 tracking-tight">Welcome back!</h3>
-        <p className="text-sm text-deepBlue-600 mb-6">
+        <h3 className="text-xl font-bold text-white mb-3 tracking-tight">Welcome back!</h3>
+        <p className="text-sm text-white/80 mb-6">
           Successfully signed in. Redirecting to your dashboard...
         </p>
-        <div className="w-full bg-deepBlue-50 h-1 rounded-full overflow-hidden">
-          <div className="bg-deepBlue-600 h-full w-2/3 rounded-full animate-pulse"></div>
+        <div className="w-full bg-white/20 h-1 rounded-full overflow-hidden">
+          <div className="bg-white h-full w-2/3 rounded-full animate-pulse"></div>
         </div>
       </div>
     );
@@ -96,11 +96,11 @@ const Login = () => {
     return (
       <div className="space-y-6">
         <div className="text-center">
-          <div className="w-12 h-12 bg-deepBlue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle className="w-6 h-6 text-deepBlue-600" />
+          <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <CheckCircle className="w-6 h-6 text-white" />
           </div>
-          <h3 className="text-lg font-bold text-deepBlue-800 mb-2 tracking-tight">Verify Your Identity</h3>
-          <p className="text-sm text-deepBlue-600">
+          <h3 className="text-lg font-bold text-white mb-2 tracking-tight">Verify Your Identity</h3>
+          <p className="text-sm text-white/80">
             We've sent a verification code to secure your account
           </p>
         </div>
@@ -120,15 +120,15 @@ const Login = () => {
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Phone Number with enhanced styling */}
         <div className="space-y-2">
-          <label className="block text-sm font-semibold text-deepBlue-700">Phone Number</label>
+          <label className="block text-sm font-semibold text-white">Phone Number</label>
           <div className={`flex items-center border-2 rounded-xl overflow-hidden transition-all duration-200 ${
             fieldErrors.localPhone 
-              ? 'border-red-400 bg-red-50/50' 
-              : 'border-deepBlue-100 hover:border-deepBlue-200 focus-within:border-deepBlue-400 focus-within:shadow-lg focus-within:shadow-deepBlue-100/50'
+              ? 'border-red-400 bg-red-50/20' 
+              : 'border-white/20 hover:border-white/40 focus-within:border-white/60 focus-within:shadow-lg focus-within:shadow-white/10'
           }`}>
-            <div className="px-4 py-4 bg-deepBlue-50 border-r border-deepBlue-100 flex items-center gap-2">
+            <div className="px-4 py-4 bg-white/10 border-r border-white/20 flex items-center gap-2">
               <span className="text-lg">🇳🇬</span>
-              <span className="text-sm font-semibold text-deepBlue-700">+234</span>
+              <span className="text-sm font-semibold text-white">+234</span>
             </div>
             <input
               type="tel"
@@ -136,7 +136,7 @@ const Login = () => {
               value={formData.localPhone}
               onChange={handleChange}
               placeholder="8012345678"
-              className="flex-1 px-4 py-4 focus:outline-none bg-transparent text-deepBlue-800 placeholder:text-deepBlue-400"
+              className="flex-1 px-4 py-4 focus:outline-none bg-transparent text-white placeholder:text-white/60"
               disabled={isLoading}
               autoComplete="tel"
               maxLength={10}
@@ -152,11 +152,11 @@ const Login = () => {
 
         {/* Password with enhanced styling */}
         <div className="space-y-2">
-          <label className="block text-sm font-semibold text-deepBlue-700">Password</label>
+          <label className="block text-sm font-semibold text-white">Password</label>
           <div className={`relative border-2 rounded-xl transition-all duration-200 ${
             fieldErrors.password 
-              ? 'border-red-400 bg-red-50/50' 
-              : 'border-deepBlue-100 hover:border-deepBlue-200 focus-within:border-deepBlue-400 focus-within:shadow-lg focus-within:shadow-deepBlue-100/50'
+              ? 'border-red-400 bg-red-50/20' 
+              : 'border-white/20 hover:border-white/40 focus-within:border-white/60 focus-within:shadow-lg focus-within:shadow-white/10'
           }`}>
             <input
               type={showPassword ? 'text' : 'password'}
@@ -164,14 +164,14 @@ const Login = () => {
               value={formData.password}
               onChange={handleChange}
               placeholder="Enter your password"
-              className="w-full px-4 py-4 focus:outline-none bg-transparent pr-12 rounded-xl text-deepBlue-800 placeholder:text-deepBlue-400"
+              className="w-full px-4 py-4 focus:outline-none bg-transparent pr-12 rounded-xl text-white placeholder:text-white/60"
               disabled={isLoading}
               autoComplete="current-password"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-deepBlue-400 hover:text-deepBlue-600 p-1 rounded-lg hover:bg-deepBlue-50 transition-all"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-all"
               tabIndex={-1}
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -191,8 +191,8 @@ const Login = () => {
           disabled={isLoading}
           className={`w-full py-4 rounded-xl font-semibold transition-all duration-200 ${
             isLoading 
-              ? 'bg-deepBlue-200 cursor-not-allowed text-deepBlue-400' 
-              : 'bg-deepBlue-600 hover:bg-deepBlue-700 text-white shadow-lg hover:shadow-xl hover:shadow-deepBlue-200/50 transform hover:scale-[1.02] active:scale-[0.98]'
+              ? 'bg-white/20 cursor-not-allowed text-white/60' 
+              : 'bg-white/20 hover:bg-white/30 text-white shadow-lg hover:shadow-xl hover:shadow-white/10 transform hover:scale-[1.02] active:scale-[0.98] border border-white/30'
           }`}
         >
           {isLoading ? (
@@ -209,7 +209,7 @@ const Login = () => {
         <div className="text-center pt-2">
           <button 
             type="button" 
-            className="text-deepBlue-600 text-sm hover:text-deepBlue-700 font-medium hover:underline underline-offset-2 transition-all" 
+            className="text-white/80 text-sm hover:text-white font-medium hover:underline underline-offset-2 transition-all" 
             disabled={isLoading}
           >
             Forgot your password?
@@ -218,9 +218,9 @@ const Login = () => {
       </form>
 
       {/* Additional info */}
-      <div className="pt-4 border-t border-deepBlue-100">
+      <div className="pt-4 border-t border-white/20">
         <div className="text-center">
-          <p className="text-xs text-deepBlue-500 leading-relaxed">
+          <p className="text-xs text-white/60 leading-relaxed">
             By signing in, you agree to our terms of service and privacy policy. 
             Your data is protected with bank-level security.
           </p>

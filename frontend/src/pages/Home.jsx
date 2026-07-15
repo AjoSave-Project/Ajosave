@@ -545,7 +545,7 @@ const Home = () => {
         <div className="relative z-10 max-w-6xl mx-auto px-4">
           <div className="max-w-2xl mb-14">
             <h2 className="text-xs font-bold uppercase tracking-widest text-blue-300 mb-2">Our Current Status</h2>
-            <p className="text-2xl font-bold tracking-tight text-white">
+            <p className="text-4xl font-bold tracking-tight text-white">
               Simple, reliable savings technology built for real communities.
             </p>
           </div>

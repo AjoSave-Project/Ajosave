@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import logo from '../../assets/images/logo.png';
@@ -146,10 +146,34 @@ const HomeNavbar = ({ isCollapsed = false }) => {
             />
             
             {/* Sidebar */}
-            <div className="md:hidden fixed top-0 right-0 h-full w-80 max-w-[80vw] z-[70] transform transition-transform duration-300 ease-in-out shadow-2xl" style={{backgroundColor: '#1f2937'}}>
-              <div className="flex flex-col h-full" style={{backgroundColor: '#1f2937'}}>
+            <div 
+              className="md:hidden fixed top-2 right-2 h-[calc(50vh] w-80 max-w-[80vw] z-[70] transform transition-transform duration-300 ease-in-out shadow-2xl"
+              style={{ 
+                backgroundColor: '#1f2937',
+                opacity: '1',
+                backdropFilter: 'none',
+                WebkitBackdropFilter: 'none',
+                borderRadius: '16px',
+                overflow: 'hidden'
+              }}
+            >
+              <div 
+                className="flex flex-col h-full"
+                style={{ 
+                  backgroundColor: '#1f2937',
+                  opacity: '1',
+                  backdropFilter: 'none',
+                  WebkitBackdropFilter: 'none'
+                }}
+              >
                 {/* Sidebar Header */}
-                <div className="flex items-center justify-between p-6 border-b border-deepBlue-700">
+                <div 
+                  className="flex items-center justify-between p-6"
+                  style={{ 
+                    borderBottom: '1px solid #4b5563',
+                    backgroundColor: '#1f2937'
+                  }}
+                >
                   <div className="flex items-center space-x-2">
                     <img 
                       src={logo} 
@@ -160,14 +184,17 @@ const HomeNavbar = ({ isCollapsed = false }) => {
                   </div>
                   <button
                     onClick={() => setIsMenuOpen(false)}
-                    className="p-2 text-white hover:text-blue-200 rounded-lg hover:bg-white/10 transition-colors"
+                    className="p-2 text-white hover:text-blue-200 rounded-lg transition-colors"
+                    style={{ backgroundColor: 'rgba(75, 85, 99, 0.5)' }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(75, 85, 99, 0.7)'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = 'rgba(75, 85, 99, 0.5)'}
                   >
                     <X className="w-6 h-6" />
                   </button>
                 </div>
 
                 {/* Navigation Items */}
-                <div className="flex-1 py-6">
+                <div className="flex-1 py-6" style={{ backgroundColor: '#1f2937' }}>
                   <nav className="space-y-2 px-4">
                     {navItems.map((item) => {
                       const isActive = location.pathname === item.path;
@@ -178,15 +205,30 @@ const HomeNavbar = ({ isCollapsed = false }) => {
                             navigate(item.path);
                             setIsMenuOpen(false);
                           }}
-                          className={`w-full text-left px-4 py-3 rounded-xl font-medium transition-all flex items-center justify-between group ${
-                            isActive 
-                              ? 'text-white bg-white/20 shadow-lg' 
-                              : 'text-white/80 hover:text-white hover:bg-white/10'
-                          }`}
+                          className="w-full text-left px-4 py-3 rounded-xl font-medium transition-all flex items-center justify-between group"
+                          style={{
+                            backgroundColor: isActive ? '#4b5563' : '#1f2937',
+                            color: isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.8)'
+                          }}
+                          onMouseEnter={(e) => {
+                            if (!isActive) {
+                              e.target.style.backgroundColor = '#4b5563';
+                              e.target.style.color = '#ffffff';
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (!isActive) {
+                              e.target.style.backgroundColor = '#1f2937';
+                              e.target.style.color = 'rgba(255, 255, 255, 0.8)';
+                            }
+                          }}
                         >
                           <span>{item.label}</span>
                           {isActive && (
-                            <div className="w-2 h-2 bg-blue-300 rounded-full"></div>
+                            <div 
+                              className="w-2 h-2 rounded-full"
+                              style={{ backgroundColor: '#60a5fa' }}
+                            ></div>
                           )}
                         </button>
                       );
@@ -195,13 +237,31 @@ const HomeNavbar = ({ isCollapsed = false }) => {
                 </div>
 
                 {/* Auth Buttons */}
-                <div className="p-6 space-y-3 border-t border-deepBlue-700">
+                <div 
+                  className="p-6 space-y-3"
+                  style={{ 
+                    borderTop: '1px solid #4b5563',
+                    backgroundColor: '#1f2937'
+                  }}
+                >
                   <button
                     onClick={() => {
                       navigate('/auth');
                       setIsMenuOpen(false);
                     }}
-                    className="w-full text-white/80 hover:text-white hover:bg-white/10 font-medium text-left px-4 py-3 transition-colors rounded-xl"
+                    className="w-full font-medium text-left px-4 py-3 transition-colors rounded-xl"
+                    style={{ 
+                      color: 'rgba(255, 255, 255, 0.8)',
+                      backgroundColor: '#1f2937'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = '#4b5563';
+                      e.target.style.color = '#ffffff';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = '#1f2937';
+                      e.target.style.color = 'rgba(255, 255, 255, 0.8)';
+                    }}
                   >
                     Log In
                   </button>
@@ -217,8 +277,17 @@ const HomeNavbar = ({ isCollapsed = false }) => {
                 </div>
 
                 {/* Footer */}
-                <div className="p-6 border-t border-deepBlue-700">
-                  <p className="text-white/60 text-xs text-center">
+                <div 
+                  className="p-6"
+                  style={{ 
+                    borderTop: '1px solid #4b5563',
+                    backgroundColor: '#1f2937'
+                  }}
+                >
+                  <p 
+                    className="text-xs text-center"
+                    style={{ color: 'rgba(255, 255, 255, 0.6)' }}
+                  >
                     © 2024 AjoSave. All rights reserved.
                   </p>
                 </div>
