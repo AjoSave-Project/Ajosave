@@ -312,13 +312,43 @@ const Home = () => {
           pinSpacing: true,
           scrub: false,
           onEnter: () => {
-            setNavbarCollapsed(true)
-            setActiveStep(1)
-            currentStepRef.current = 1 // Keep ref in sync
+            // Animate navbar collapse with GSAP
+            gsap.to('.navbar-container', {
+              width: '12rem', // w-48 equivalent
+              duration: 0.7,
+              ease: 'power2.out'
+            });
+            setNavbarCollapsed(true);
+            setActiveStep(1);
+            currentStepRef.current = 1;
           },
-          onLeave: () => setNavbarCollapsed(false),
-          onEnterBack: () => setNavbarCollapsed(true),
-          onLeaveBack: () => setNavbarCollapsed(false),
+          onLeave: () => {
+            // Animate navbar expand with GSAP
+            gsap.to('.navbar-container', {
+              width: '100%',
+              duration: 0.7,
+              ease: 'power2.out'
+            });
+            setNavbarCollapsed(false);
+          },
+          onEnterBack: () => {
+            // Animate navbar collapse with GSAP
+            gsap.to('.navbar-container', {
+              width: '12rem', // w-48 equivalent
+              duration: 0.7,
+              ease: 'power2.out'
+            });
+            setNavbarCollapsed(true);
+          },
+          onLeaveBack: () => {
+            // Animate navbar expand with GSAP
+            gsap.to('.navbar-container', {
+              width: '100%',
+              duration: 0.7,
+              ease: 'power2.out'
+            });
+            setNavbarCollapsed(false);
+          },
           onUpdate: (self) => {
             const progress = self.progress
             const adjustedProgress = Math.max(0, Math.min(progress, 0.999))
@@ -548,7 +578,7 @@ const Home = () => {
       <div ref={thirdSectionRef} className="bg-deepBlue-50/20 py-20 border-b border-deepBlue-100/60 relative lg:min-h-screen">
         <div className="max-w-6xl mx-auto px-4 lg:h-screen lg:flex lg:flex-col lg:justify-center">
           <div className="text-center max-w-2xl mx-auto my-16">
-            <h2 className="text-3xl font-bold text-deepBlue-800 mt-28 mb-3 overflow-hidden">
+            <h2 className="text-3xl font-bold text-deepBlue-800 mt-28 overflow-hidden">
               <span className="block animate-slideUpReveal-scroll third-section-header">One app that works everywhere you do.</span>
             </h2>
             <p className="text-sm text-deepBlue-600">
@@ -563,16 +593,16 @@ const Home = () => {
                 <div
                   key={step.id}
                   onClick={() => goToStep(step.id)}
-                  className={`p-4 rounded-xl border transition-all cursor-pointer ${activeStep === step.id
+                  className={`p-3 rounded-xl border transition-all cursor-pointer ${activeStep === step.id
                       ? 'bg-white border-deepBlue-300 shadow-sm'
                       : 'border-transparent hover:bg-white/60 hover:border-deepBlue-100'
                     }`}
                 >
-                  <h4 className={`text-lg font-semibold mb-1 ${activeStep === step.id ? 'text-deepBlue-700' : 'text-deepBlue-800'}`}>
+                  <h4 className={`text-lg font-semibold ${activeStep === step.id ? 'text-deepBlue-700' : 'text-deepBlue-800'}`}>
                     {step.title}
                   </h4>
                   {activeStep === step.id && (
-                    <p className="text-lg text-deepBlue-600 leading-relaxed mt-1 animate-fadeIn">
+                    <p className="text-md text-deepBlue-600 leading-relaxed mt-1 animate-fadeIn">
                       {step.desc}
                     </p>
                   )}
@@ -581,9 +611,9 @@ const Home = () => {
             </div>
 
             <div ref={phoneImageRef} className="lg:col-span-7 flex justify-center lg:justify-end relative z-10">
-              <div className="w-full max-w-[235px]">
+              <div className="w-full max-w-[200px]">
                 <div className="bg-gray-900 rounded-[2rem] p-2 shadow-xl mx-auto">
-                  <div className="bg-white rounded-[1.5rem] overflow-hidden w-full h-[460px] flex flex-col">
+                  <div className="bg-white rounded-[1.5rem] overflow-hidden w-full h-[400px] flex flex-col">
                     <div className="bg-gray-900 h-6 flex justify-center items-center flex-shrink-0">
                       <div className="w-19 h-3 bg-black rounded-full"></div>
                     </div>
@@ -821,7 +851,7 @@ const Home = () => {
       <div className="bg-gradient-to-br from-deepBlue-50/40 to-blue-50/60 py-20 border-b border-deepBlue-100/60">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight text-deepBlue-800 mt-48 mb-4 overflow-hidden">
+            <h2 className="text-3xl font-bold tracking-tight text-deepBlue-800 mt-8 mb-4 overflow-hidden">
               <span className="block animate-slideUpReveal-scroll faq-header">FAQs</span>
             </h2>
             <p className="text-deepBlue-600 mb-6 max-w-2xl mx-auto leading-relaxed">

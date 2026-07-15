@@ -43,17 +43,17 @@ const HomeNavbar = ({ isCollapsed = false }) => {
   ];
 
   return (
-    <>
-      <div className={`fixed top-4 z-50 transition-all duration-700 ease-out ${
-        isCollapsed 
-          ? 'left-4' // Collapsed state - positioned on the left
-          : 'left-4 right-4' // Normal state - spans full width with margins
-      }`}>
+      <div className="fixed top-4 left-4 right-4 z-50">
+        <div className={`navbar-container ${
+          isCollapsed 
+            ? 'w-48' // Collapsed state - small width, aligned left
+            : 'w-full' // Normal state - full width
+        }`}>
         <nav 
-          className={`mx-auto transition-all duration-700 ease-out rounded-2xl transform -skew-x-1 ${
+          className={`transition-all duration-700 ease-out rounded-2xl transform -skew-x-1 ${
             isCollapsed 
-              ? 'max-w-48' // Collapsed state - much smaller width
-              : 'max-w-6xl' // Normal state
+              ? 'w-full' // Collapsed state - takes full width of container
+              : 'w-full mx-auto max-w-6xl' // Normal state - centered with max width
           } ${
             isTransparentNavPage && !isScrolled
               ? 'bg-black/20 backdrop-blur-sm border border-white/10' 
@@ -71,7 +71,7 @@ const HomeNavbar = ({ isCollapsed = false }) => {
           }}
         >
       <div className="container mx-auto px-4 transform skew-x-1">
-        <div className={`flex items-center transition-all duration-700 ease-out ${isCollapsed ? 'justify-start h-10' : 'justify-between h-12'}`}>
+        <div className={`flex items-center transition-all duration-700 ease-out ${isCollapsed ? 'justify-center h-10' : 'justify-between h-12'}`}>
           {/* Logo */}
           <div 
             className="flex items-center space-x-2 cursor-pointer"
@@ -232,7 +232,7 @@ const HomeNavbar = ({ isCollapsed = false }) => {
     
     {/* Content spacer for pages that don't have transparent navbar */}
     {!isTransparentNavPage && <div className="h-24 w-full"></div>}
-  </>
+    </div>
   );
 };
 
