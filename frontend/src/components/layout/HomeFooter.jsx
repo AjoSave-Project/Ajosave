@@ -62,11 +62,11 @@ const HomeFooter = () => {
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <Mail className="w-4 h-4 text-deepBlue-300" />
-                <span className="text-deepBlue-200">support@ajosave.com</span>
+                <span className="text-deepBlue-200">ajosavesupport@gmail.com</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="w-4 h-4 text-deepBlue-300" />
-                <span className="text-deepBlue-200">+234 800 AJOSAVE</span>
+                <span className="text-deepBlue-200">+234 809 19 334 5365</span>
               </div>
               <div className="flex items-center space-x-3">
                 <MapPin className="w-4 h-4 text-deepBlue-300" />

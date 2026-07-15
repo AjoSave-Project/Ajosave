@@ -1,30 +1,36 @@
 import React from 'react';
-import { CheckCircle, AlertTriangle, Clock, DollarSign, ArrowRight, FileText } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { CheckCircle, AlertTriangle, ArrowRight, FileText } from 'lucide-react';
 import HomeNavbar from '../components/layout/HomeNavbar';
 import HomeFooter from '../components/layout/HomeFooter';
 
 const RefundPolicy = () => {
+  const navigate = useNavigate();
+  
+  const handleNavigation = (path) => {
+    navigate(path);
+    window.scrollTo(0, 0);
+  };
+
   const refundScenarios = [
     {
-      icon: <CheckCircle className="w-6 h-6 text-green-600" />,
-      title: "Eligible for Refund",
+      title: "Eligible for Refund when....",
       items: [
-        "Duplicate transactions within 24 hours",
-        "Unauthorized transactions reported within 30 days",
-        "Technical errors causing incorrect deductions",
-        "Group cancellation before payout cycle begins",
-        "Service failures affecting transaction completion"
+        "You made Duplicate transactions within 48 hours",
+        "You report an Unauthorized transactions within 30 days",
+        "There are technical errors causing incorrect deductions",
+        "There is a Group cancellation before payout cycle begins",
+        "You experience Service failures affecting transaction completion"
       ]
     },
     {
       icon: <AlertTriangle className="w-6 h-6 text-orange-600" />,
-      title: "Not Eligible for Refund",
+      title: "Not Eligible for Refund if...",
       items: [
         "Voluntary group withdrawal after cycle starts",
-        "Transactions completed as requested by user",
-        "Payments made to incorrect group (user error)",
-        "Refunds requested after 90 days",
-        "Transactions with confirmed recipient confirmation"
+        "Transactions were completed as requested by user",
+        "Payments were made to incorrect group",
+        "You request a Refund 90 days after incident",
       ]
     }
   ];
@@ -70,14 +76,6 @@ const RefundPolicy = () => {
             <p className="text-xl text-deepBlue-600 max-w-3xl mx-auto">
               We're committed to fair and transparent refund practices for all our users.
             </p>
-            <div className="bg-deepBlue-50 rounded-lg p-6 mt-8">
-              <p className="text-deepBlue-700">
-                <strong>Last updated:</strong> {new Date().toLocaleDateString()}
-              </p>
-              <p className="text-deepBlue-700 mt-2">
-                This policy outlines when and how refunds are processed on the AjoSave platform.
-              </p>
-            </div>
           </div>
 
           {/* Quick Overview */}
@@ -86,23 +84,20 @@ const RefundPolicy = () => {
               <FileText className="w-6 h-6 mr-3" />
               Quick Overview
             </h2>
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-3 gap-3">
               <div className="flex items-start">
-                <Clock className="w-6 h-6 text-deepBlue-600 mr-4 flex-shrink-0 mt-1" />
                 <div>
                   <h3 className="font-semibold text-deepBlue-800 mb-1">Request Window</h3>
                   <p className="text-deepBlue-600">Up to 90 days from transaction date</p>
                 </div>
               </div>
               <div className="flex items-start">
-                <DollarSign className="w-6 h-6 text-green-600 mr-4 flex-shrink-0 mt-1" />
                 <div>
                   <h3 className="font-semibold text-deepBlue-800 mb-1">Processing Time</h3>
                   <p className="text-deepBlue-600">5-7 business days after approval</p>
                 </div>
               </div>
               <div className="flex items-start">
-                <CheckCircle className="w-6 h-6 text-purple-600 mr-4 flex-shrink-0 mt-1" />
                 <div>
                   <h3 className="font-semibold text-deepBlue-800 mb-1">Refund Method</h3>
                   <p className="text-deepBlue-600">Original payment method used</p>
@@ -271,8 +266,8 @@ const RefundPolicy = () => {
                 <div>
                   <h3 className="font-semibold mb-3">Contact Methods</h3>
                   <div className="space-y-2">
-                    <p className="text-deepBlue-200 text-sm">Email: support@ajosave.com</p>
-                    <p className="text-deepBlue-200 text-sm">Phone: +234 800 AJOSAVE</p>
+                    <p className="text-deepBlue-200 text-sm">Email: ajosavesupport@gmail.com</p>
+                    <p className="text-deepBlue-200 text-sm">Phone: +234 809 19 334 5365</p>
                   </div>
                 </div>
                 <div>
@@ -286,10 +281,10 @@ const RefundPolicy = () => {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <button className="bg-white text-deepBlue-600 px-8 py-3 rounded-full font-semibold hover:bg-deepBlue-50 transition-colors">
+                <button onClick={() => handleNavigation('/contact')} className="bg-white text-deepBlue-600 px-8 py-3 rounded-full font-semibold hover:bg-deepBlue-50 transition-colors">
                   Contact Support
                 </button>
-                <button className="border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-deepBlue-600 transition-colors">
+                <button onClick={() => handleNavigation('/terms')} className="border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-deepBlue-600 transition-colors">
                   Back to Terms
                 </button>
               </div>

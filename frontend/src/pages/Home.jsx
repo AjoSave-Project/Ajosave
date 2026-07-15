@@ -342,6 +342,32 @@ const Home = () => {
           }
         })
       }
+
+      // FAQ Header Animation
+      const faqHeader = document.querySelector('.faq-header');
+      if (faqHeader) {
+        ScrollTrigger.create({
+          trigger: faqHeader,
+          start: 'top 80%',
+          toggleActions: 'play none none none',
+          onEnter: () => {
+            faqHeader.classList.add('in-view');
+          }
+        });
+      }
+
+      // Third Section Header Animation
+      const thirdSectionHeader = document.querySelector('.third-section-header');
+      if (thirdSectionHeader) {
+        ScrollTrigger.create({
+          trigger: thirdSectionHeader,
+          start: 'top 80%',
+          toggleActions: 'play none none none',
+          onEnter: () => {
+            thirdSectionHeader.classList.add('in-view');
+          }
+        });
+      }
     })
 
     return () => ctx.revert()
@@ -446,8 +472,8 @@ const Home = () => {
         <div className="max-w-6xl mx-auto px-4 relative z-10 w-full">
           <div className="grid lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-12 space-y-4 text-center">
-              <h1 className="text-3xl lg:text-5xl font-extrabold tracking-tight text-white leading-[1.15] max-w-4xl mx-auto">
-                Bringing transparency to traditional <span className="text-blue-300">Ajo.</span>
+              <h1 className="text-3xl lg:text-5xl font-extrabold tracking-tight text-white leading-[1.15] max-w-4xl mx-auto overflow-hidden">
+                <span className="block animate-slideUpReveal">Bringing transparency to traditional <span className="text-blue-300">Ajo.</span></span>
               </h1>
 
               <p className="text-lg lg:text-xl text-white/90 leading-relaxed max-w-2xl mx-auto animate-matte-reveal">
@@ -522,8 +548,8 @@ const Home = () => {
       <div ref={thirdSectionRef} className="bg-deepBlue-50/20 py-20 border-b border-deepBlue-100/60 relative lg:min-h-screen">
         <div className="max-w-6xl mx-auto px-4 lg:h-screen lg:flex lg:flex-col lg:justify-center">
           <div className="text-center max-w-2xl mx-auto my-16">
-            <h2 className="text-3xl font-bold tracking-tight text-deepBlue-800 mb-3">
-              One app that works everywhere you do.
+            <h2 className="text-3xl font-bold text-deepBlue-800 mt-48 mb-3 overflow-hidden">
+              <span className="block animate-slideUpReveal-scroll third-section-header">One app that works everywhere you do.</span>
             </h2>
             <p className="text-sm text-deepBlue-600">
               Save money with your group from your phone, tablet, or computer. Everything stays in sync so you're always up to date.
@@ -576,8 +602,20 @@ const Home = () => {
 
           {/* Mobile Layout - Completely New Design */}
           <div className="lg:hidden min-h-screen flex flex-col">
+            {/* Scroll Down Hint at Top */}
+            <div className="flex items-center justify-center py-4 opacity-60">
+              <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 border border-deepBlue-100">
+                <div className="flex flex-col gap-1">
+                  <div className="w-1 h-1 bg-deepBlue-400 rounded-full animate-bounce"></div>
+                  <div className="w-1 h-1 bg-deepBlue-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                  <div className="w-1 h-1 bg-deepBlue-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                </div>
+                <span className="text-xs text-deepBlue-600 font-medium">Scroll down to explore</span>
+              </div>
+            </div>
+
             {/* Mobile Card Stack Layout */}
-            <div className="flex-1 relative overflow-hidden py-8">
+            <div className="flex-1 relative overflow-hidden py-4">
               {/* Background Pattern */}
               <div className="absolute inset-0 opacity-10">
                 <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-gradient-to-br from-deepBlue-200 to-blue-200 rounded-full blur-3xl"></div>
@@ -676,39 +714,6 @@ const Home = () => {
                       <p className="text-deepBlue-600 leading-relaxed text-sm mb-6">
                         {currentStepData?.desc}
                       </p>
-
-                      {/* Action Buttons */}
-                      <div className="flex gap-3">
-                        <button
-                          onClick={() => activeStep > 1 && goToStep(activeStep - 1)}
-                          disabled={activeStep === 1}
-                          className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-semibold transition-all text-sm ${
-                            activeStep === 1
-                              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                              : 'bg-deepBlue-50 text-deepBlue-700 hover:bg-deepBlue-100 active:scale-95'
-                          }`}
-                        >
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                          </svg>
-                          Previous
-                        </button>
-                        
-                        <button
-                          onClick={() => activeStep < STEPS_DATA.length && goToStep(activeStep + 1)}
-                          disabled={activeStep === STEPS_DATA.length}
-                          className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-semibold transition-all text-sm ${
-                            activeStep === STEPS_DATA.length
-                              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                              : 'bg-deepBlue-600 text-white hover:bg-deepBlue-700 active:scale-95 shadow-lg shadow-deepBlue-200'
-                          }`}
-                        >
-                          Next
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        </button>
-                      </div>
                     </div>
                   </div>
 
@@ -725,18 +730,6 @@ const Home = () => {
                         }`}
                       />
                     ))}
-                  </div>
-
-                  {/* Swipe Hint */}
-                  <div className="flex items-center justify-center mt-4 opacity-60">
-                    <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 border border-deepBlue-100">
-                      <div className="flex gap-1">
-                        <div className="w-1 h-1 bg-deepBlue-400 rounded-full animate-bounce"></div>
-                        <div className="w-1 h-1 bg-deepBlue-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                        <div className="w-1 h-1 bg-deepBlue-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-                      </div>
-                      <span className="text-xs text-deepBlue-600 font-medium">Swipe to explore</span>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -828,11 +821,11 @@ const Home = () => {
       <div className="bg-gradient-to-br from-deepBlue-50/40 to-blue-50/60 py-20 border-b border-deepBlue-100/60">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight text-deepBlue-800 mb-4">
-              We know you have questions
+            <h2 className="text-3xl font-bold tracking-tight text-deepBlue-800 mt-48 mb-4 overflow-hidden">
+              <span className="block animate-slideUpReveal-scroll faq-header">FAQs</span>
             </h2>
             <p className="text-deepBlue-600 mb-6 max-w-2xl mx-auto leading-relaxed">
-              Get quick answers to common questions, or join our community for deeper discussions and support.
+              We know you have questions
             </p>
 
             {/* Reddit Community Link */}

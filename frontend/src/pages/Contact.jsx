@@ -33,8 +33,8 @@ const Contact = () => {
       <div className="container mx-auto px-4 py-24">
         {/* Hero Section */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-deepBlue-800 mb-6">
-            Contact Us
+          <h1 className="text-4xl md:text-5xl font-bold text-deepBlue-800 mb-6 overflow-hidden">
+            <span className="block animate-slideUpReveal">Contact Us</span>
           </h1>
         </div>
 
@@ -128,7 +128,7 @@ const Contact = () => {
           </div>
 
           {/* Additional Info */}
-          <div className="space-y-8">
+          <div className="space-y-1">
             {/* Quick Help */}
             <div className="bg-gradient-to-r from-deepBlue-50 to-deepBlue-100 rounded-xl p-6">
               <h3 className="text-xl font-semibold text-deepBlue-800 mb-4 flex items-center">
@@ -138,42 +138,11 @@ const Contact = () => {
               <p className="text-deepBlue-700 mb-4">
                 For immediate assistance, start a chat on whatsapp.
               </p>
-              <div className="space-y-3">
+              <div className="space-y-1">
                 <button className="w-full bg-deepBlue-600 text-white py-2 px-4 rounded-lg hover:bg-deepBlue-700 transition-colors">
                   Start Chat
                 </button>
               </div>
-            </div>
-
-
-            {/* Response Time */}
-            <div className="bg-white rounded-xl p-6 shadow-lg border border-deepBlue-100">
-              <h3 className="text-xl font-semibold text-deepBlue-800 mb-4">
-                Response Times
-              </h3>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-deepBlue-600">Live Chat:</span>
-                  <span className="font-medium text-green-600">Instant</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-deepBlue-600">Email:</span>
-                  <span className="font-medium">Within 2 hours</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-deepBlue-600">Phone:</span>
-                  <span className="font-medium text-green-600">Instant</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Office Image */}
-            <div className="rounded-xl overflow-hidden shadow-lg">
-              <img 
-                src="https://plus.unsplash.com/premium_photo-1661963781048-9780e4ecae5b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Y29vcGVyYXRlJTIwb2ZmaWNlfGVufDB8fDB8fHww" 
-                alt="AjoSave Office" 
-                className="w-full h-48 object-cover"
-              />
             </div>
           </div>
         </div>

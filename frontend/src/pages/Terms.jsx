@@ -18,15 +18,6 @@ const Terms = () => {
             <p className="text-xl text-deepBlue-600 max-w-3xl mx-auto">
               Everything you need to know about using AjoSave safely and responsibly.
             </p>
-            <div className="bg-deepBlue-50 rounded-lg p-6 mt-8">
-              <p className="text-deepBlue-700">
-                <strong>Last updated:</strong> {new Date().toLocaleDateString()}
-              </p>
-              <p className="text-deepBlue-700 mt-2">
-                These terms include our service agreement, privacy policy, security measures, 
-                community guidelines, and trust & safety policies.
-              </p>
-            </div>
           </div>
 
           {/* Quick Navigation */}
@@ -376,32 +367,6 @@ const Terms = () => {
                   We may update these terms from time to time. We'll notify you of any major changes via email or 
                   in-app notification. Continued use of AjoSave means you accept the updated terms.
                 </p>
-              </div>
-            </div>
-          </section>
-
-          {/* Contact Information */}
-          <section id="contact" className="mb-16">
-            <div className="bg-deepBlue-600 rounded-2xl p-8 md:p-12 text-white">
-              <h2 className="text-3xl font-bold mb-6">Questions? We're Here to Help</h2>
-              <p className="text-deepBlue-100 mb-8 text-lg">
-                If you have questions about these terms or need help with anything, our support team is ready to assist you.
-              </p>
-              
-              <div className="grid md:grid-cols-3 gap-6">
-                <div>
-                  <h3 className="font-semibold mb-2">General Support</h3>
-                  <p className="text-deepBlue-200 text-sm">support@ajosave.com</p>
-                  <p className="text-deepBlue-200 text-sm">+234 800 AJOSAVE</p>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Privacy & Data</h3>
-                  <p className="text-deepBlue-200 text-sm">privacy@ajosave.com</p>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Security Issues</h3>
-                  <p className="text-deepBlue-200 text-sm">security@ajosave.com</p>
-                </div>
               </div>
             </div>
           </section>

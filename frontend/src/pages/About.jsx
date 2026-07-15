@@ -86,7 +86,7 @@ const About = () => {
       <HomeNavbar />
       
       {/* Hero Carousel Section */}
-      <div className="relative h-screen overflow-hidden">
+      <div className="relative h-screen overflow-hidden hidden md:block">
         <div 
           className={`flex h-full ${isTransitioning ? 'transition-transform duration-1000 ease-in-out' : ''}`}
           style={{ transform: `translateX(-${currentSlide * 100}%)` }}
@@ -105,8 +105,8 @@ const About = () => {
             >
               <div className="flex items-center justify-center h-full">
                 <div className="max-w-6xl mx-auto px-4 text-center">
-                  <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-                    {slide.title}
+                  <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight overflow-hidden">
+                    <span className="block animate-slideUpReveal">{slide.title}</span>
                   </h1>
                   <p className="text-xl md:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed">
                     {slide.subtitle}

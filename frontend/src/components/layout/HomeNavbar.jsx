@@ -11,6 +11,20 @@ const HomeNavbar = ({ isCollapsed = false }) => {
   
   const isTransparentNavPage = location.pathname === '/' || location.pathname === '/about';
 
+  // Prevent body scroll when sidebar is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    // Cleanup function to reset overflow when component unmounts
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
+
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
@@ -118,54 +132,95 @@ const HomeNavbar = ({ isCollapsed = false }) => {
           )}
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu - Sidebar */}
         {isMenuOpen && !isCollapsed && (
-          <div className={`md:hidden border-t border-white/20 py-4 bg-black/20 backdrop-blur-sm rounded-b-lg mt-2`}>
-            <div className="flex flex-col space-y-4">
-              {navItems.map((item) => {
-                const isActive = location.pathname === item.path;
-                return (
+          <>
+            {/* Overlay */}
+            <div 
+              className="md:hidden fixed inset-0 bg-black/70 z-[60]"
+              onClick={() => setIsMenuOpen(false)}
+            />
+            
+            {/* Sidebar */}
+            <div className="md:hidden fixed top-0 right-0 h-full w-80 max-w-[80vw] z-[70] transform transition-transform duration-300 ease-in-out shadow-2xl" style={{backgroundColor: '#1f2937'}}>
+              <div className="flex flex-col h-full" style={{backgroundColor: '#1f2937'}}>
+                {/* Sidebar Header */}
+                <div className="flex items-center justify-between p-6 border-b border-deepBlue-700">
+                  <div className="flex items-center space-x-2">
+                    <img 
+                      src={logo} 
+                      alt="AjoSave Logo" 
+                      className="w-8 h-8 rounded-xl object-contain"
+                    />
+                    <span className="text-lg font-bold text-white">AjoSave</span>
+                  </div>
                   <button
-                    key={item.path}
+                    onClick={() => setIsMenuOpen(false)}
+                    className="p-2 text-white hover:text-blue-200 rounded-lg hover:bg-white/10 transition-colors"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+
+                {/* Navigation Items */}
+                <div className="flex-1 py-6">
+                  <nav className="space-y-2 px-4">
+                    {navItems.map((item) => {
+                      const isActive = location.pathname === item.path;
+                      return (
+                        <button
+                          key={item.path}
+                          onClick={() => {
+                            navigate(item.path);
+                            setIsMenuOpen(false);
+                          }}
+                          className={`w-full text-left px-4 py-3 rounded-xl font-medium transition-all flex items-center justify-between group ${
+                            isActive 
+                              ? 'text-white bg-white/20 shadow-lg' 
+                              : 'text-white/80 hover:text-white hover:bg-white/10'
+                          }`}
+                        >
+                          <span>{item.label}</span>
+                          {isActive && (
+                            <div className="w-2 h-2 bg-blue-300 rounded-full"></div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </nav>
+                </div>
+
+                {/* Auth Buttons */}
+                <div className="p-6 space-y-3 border-t border-deepBlue-700">
+                  <button
                     onClick={() => {
-                      navigate(item.path);
+                      navigate('/auth');
                       setIsMenuOpen(false);
                     }}
-                    className={`font-medium text-left px-4 py-1.5 transition-all rounded-lg text-sm relative ${
-                      isActive 
-                        ? 'text-white bg-white/20 shadow-lg' 
-                        : 'text-white/80 hover:text-white hover:bg-white/10'
-                    }`}
+                    className="w-full text-white/80 hover:text-white hover:bg-white/10 font-medium text-left px-4 py-3 transition-colors rounded-xl"
                   >
-                    {item.label}
-                    {isActive && (
-                      <div className="absolute left-1 top-1/2 transform -translate-y-1/2 w-1 h-4 bg-blue-300 rounded-full"></div>
-                    )}
+                    Log In
                   </button>
-                );
-              })}
-              <div className="flex flex-col space-y-2 pt-4 border-t border-white/20">
-                <button
-                  onClick={() => {
-                    navigate('/auth');
-                    setIsMenuOpen(false);
-                  }}
-                  className="text-white hover:text-blue-200 font-medium text-left px-4 py-1.5 transition-colors rounded-lg text-sm"
-                >
-                  Log In
-                </button>
-                <button
-                  onClick={() => {
-                    navigate('/auth');
-                    setIsMenuOpen(false);
-                  }}
-                  className="bg-deepBlue-600 text-white px-4 py-1.5 rounded-lg font-medium hover:bg-deepBlue-700 transition-colors text-center mx-2 text-sm"
-                >
-                  Sign Up
-                </button>
+                  <button
+                    onClick={() => {
+                      navigate('/auth');
+                      setIsMenuOpen(false);
+                    }}
+                    className="w-full bg-deepBlue-600 text-white px-4 py-3 rounded-xl font-semibold hover:bg-deepBlue-500 transition-colors text-center shadow-lg"
+                  >
+                    Sign Up
+                  </button>
+                </div>
+
+                {/* Footer */}
+                <div className="p-6 border-t border-deepBlue-700">
+                  <p className="text-white/60 text-xs text-center">
+                    © 2024 AjoSave. All rights reserved.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          </>
         )}
         </div>
       </nav>

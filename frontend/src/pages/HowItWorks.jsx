@@ -180,8 +180,8 @@ const HowItWorks = () => {
 
       <section className="container mx-auto px-6 lg:px-16 pt-16 pb-12">
         <div ref={heroTextRef} className="max-w-4xl opacity-0">
-          <h1 className="text-4xl md:text-6xl font-black tracking-tight text-deepBlue-800 leading-[1.1] mb-6">
-            A system built on absolute <span className="underline decoration-deepBlue-500 decoration-wavy decoration-2 underline-offset-4">transparency</span>.
+          <h1 className="text-4xl md:text-6xl font-black tracking-tight text-deepBlue-800 leading-[1.1] mb-6 overflow-hidden">
+            <span className="block animate-slideInLeft">A system built on absolute <span className="underline decoration-deepBlue-500 decoration-wavy decoration-2 underline-offset-4">transparency</span>.</span>
           </h1> 
           <p className="text-lg text-deepBlue-600 max-w-2xl font-normal leading-relaxed">
             Witness how decentralized rotary savings operate. Our simulator charts live ledger balances while our automation engine drives secure capital pools forward.
