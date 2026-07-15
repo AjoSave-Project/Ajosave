@@ -72,10 +72,10 @@ const Auth = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-white text-deepBlue-800 antialiased selection:bg-deepBlue-50">
+    <div className="min-h-screen bg-white text-deepBlue-800 antialiased selection:bg-deepBlue-50 overflow-x-hidden">
       {/* Hero Section with Background */}
       <div 
-        className="relative min-h-screen flex items-center overflow-hidden"
+        className="relative min-h-screen flex flex-col lg:flex-row lg:items-center overflow-hidden"
         style={{
          backgroundImage: `linear-gradient(to bottom right, #172033, #0c4a6e)`,
           backgroundSize: 'cover',
@@ -84,10 +84,10 @@ const Auth = () => {
           clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 4vw), 0 100%)',
         }}
       >
-        <div className="relative z-10 w-full">
-          <div className="max-w-7xl mx-auto px-4 lg:px-8">
+        <div className="relative z-10 w-full flex-1">
+          <div className="max-w-7xl mx-auto px-4 lg:px-8 py-4 lg:py-0">
             {/* Navigation Header */}
-            <div className="flex items-center justify-between pt-8 pb-16">
+            <div className="flex items-center justify-between pt-4 lg:pt-8 pb-8 lg:pb-16">
               <button
                 onClick={() => navigate('/')}
                 className="flex items-center gap-2 text-white hover:text-blue-300 transition-colors px-4 py-2 rounded-lg hover:bg-white/10 backdrop-blur-sm"
@@ -101,15 +101,15 @@ const Auth = () => {
               </div>
             </div>
 
-            <div className="grid lg:grid-cols-12 gap-12 items-center pb-8 lg:pb-20">
+            <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 lg:items-center pb-8 lg:pb-20">
               {/* Left Side - Marketing Content */}
-              <div className="lg:col-span-6 space-y-8">
+              <div className="lg:col-span-6 space-y-6 lg:space-y-8">
                 <div className="space-y-4">
                   <span className="text-xs font-bold uppercase tracking-widest text-blue-300 block">Secure Authentication</span>
-                  <h1 className="text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-[1.15]">
+                  <h1 className="text-3xl lg:text-4xl xl:text-5xl font-extrabold tracking-tight text-white leading-[1.15]">
                     Join the future of <span className="text-blue-300">group savings</span>.
                   </h1>
-                  <p className="text-lg text-white/90 leading-relaxed max-w-xl">
+                  <p className="text-base lg:text-lg text-white/90 leading-relaxed max-w-xl">
                     Experience transparent, digital Ajo with verified members and automated rotations. Your money, your community, secured by technology.
                   </p>
                 </div>
@@ -131,11 +131,11 @@ const Auth = () => {
               </div>
 
               {/* Right Side - Auth Form */}
-              <div className="lg:col-span-6 flex justify-center lg:justify-end px-4 lg:px-0">
+              <div className="lg:col-span-6 flex justify-center lg:justify-end">
                 <div className="w-full max-w-md">
-                  <div className="bg-white/15 backdrop-blur-sm rounded-2xl shadow-2xl border border-white/20 p-8">
+                  <div className="bg-white/15 backdrop-blur-sm rounded-2xl shadow-2xl border border-white/20 p-6 lg:p-8">
                     {/* Tab Navigation */}
-                    <div className="flex items-center justify-center mb-8">
+                    <div className="flex items-center justify-center mb-6 lg:mb-8">
                       <div className="flex bg-white/10 rounded-xl p-1 backdrop-blur-sm border border-white/20">
                         <button
                           onClick={() => setActiveTab('login')}
@@ -161,8 +161,8 @@ const Auth = () => {
                     </div>
 
                     {/* Form Title */}
-                    <div className="text-center mb-8">
-                      <h2 className="text-2xl font-bold text-white tracking-tight">
+                    <div className="text-center mb-6 lg:mb-8">
+                      <h2 className="text-xl lg:text-2xl font-bold text-white tracking-tight">
                         {activeTab === 'login' ? 'Welcome back' : 'Create your account'}
                       </h2>
                       <p className="text-sm text-white/80 mt-2">
@@ -174,7 +174,7 @@ const Auth = () => {
                     </div>
 
                     {/* Auth Components */}
-                    <div className="space-y-6">
+                    <div className="space-y-4 lg:space-y-6">
                       {activeTab === 'login' ? (
                         <Login />
                       ) : (
