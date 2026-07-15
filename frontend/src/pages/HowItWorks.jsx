@@ -229,16 +229,11 @@ const HowItWorks = () => {
               </div>
 
               {/* Narrator info below animation */}
-              <div className="mt-8 bg-deepBlue-50/50 border border-deepBlue-100 rounded-xl p-6">
-                <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-wider text-deepBlue-400 uppercase mb-4">
-                  <Play className="w-3 h-3 text-deepBlue-500 fill-deepBlue-500" />
-                  <span>Live Simulation Narrator</span>
-                </div>
-                
-                <h3 className="text-xl font-black text-deepBlue-800 tracking-tight mb-3 transition-all duration-300">
+              <div className="mt-8 bg-blur-sm bg-white/20 border border-deepBlue-100 rounded-xl p-6">                
+                <h3 className="text-xl font-black text-white tracking-tight mb-3 transition-all duration-300">
                   {narrations[activeStepIndex].title}
                 </h3>
-                <p className="text-sm text-deepBlue-800 font-normal leading-relaxed transition-all duration-500">
+                <p className="text-sm text-white font-normal leading-relaxed transition-all duration-500">
                   {narrations[activeStepIndex].body}
                 </p>
 
