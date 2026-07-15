@@ -7,66 +7,59 @@ import {
 
 import { gsap } from "gsap";
 
-interface Member {
-  id: number;
-  name: string;
-  avatar: string;
-  contribution: number;
-  color: string;
-}
+import AdunniImg from "../../assets/images/Adunni.jpg";
+import BolajiImg from "../../assets/images/Bolaji.jpg";
+import ChiomaImg from "../../assets/images/Chioma.jpg";
+import DayoImg from "../../assets/images/Dayo.jpg";
+import EmekaImg from "../../assets/images/Emeka.jpg";
+import FatimaImg from "../../assets/images/Fatima.jpg";
 
-interface Card {
-  id: number;
-  memberId: number;
-  amount: number;
-}
-
-const MEMBERS: Member[] = [
+const MEMBERS = [
   {
     id: 1,
     name: "Adunni",
-    avatar: "/src/assets/images/Adunni.jpg",
+    avatar: AdunniImg,
     contribution: 50000,
     color: "#2563eb",
   },
   {
     id: 2,
     name: "Bolaji",
-    avatar: "/src/assets/images/Bolaji.jpg",
+    avatar: BolajiImg,
     contribution: 50000,
     color: "#16a34a",
   },
   {
     id: 3,
     name: "Chioma",
-    avatar: "/src/assets/images/Chioma.jpg",
+    avatar: ChiomaImg,
     contribution: 50000,
     color: "#9333ea",
   },
   {
     id: 4,
     name: "Dayo",
-    avatar: "/src/assets/images/Dayo.jpg",
+    avatar: DayoImg,
     contribution: 50000,
     color: "#f59e0b",
   },
   {
     id: 5,
     name: "Emeka",
-    avatar: "/src/assets/images/Emeka.jpg",
+    avatar: EmekaImg,
     contribution: 50000,
     color: "#dc2626",
   },
   {
     id: 6,
     name: "Fatima",
-    avatar: "/src/assets/images/Fatima.jpg",
+    avatar: FatimaImg,
     contribution: 50000,
     color: "#4f46e5",
   },
 ];
 
-const CARDS: Card[] = MEMBERS.map((member) => ({
+const CARDS = MEMBERS.map((member) => ({
   id: member.id,
   memberId: member.id,
   amount: member.contribution,
@@ -77,12 +70,12 @@ const SIZE_HEIGHT = 520;
 const RADIUS = 215;
 
 export default function AjoCycleAnimation() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const memberRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const stackRef = useRef<HTMLDivElement>(null);
-  const poolAmountRef = useRef<HTMLHeadingElement>(null);
-  const timeline = useRef<gsap.core.Timeline | null>(null);
+  const containerRef = useRef(null);
+  const memberRefs = useRef([]);
+  const cardRefs = useRef([]);
+  const stackRef = useRef(null);
+  const poolAmountRef = useRef(null);
+  const timeline = useRef(null);
 
   const [receiver, setReceiver] = useState(0);
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
@@ -123,7 +116,7 @@ export default function AjoCycleAnimation() {
       timeline.current = gsap.timeline({ repeat: -1, repeatDelay: 1, paused: true });
 
       MEMBERS.forEach((member, index) => {
-        timeline.current!
+        timeline.current
           .to(
             cardRefs.current[index],
             {
@@ -139,7 +132,7 @@ export default function AjoCycleAnimation() {
             duration: 0.4,
             onUpdate() {
               const value = Math.round(
-                (gsap.getProperty(this, "progress") as number) *
+                (gsap.getProperty(this, "progress")) *
                   member.contribution *
                   (index + 1)
               );
@@ -182,7 +175,7 @@ export default function AjoCycleAnimation() {
         .to(poolAmountRef.current, {
           duration: 0.3,
           onUpdate() {
-            const progress = 1 - (gsap.getProperty(this, "progress") as number);
+            const progress = 1 - (gsap.getProperty(this, "progress"));
             const value = Math.round(progress * MEMBERS.length * 50000);
             if (poolAmountRef.current) {
               poolAmountRef.current.innerHTML = "₦" + value.toLocaleString();
