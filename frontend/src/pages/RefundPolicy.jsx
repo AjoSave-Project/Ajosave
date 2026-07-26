@@ -220,7 +220,7 @@ const RefundPolicy = () => {
                   </p>
                   <div className="mt-4 flex flex-wrap gap-4 text-xs font-mono text-slate-300">
                     <span className="flex items-center gap-1.5"><Mail className="w-4 h-4 text-blue-400" /> ajosavesupport@gmail.com</span>
-                    <span className="flex items-center gap-1.5"><Phone className="w-4 h-4 text-blue-400" /> +234 809 19 334 5365</span>
+                    <span className="flex items-center gap-1.5"><Phone className="w-4 h-4 text-blue-400" /> +234 915 62 196 54</span>
                   </div>
                 </div>
                 <button

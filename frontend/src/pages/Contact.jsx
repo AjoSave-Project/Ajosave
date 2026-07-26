@@ -162,7 +162,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Call or WhatsApp</h4>
-                  <p className="text-sm font-semibold text-slate-800 mt-0.5">+234 809 19 334 5365</p>
+                  <p className="text-sm font-semibold text-slate-800 mt-0.5">+234 915 62 196 54</p>
                 </div>
               </div>
 

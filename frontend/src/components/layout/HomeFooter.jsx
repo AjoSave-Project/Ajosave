@@ -65,7 +65,7 @@ const HomeFooter = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="w-4 h-4 text-deepBlue-300" />
-                <span className="text-deepBlue-200">+234 809 19 334 5365</span>
+                <span className="text-deepBlue-200">+234 915 62 196 54</span>
               </div>
               <div className="flex items-center space-x-3">
                 <MapPin className="w-4 h-4 text-deepBlue-300" />

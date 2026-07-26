@@ -57,9 +57,13 @@ const FAQSection = ({ onContact }) => {
           <p className="text-deepBlue-600 mb-6 max-w-2xl mx-auto leading-relaxed">
             If something is not covered here, reach out — we read every message.
           </p>
-
           {/* Reddit Community Link */}
-          <div className="inline-flex items-center gap-3 bg-white border border-deepBlue-200 rounded-xl px-4 py-3 hover:border-deepBlue-300 transition-all group cursor-pointer shadow-sm">
+          <a
+            href="https://www.reddit.com/r/ajosave/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-3 bg-white border border-deepBlue-200 rounded-xl px-4 py-3 hover:border-deepBlue-300 transition-all group cursor-pointer shadow-sm"
+          >
             <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
               <MessageCircle className="w-4 h-4 text-white" />
             </div>
@@ -72,55 +76,55 @@ const FAQSection = ({ onContact }) => {
               </div>
             </div>
             <ExternalLink className="w-4 h-4 text-deepBlue-400 group-hover:text-deepBlue-600" />
+          </a>
+          </div>
+
+
+          <div className="space-y-4">
+            {FAQ_DATA.map((faq) => (
+              <div
+                key={faq.id}
+                className="bg-white border border-deepBlue-100 rounded-xl overflow-hidden hover:border-deepBlue-200 transition-all shadow-sm"
+              >
+                <button
+                  onClick={() => setOpenFAQ(openFAQ === faq.id ? null : faq.id)}
+                  className="w-full px-6 py-5 text-left flex items-center justify-between hover:bg-deepBlue-50/30 transition-colors"
+                >
+                  <span className="font-semibold text-deepBlue-800 pr-4">
+                    {faq.question}
+                  </span>
+                  <ChevronDown
+                    className={`w-5 h-5 text-deepBlue-500 transition-transform flex-shrink-0 ${openFAQ === faq.id ? 'rotate-180' : ''
+                      }`}
+                  />
+                </button>
+                {openFAQ === faq.id && (
+                  <div className="px-6 pb-5 animate-fadeIn">
+                    <div className="pt-2 border-t border-deepBlue-100/50">
+                      <p className="text-deepBlue-600 leading-relaxed">
+                        {faq.answer}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-8 pt-6 border-t border-deepBlue-200/50">
+            <p className="text-sm text-deepBlue-600 mb-3">
+              Still have questions? We are happy to help.
+            </p>
+            <button
+              onClick={onContact}
+              className="text-deepBlue-700 hover:text-deepBlue-800 font-medium text-sm underline underline-offset-2 hover:underline-offset-4 transition-all"
+            >
+              Talk to us
+            </button>
           </div>
         </div>
-
-        <div className="space-y-4">
-          {FAQ_DATA.map((faq) => (
-            <div
-              key={faq.id}
-              className="bg-white border border-deepBlue-100 rounded-xl overflow-hidden hover:border-deepBlue-200 transition-all shadow-sm"
-            >
-              <button
-                onClick={() => setOpenFAQ(openFAQ === faq.id ? null : faq.id)}
-                className="w-full px-6 py-5 text-left flex items-center justify-between hover:bg-deepBlue-50/30 transition-colors"
-              >
-                <span className="font-semibold text-deepBlue-800 pr-4">
-                  {faq.question}
-                </span>
-                <ChevronDown
-                  className={`w-5 h-5 text-deepBlue-500 transition-transform flex-shrink-0 ${
-                    openFAQ === faq.id ? 'rotate-180' : ''
-                  }`}
-                />
-              </button>
-              {openFAQ === faq.id && (
-                <div className="px-6 pb-5 animate-fadeIn">
-                  <div className="pt-2 border-t border-deepBlue-100/50">
-                    <p className="text-deepBlue-600 leading-relaxed">
-                      {faq.answer}
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-
-        <div className="text-center mt-8 pt-6 border-t border-deepBlue-200/50">
-          <p className="text-sm text-deepBlue-600 mb-3">
-            Still have questions? We are happy to help.
-          </p>
-          <button
-            onClick={onContact}
-            className="text-deepBlue-700 hover:text-deepBlue-800 font-medium text-sm underline underline-offset-2 hover:underline-offset-4 transition-all"
-          >
-            Talk to us
-          </button>
-        </div>
       </div>
-    </div>
-  )
+      )
 }
 
-export default FAQSection
+      export default FAQSection
