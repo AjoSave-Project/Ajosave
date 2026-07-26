@@ -11,9 +11,18 @@ const Signup = () => {
   const toast = useToast();
 
   const [formData, setFormData] = useState({
-    firstName: '', lastName: '', email: '',
-    localPhone: '', bvn: '', nin: '', dateOfBirth: '', password: '',
+    firstName: '',
+    lastName: '',
+    email: '',
+    localPhone: '',
+    bvn: '',
+    nin: '',
+    dateOfBirth: '',
+    password: '',
   });
+
+  const [isBvnVerified, setIsBvnVerified] = useState(false);
+  const [isNinVerified, setIsNinVerified] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
@@ -28,18 +37,60 @@ const Signup = () => {
 
     if (name === 'localPhone') {
       processed = value.replace(/\D/g, '').slice(0, 10);
-    } else if (name === 'bvn' || name === 'nin') {
+    } else if (name === 'bvn') {
       processed = value.replace(/\D/g, '').slice(0, 11);
+      setIsBvnVerified(false); // Reset verification if modified
+    } else if (name === 'nin') {
+      processed = value.replace(/\D/g, '').slice(0, 11);
+      setIsNinVerified(false); // Reset verification if modified
     } else if (name === 'dateOfBirth') {
-      // Auto-format YYYY-MM-DD
       const digits = value.replace(/\D/g, '').slice(0, 8);
-      if (digits.length > 6) processed = `${digits.slice(0,4)}-${digits.slice(4,6)}-${digits.slice(6)}`;
-      else if (digits.length > 4) processed = `${digits.slice(0,4)}-${digits.slice(4)}`;
+      if (digits.length > 6) processed = `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6)}`;
+      else if (digits.length > 4) processed = `${digits.slice(0, 4)}-${digits.slice(4)}`;
       else processed = digits;
     }
 
-    setFormData(prev => ({ ...prev, [name]: processed }));
-    setFieldErrors(prev => { const n = { ...prev }; delete n[name]; return n; });
+    setFormData((prev) => ({ ...prev, [name]: processed }));
+    setFieldErrors((prev) => {
+      const n = { ...prev };
+      delete n[name];
+      return n;
+    });
+  };
+
+  // --- CLIENT-SIDE VERIFY HANDLERS (NO BACKEND CALLS) ---
+  const handleVerifyBvn = (e) => {
+    e.preventDefault();
+    if (!formData.bvn || formData.bvn.length !== 11) {
+      setFieldErrors((prev) => ({ ...prev, bvn: 'BVN must be exactly 11 digits' }));
+      return;
+    }
+    setIsBvnVerified(true);
+    toast.success('BVN Verified (Simulated)');
+    setFieldErrors((prev) => {
+      const n = { ...prev };
+      delete n.bvn;
+      return n;
+    });
+  };
+
+  const handleVerifyNin = (e) => {
+    e.preventDefault();
+    if (!formData.nin || formData.nin.length !== 11) {
+      setFieldErrors((prev) => ({ ...prev, nin: 'NIN must be exactly 11 digits' }));
+      return;
+    }
+    if (!formData.dateOfBirth) {
+      setFieldErrors((prev) => ({ ...prev, dateOfBirth: 'Date of birth is required to verify NIN' }));
+      return;
+    }
+    setIsNinVerified(true);
+    toast.success('NIN Verified (Simulated)');
+    setFieldErrors((prev) => {
+      const n = { ...prev };
+      delete n.nin;
+      return n;
+    });
   };
 
   const validate = () => {
@@ -48,11 +99,10 @@ const Signup = () => {
     if (!formData.lastName.trim() || formData.lastName.trim().length < 2) errors.lastName = 'Last name must be at least 2 characters';
     if (!formData.email || !/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(formData.email)) errors.email = 'Please enter a valid email address';
     if (!formData.localPhone || formData.localPhone.length < 10) errors.localPhone = 'Enter a valid 10-digit number';
-    
-    // --- REAL BVN & NIN VALIDATION COMMENTED OUT FOR TESTING ---
-    // if (!formData.bvn || formData.bvn.length !== 11) errors.bvn = `BVN must be exactly 11 digits (${formData.bvn.length}/11)`;
-    // if (!formData.nin || formData.nin.length !== 11) errors.nin = `NIN must be exactly 11 digits (${formData.nin.length}/11)`;
-    
+
+    if (!isBvnVerified) errors.bvn = 'Please verify your BVN before continuing';
+    if (!isNinVerified) errors.nin = 'Please verify your NIN before continuing';
+
     if (!formData.dateOfBirth) {
       errors.dateOfBirth = 'Date of birth is required';
     } else {
@@ -61,15 +111,18 @@ const Signup = () => {
       if (isNaN(birth.getTime())) errors.dateOfBirth = 'Enter a valid date (YYYY-MM-DD)';
       else if (age < 18) errors.dateOfBirth = 'You must be at least 18 years old';
     }
+
     if (!formData.password) errors.password = 'Password is required';
     else if (formData.password.length < 6) errors.password = 'Password must be at least 6 characters';
     else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) errors.password = 'Password must contain uppercase, lowercase, and number';
+
     return errors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFieldErrors({});
+
     const errors = validate();
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
@@ -79,22 +132,17 @@ const Signup = () => {
 
     try {
       setIsLoading(true);
-
-      // --- SIMULATED BVN AND NIN DATA ---
-      // Uses user input if provided; defaults to a 11-digit mock string if left blank or partial
-      const simulatedBvn = formData.bvn.length === 11 ? formData.bvn : '12345678901';
-      const simulatedNin = formData.nin.length === 11 ? formData.nin : '12345678901';
-
       const result = await signup({
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
         email: formData.email.trim().toLowerCase(),
         phoneNumber: fullPhone,
-        bvn: simulatedBvn,
-        nin: simulatedNin,
+        bvn: formData.bvn,
+        nin: formData.nin,
         dateOfBirth: formData.dateOfBirth,
         password: formData.password,
       });
+
       if (result?.requiresOtp) {
         setOtpState({ userId: result.userId, phoneNumber: result.phoneNumber, devOtp: result.devOtp });
       }
@@ -103,11 +151,11 @@ const Signup = () => {
         toast.error(err.message);
         if (err.errors?.length > 0) {
           const fe = {};
-          err.errors.forEach(e => { fe[e.field] = e.message; });
+          err.errors.forEach((e) => {
+            fe[e.field] = e.message;
+          });
           setFieldErrors(fe);
         }
-      } else if (err instanceof APIError && err.statusCode === 429) {
-        toast.error('Too many attempts. Please wait 15 minutes before trying again.');
       } else {
         toast.error('An unexpected error occurred. Please try again.');
       }
@@ -149,16 +197,24 @@ const Signup = () => {
 
   const hasErr = (f) => !!fieldErrors[f];
   const getErr = (f) => fieldErrors[f];
-  const inputCls = (f) => `w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition duration-200 ${
-    hasErr(f) ? 'border-red-500 focus:ring-red-500 bg-red-50' : 'border-deepBlue-200 focus:ring-deepBlue-500'
-  }`;
+  const inputCls = (f) =>
+    `w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition duration-200 ${
+      hasErr(f) ? 'border-red-500 focus:ring-red-500 bg-red-50' : 'border-deepBlue-200 focus:ring-deepBlue-500'
+    }`;
 
   return (
     <div>
+      <div className="bg-slate-800 text-slate-200 p-4 rounded-lg mb-6 text-sm">
+        Enter your BVN and NIN, then tap Verify for each. Date of birth is required to verify your NIN.
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Name */}
         <div className="grid grid-cols-2 gap-4">
-          {[['firstName', 'First Name', 'John', 'given-name'], ['lastName', 'Last Name', 'Doe', 'family-name']].map(([name, label, ph, ac]) => (
+          {[
+            ['firstName', 'First Name', 'John', 'given-name'],
+            ['lastName', 'Last Name', 'Doe', 'family-name'],
+          ].map(([name, label, ph, ac]) => (
             <div key={name}>
               <label className="block text-sm font-medium text-deepBlue-700 mb-2">{label} *</label>
               <input type="text" name={name} value={formData[name]} onChange={handleChange} placeholder={ph} className={inputCls(name)} disabled={isLoading} autoComplete={ac} />
@@ -174,43 +230,71 @@ const Signup = () => {
           {hasErr('email') && <p className="text-xs text-red-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('email')}</p>}
         </div>
 
-        {/* Phone with +234 prefix */}
+        {/* Phone */}
         <div>
           <label className="block text-sm font-medium text-deepBlue-700 mb-2">Phone Number *</label>
           <div className={`flex items-center border rounded-lg overflow-hidden transition duration-200 ${hasErr('localPhone') ? 'border-red-500 bg-red-50' : 'border-deepBlue-200'}`}>
             <span className="px-3 py-3 bg-gray-50 border-r border-deepBlue-200 text-sm font-medium text-deepBlue-700 whitespace-nowrap">🇳🇬 +234</span>
             <input type="tel" name="localPhone" value={formData.localPhone} onChange={handleChange} placeholder="8012345678" className="flex-1 px-3 py-3 focus:outline-none bg-transparent" disabled={isLoading} maxLength={10} />
           </div>
-          {hasErr('localPhone') ? <p className="text-xs text-red-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('localPhone')}</p>
-            : <p className="text-xs text-deepBlue-500 mt-1 flex items-center gap-1"><Info className="w-3 h-3" />10-digit number after +234</p>}
+          {hasErr('localPhone') ? (
+            <p className="text-xs text-red-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('localPhone')}</p>
+          ) : (
+            <p className="text-xs text-deepBlue-500 mt-1 flex items-center gap-1"><Info className="w-3 h-3" />10-digit number after +234</p>
+          )}
         </div>
 
-        {/* BVN (Optional / Simulated in Test Mode) */}
-        <div>
-          <label className="block text-sm font-medium text-deepBlue-700 mb-2">
-            BVN <span className="text-xs text-amber-600 font-normal">(Optional for testing)</span>
-          </label>
-          <input type="text" name="bvn" value={formData.bvn} onChange={handleChange} placeholder="12345678901 (Simulated)" maxLength={11} className={inputCls('bvn')} disabled={isLoading} />
-          {hasErr('bvn') ? <p className="text-xs text-red-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('bvn')}</p>
-            : <p className="text-xs text-deepBlue-500 mt-1">Leave blank to use mock BVN: 12345678901</p>}
-        </div>
-
-        {/* NIN (Optional / Simulated in Test Mode) */}
-        <div>
-          <label className="block text-sm font-medium text-deepBlue-700 mb-2">
-            NIN <span className="text-xs text-amber-600 font-normal">(Optional for testing)</span>
-          </label>
-          <input type="text" name="nin" value={formData.nin} onChange={handleChange} placeholder="12345678901 (Simulated)" maxLength={11} className={inputCls('nin')} disabled={isLoading} />
-          {hasErr('nin') ? <p className="text-xs text-red-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('nin')}</p>
-            : <p className="text-xs text-deepBlue-500 mt-1">Leave blank to use mock NIN: 12345678901</p>}
-        </div>
-
-        {/* DOB with auto-format */}
+        {/* Date of Birth */}
         <div>
           <label className="block text-sm font-medium text-deepBlue-700 mb-2">Date of Birth *</label>
           <input type="text" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleChange} placeholder="YYYY-MM-DD" maxLength={10} className={inputCls('dateOfBirth')} disabled={isLoading} inputMode="numeric" />
-          {hasErr('dateOfBirth') ? <p className="text-xs text-red-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('dateOfBirth')}</p>
-            : <p className="text-xs text-deepBlue-500 mt-1">You must be at least 18 years old</p>}
+          {hasErr('dateOfBirth') ? (
+            <p className="text-xs text-red-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('dateOfBirth')}</p>
+          ) : (
+            <p className="text-xs text-deepBlue-500 mt-1">You must be at least 18 years old</p>
+          )}
+        </div>
+
+        {/* BVN */}
+        <div>
+          <label className="block text-sm font-medium text-deepBlue-700 mb-2">BVN (11 digits) *</label>
+          <div className="flex gap-2">
+            <input type="text" name="bvn" value={formData.bvn} onChange={handleChange} placeholder="01983091893" maxLength={11} className={inputCls('bvn')} disabled={isLoading} />
+            <button
+              type="button"
+              onClick={handleVerifyBvn}
+              disabled={isLoading || isBvnVerified}
+              className={`px-5 py-3 rounded-lg font-medium text-sm transition ${
+                isBvnVerified
+                  ? 'bg-emerald-600 text-white cursor-default'
+                  : 'bg-slate-700 hover:bg-slate-600 text-white'
+              }`}
+            >
+              {isBvnVerified ? 'Verified ✓' : 'Verify'}
+            </button>
+          </div>
+          {hasErr('bvn') && <p className="text-xs text-red-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('bvn')}</p>}
+        </div>
+
+        {/* NIN */}
+        <div>
+          <label className="block text-sm font-medium text-deepBlue-700 mb-2">NIN (11 digits) *</label>
+          <div className="flex gap-2">
+            <input type="text" name="nin" value={formData.nin} onChange={handleChange} placeholder="19834798614" maxLength={11} className={inputCls('nin')} disabled={isLoading} />
+            <button
+              type="button"
+              onClick={handleVerifyNin}
+              disabled={isLoading || isNinVerified}
+              className={`px-5 py-3 rounded-lg font-medium text-sm transition ${
+                isNinVerified
+                  ? 'bg-emerald-600 text-white cursor-default'
+                  : 'bg-slate-700 hover:bg-slate-600 text-white'
+              }`}
+            >
+              {isNinVerified ? 'Verified ✓' : 'Verify'}
+            </button>
+          </div>
+          {hasErr('nin') && <p className="text-xs text-red-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('nin')}</p>}
         </div>
 
         {/* Password */}
@@ -222,12 +306,28 @@ const Signup = () => {
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
-          {hasErr('password') ? <p className="text-xs text-red-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('password')}</p>
-            : <p className="text-xs text-deepBlue-500 mt-1">At least 6 characters with uppercase, lowercase, and number</p>}
+          {hasErr('password') ? (
+            <p className="text-xs text-red-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('password')}</p>
+          ) : (
+            <p className="text-xs text-deepBlue-500 mt-1">At least 6 characters with uppercase, lowercase, and number</p>
+          )}
         </div>
 
-        <button type="submit" disabled={isLoading} className={`w-full py-3 rounded-lg font-semibold transition duration-200 ${isLoading ? 'bg-deepBlue-300 cursor-not-allowed' : 'bg-deepBlue-600 hover:bg-deepBlue-700 text-white'}`}>
-          {isLoading ? <div className="flex items-center justify-center gap-2"><LoadingSpinner size="sm" text="" /><span>Creating Account...</span></div> : 'Create Account'}
+        <button
+          type="submit"
+          disabled={isLoading}
+          className={`w-full py-3 rounded-lg font-semibold transition duration-200 ${
+            isLoading ? 'bg-deepBlue-300 cursor-not-allowed' : 'bg-deepBlue-600 hover:bg-deepBlue-700 text-white'
+          }`}
+        >
+          {isLoading ? (
+            <div className="flex items-center justify-center gap-2">
+              <LoadingSpinner size="sm" text="" />
+              <span>Creating Account...</span>
+            </div>
+          ) : (
+            'Continue'
+          )}
         </button>
       </form>
     </div>

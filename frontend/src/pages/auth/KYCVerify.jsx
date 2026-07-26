@@ -6,7 +6,7 @@ import { useToast } from '../../components/common/Toast';
 /**
  * KYC Verify Screen - Step 3 of 3
  * 
- * Consolidated BVN, NIN, and Date of Birth verification
+ * Client-Side Consolidated BVN, NIN, and Date of Birth verification (Testing Mode)
  */
 const KYCVerify = () => {
   const navigate = useNavigate();
@@ -23,7 +23,6 @@ const KYCVerify = () => {
   const [errors, setErrors] = useState({});
   const [bvnVerified, setBvnVerified] = useState(false);
   const [ninVerified, setNinVerified] = useState(false);
-  const [isVerifying, setIsVerifying] = useState(false);
 
   // Redirect if no required data
   useEffect(() => {
@@ -60,61 +59,40 @@ const KYCVerify = () => {
     });
   };
 
-  const handleVerifyBVN = async () => {
+  // --- CLIENT-SIDE VERIFY HANDLERS (NO BACKEND CALLS) ---
+  const handleVerifyBVN = () => {
     if (formData.bvn.length !== 11) {
       setErrors(prev => ({ ...prev, bvn: 'BVN must be 11 digits' }));
       return;
     }
 
-    setIsVerifying(true);
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/verify-bvn`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bvn: formData.bvn }),
-      });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'BVN verification failed');
-
-      setBvnVerified(true);
-      toast.success('BVN verified successfully');
-    } catch (error) {
-      toast.error(error.message || 'BVN verification failed');
-      setErrors(prev => ({ ...prev, bvn: error.message }));
-    } finally {
-      setIsVerifying(false);
-    }
+    setBvnVerified(true);
+    toast.success('BVN verified (Simulated)');
+    setErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors.bvn;
+      return newErrors;
+    });
   };
 
-  const handleVerifyNIN = async () => {
+  const handleVerifyNIN = () => {
     if (formData.nin.length !== 11) {
       setErrors(prev => ({ ...prev, nin: 'NIN must be 11 digits' }));
       return;
     }
 
-    setIsVerifying(true);
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/verify-nin`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          nin: formData.nin,
-          dateOfBirth: formData.dateOfBirth 
-        }),
-      });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'NIN verification failed');
-
-      setNinVerified(true);
-      toast.success('NIN verified successfully');
-    } catch (error) {
-      toast.error(error.message || 'NIN verification failed');
-      setErrors(prev => ({ ...prev, nin: error.message }));
-    } finally {
-      setIsVerifying(false);
+    if (!formData.dateOfBirth.trim()) {
+      setErrors(prev => ({ ...prev, dateOfBirth: 'Date of birth is required to verify NIN' }));
+      return;
     }
+
+    setNinVerified(true);
+    toast.success('NIN verified (Simulated)');
+    setErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors.nin;
+      return newErrors;
+    });
   };
 
   const validate = () => {
@@ -187,6 +165,30 @@ const KYCVerify = () => {
               </p>
             </div>
 
+            {/* Date of Birth (Moved up for UX flow with NIN) */}
+            <div>
+              <label className="block text-sm font-medium text-gray-800 mb-2 ml-3">
+                Date of Birth
+              </label>
+              <input
+                type="text"
+                name="dateOfBirth"
+                value={formData.dateOfBirth}
+                onChange={handleChange}
+                placeholder="YYYY-MM-DD"
+                maxLength={10}
+                className={`w-full px-4 py-3 bg-white rounded-lg border ${
+                  errors.dateOfBirth ? 'border-red-500' : 'border-gray-200'
+                } focus:outline-none focus:ring-2 focus:ring-deepBlue-500`}
+              />
+              {errors.dateOfBirth && (
+                <p className="text-xs text-red-600 mt-1 flex items-center gap-1 ml-1">
+                  <AlertCircle className="w-3 h-3" />
+                  {errors.dateOfBirth}
+                </p>
+              )}
+            </div>
+
             {/* BVN */}
             <div>
               <label className="block text-sm font-medium text-gray-800 mb-2 ml-3">
@@ -206,8 +208,9 @@ const KYCVerify = () => {
                   disabled={bvnVerified}
                 />
                 <button
+                  type="button"
                   onClick={handleVerifyBVN}
-                  disabled={formData.bvn.length !== 11 || bvnVerified || isVerifying}
+                  disabled={formData.bvn.length !== 11 || bvnVerified}
                   className={`w-12 h-12 rounded-lg flex items-center justify-center border transition duration-200 ${
                     bvnVerified
                       ? 'bg-green-100 border-green-500'
@@ -258,8 +261,9 @@ const KYCVerify = () => {
                   disabled={ninVerified}
                 />
                 <button
+                  type="button"
                   onClick={handleVerifyNIN}
-                  disabled={formData.nin.length !== 11 || ninVerified || isVerifying}
+                  disabled={formData.nin.length !== 11 || ninVerified}
                   className={`w-12 h-12 rounded-lg flex items-center justify-center border transition duration-200 ${
                     ninVerified
                       ? 'bg-green-100 border-green-500'
@@ -291,30 +295,6 @@ const KYCVerify = () => {
               )}
             </div>
 
-            {/* Date of Birth */}
-            <div>
-              <label className="block text-sm font-medium text-gray-800 mb-2 ml-3">
-                Date of Birth
-              </label>
-              <input
-                type="text"
-                name="dateOfBirth"
-                value={formData.dateOfBirth}
-                onChange={handleChange}
-                placeholder="YYYY-MM-DD"
-                maxLength={10}
-                className={`w-full px-4 py-3 bg-white rounded-lg border ${
-                  errors.dateOfBirth ? 'border-red-500' : 'border-gray-200'
-                } focus:outline-none focus:ring-2 focus:ring-deepBlue-500`}
-              />
-              {errors.dateOfBirth && (
-                <p className="text-xs text-red-600 mt-1 flex items-center gap-1 ml-1">
-                  <AlertCircle className="w-3 h-3" />
-                  {errors.dateOfBirth}
-                </p>
-              )}
-            </div>
-
             {/* Progress Bar */}
             <div className="h-1 bg-white/30 rounded-full overflow-hidden mt-4">
               <div className="h-full bg-deepBlue-600 rounded-full" style={{ width: '100%' }} />
@@ -323,6 +303,7 @@ const KYCVerify = () => {
             {/* Continue Button */}
             <div className="pt-4">
               <button
+                type="button"
                 onClick={handleContinue}
                 disabled={!canContinue}
                 className={`w-full bg-deepBlue-600 text-white font-semibold py-5 px-6 rounded-xl transition duration-200 flex items-center justify-between ${
