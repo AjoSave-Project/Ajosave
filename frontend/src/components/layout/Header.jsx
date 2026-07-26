@@ -100,14 +100,13 @@ const Header = () => {
   return (
     <>
       <SettingsSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} user={user} onLogout={handleLogout} />
-      <div className="fixed top-4 left-4 right-4 z-50">
+      <div className="fixed top-4 right-4 z-50">
         <div className={`mx-auto max-w-6xl rounded-2xl transform -skew-x-1 px-4 py-2 transition-all duration-300 ${
           isScrolled 
-            ? 'bg-white/95 backdrop-blur-md shadow-xl border border-deepBlue-200' 
-            : 'bg-white shadow-lg border border-deepBlue-200'
+            ? ' border border-deepBlue-200 backdrop-blur-md' 
+            : 'bg-white'
         }`}>
         <div className="container mx-auto flex items-center justify-between transform skew-x-1">
-          <h1 className="text-lg font-bold text-deepBlue-600">AjoSave</h1>
           {user && (
             <button onClick={() => setSidebarOpen(true)}
               className="flex items-center space-x-2 hover:bg-deepBlue-50 rounded-xl px-2 py-1 transition">
