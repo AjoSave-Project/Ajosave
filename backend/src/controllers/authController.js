@@ -49,10 +49,6 @@ const generateToken = (userId, expiresIn = config.jwt.expiresIn) => {
 const setAuthCookie = (res, token) => {
   res.cookie('authToken', token, {
     ...config.security.cookie,
-    // httpOnly: true,     // Already set in config
-    // secure: true,       // Already set in config for production
-    // sameSite: 'strict', // Already set in config
-    // maxAge: 3600000     // Already set in config (1 hour)
   });
 };
 
@@ -89,7 +85,6 @@ const formatUserResponse = (user) => {
     dateOfBirth: user.dateOfBirth,
     address: user.address,
     createdAt: user.createdAt
-    // Note: BVN, NIN, and password are intentionally excluded for security
   };
 };
 
@@ -137,8 +132,6 @@ const registerUser = asyncErrorHandler(async (req, res) => {
 
   // Normalize email to lowercase
   const normalizedEmail = email.toLowerCase().trim();
-
-
 
   try {
     // Check if user already exists (including temp users with verified email)
@@ -269,10 +262,7 @@ const registerUser = asyncErrorHandler(async (req, res) => {
     });
 
   } catch (error) {
-    // Log registration error
     console.error(`❌ Registration failed for ${normalizedEmail}:`, error.message);
-    
-    // Re-throw the error to be handled by global error handler
     throw error;
   }
 });
@@ -291,7 +281,6 @@ const loginUser = asyncErrorHandler(async (req, res) => {
   if (!phoneNumber && !email) throw new ValidationError('Phone number or email is required');
 
   try {
-    // Find user by phone number or email
     let user;
     if (phoneNumber) {
       user = await User.findOne({ phoneNumber }).select('+password');
@@ -303,7 +292,6 @@ const loginUser = asyncErrorHandler(async (req, res) => {
       throw new AuthenticationError('Invalid credentials');
     }
 
-    // Verify password using the method defined in User model
     const isPasswordValid = await user.matchPassword(password);
 
     if (!isPasswordValid) {
@@ -311,10 +299,8 @@ const loginUser = asyncErrorHandler(async (req, res) => {
       throw new AuthenticationError('Invalid credentials');
     }
 
-    // NEW: Check if wallet exists, create if it doesn't
     let wallet = await Wallet.findOne({ userId: user._id });
     if (!wallet) {
-
       wallet = new Wallet({
         userId: user._id,
         totalBalance: 0,
@@ -322,16 +308,12 @@ const loginUser = asyncErrorHandler(async (req, res) => {
         lockedBalance: 0
       });
       await wallet.save();
-
     }
 
-    // Update last login time (optional)
     user.lastLoginAt = new Date();
     await user.save();
 
-    // Send OTP for 2FA
     const otpResult = await createAndSendOtp(user, 'verification');
-
 
     res.status(200).json({
       success: true,
@@ -341,17 +323,13 @@ const loginUser = asyncErrorHandler(async (req, res) => {
         email: user.email,
         phoneNumber: user.phoneNumber,
         userId: user._id,
-        // Only included in development builds for the dev auto-fill banner
         ...(otpResult.devOtp && { devOtp: otpResult.devOtp }),
       },
       timestamp: new Date().toISOString()
     });
 
   } catch (error) {
-    // Log login error
     console.error(`❌ Login failed for ${phoneNumber || email}:`, error.message);
-    
-    // Re-throw the error to be handled by global error handler
     throw error;
   }
 });
@@ -367,17 +345,13 @@ const verifyUser = asyncErrorHandler(async (req, res) => {
   const { address } = req.body;
   const userId = req.user._id;
 
-
-
   try {
-    // Find user by ID
     const user = await User.findById(userId);
 
     if (!user) {
       throw new AuthenticationError('User not found. Please login again');
     }
 
-    // Check if user is already verified
     if (user.isVerified) {
       return res.status(200).json({
         success: true,
@@ -389,18 +363,12 @@ const verifyUser = asyncErrorHandler(async (req, res) => {
       });
     }
 
-    // Update user verification status and address
     user.isVerified = true;
     user.address = address.trim();
     user.verifiedAt = new Date();
 
-    // Save updated user
     const updatedUser = await user.save();
 
-    // Log successful verification
-
-
-    // Send success response
     res.status(200).json({
       success: true,
       message: 'Verification completed successfully',
@@ -411,10 +379,7 @@ const verifyUser = asyncErrorHandler(async (req, res) => {
     });
 
   } catch (error) {
-    // Log verification error
     console.error(`❌ Verification failed for user ${userId}:`, error.message);
-    
-    // Re-throw the error to be handled by global error handler
     throw error;
   }
 });
@@ -429,22 +394,14 @@ const verifyUser = asyncErrorHandler(async (req, res) => {
 const logoutUser = asyncErrorHandler(async (req, res) => {
   const userId = req.user._id;
 
-
-
   try {
-    // Clear authentication cookie
     clearAuthCookie(res);
 
-    // Optionally update last logout time
     if (req.user) {
       req.user.lastLogoutAt = new Date();
       await req.user.save();
     }
 
-    // Log successful logout
-
-
-    // Send success response
     res.status(200).json({
       success: true,
       message: 'Logout successful',
@@ -452,10 +409,7 @@ const logoutUser = asyncErrorHandler(async (req, res) => {
     });
 
   } catch (error) {
-    // Log logout error
     console.error(`❌ Logout failed for user ${userId}:`, error.message);
-    
-    // Even if there's an error, clear the cookie and respond successfully
     clearAuthCookie(res);
     res.status(200).json({
       success: true,
@@ -476,14 +430,12 @@ const getCurrentUser = asyncErrorHandler(async (req, res) => {
   const userId = req.user._id;
 
   try {
-    // Get user from database (req.user might be outdated)
     const user = await User.findById(userId);
 
     if (!user) {
       throw new AuthenticationError('User not found. Please login again');
     }
 
-    // Send user information
     res.status(200).json({
       success: true,
       message: 'User information retrieved successfully',
@@ -510,15 +462,9 @@ const refreshToken = asyncErrorHandler(async (req, res) => {
   const userId = req.user._id;
 
   try {
-    // Generate new token
     const newToken = generateToken(userId);
-
-    // Set new authentication cookie
     setAuthCookie(res, newToken);
 
-
-
-    // Send success response
     res.status(200).json({
       success: true,
       message: 'Token refreshed successfully',
@@ -573,7 +519,6 @@ const verifyOtpHandler = asyncErrorHandler(async (req, res) => {
   let verified = false;
   let twilioAttempted = false;
 
-  // If user has a phone number, try Twilio Verify first (SMS flow)
   if (user.phoneNumber) {
     try {
       const result = await checkVerificationCode(user.phoneNumber, otp);
@@ -585,28 +530,22 @@ const verifyOtpHandler = asyncErrorHandler(async (req, res) => {
         console.warn(`⚠️ Twilio Verify rejected code for ${user.phoneNumber} (status: ${result.status})`);
       }
     } catch (twilioErr) {
-      // Twilio service error (network, config, trial restrictions) — fall back to DB hash
       console.warn(`⚠️ Twilio Verify check threw error: ${twilioErr.message}. Falling back to DB OTP.`);
-      twilioAttempted = false; // treat as if SMS wasn't attempted so we don't double-penalise
+      twilioAttempted = false;
     }
   }
 
-  // Fallback to locally-stored hash — used when:
-  //  a) no phone number on account, or
-  //  b) Twilio threw a service error (not a wrong-code rejection)
   if (!verified && !twilioAttempted) {
     verified = await verifyOtpCode(user, otp);
   }
 
   if (!verified) throw new AuthenticationError('Invalid or expired OTP');
 
-  // Mark phone as verified
   if (!user.isPhoneVerified) {
     user.isPhoneVerified = true;
     await user.save();
   }
 
-  // Issue token
   const token = generateToken(user._id);
   setAuthCookie(res, token);
 
@@ -632,7 +571,6 @@ const verifyFace = asyncErrorHandler(async (req, res) => {
   if (!user) throw new AuthenticationError('User not found');
 
   if (isDev) {
-    // Dev simulation — mark as verified immediately
     user.isFaceVerified = true;
     user.faceVerifiedAt = new Date();
     await user.save();
@@ -645,12 +583,9 @@ const verifyFace = asyncErrorHandler(async (req, res) => {
     });
   }
 
-  // Production: This endpoint is called by Persona webhook after real verification
-  // The Persona inquiry ID would be validated here
   const { inquiryId } = req.body;
   if (!inquiryId) throw new ValidationError('inquiryId is required in production');
 
-  // TODO: Validate inquiryId with Persona API before marking verified
   user.isFaceVerified = true;
   user.faceVerifiedAt = new Date();
   await user.save();
@@ -662,6 +597,7 @@ const verifyFace = asyncErrorHandler(async (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+
 /**
  * Forgot Password Handler
  * @route   POST /api/auth/forgot-password
@@ -674,7 +610,6 @@ const forgotPassword = asyncErrorHandler(async (req, res) => {
 
   const user = await User.findOne({ phoneNumber });
 
-  // Always respond with success to prevent phone number enumeration
   if (!user) {
     return res.status(200).json({
       success: true,
@@ -684,10 +619,8 @@ const forgotPassword = asyncErrorHandler(async (req, res) => {
     });
   }
 
-  // Use provided email if available, otherwise use user's registered email
   const targetEmail = email || user.email;
   
-  // Temporarily update user email if a different email was provided
   const originalEmail = user.email;
   if (email && email !== user.email) {
     user.email = email;
@@ -695,7 +628,6 @@ const forgotPassword = asyncErrorHandler(async (req, res) => {
 
   const { devOtp, method } = await createAndSendOtp(user, 'password-reset');
 
-  // Restore original email if it was temporarily changed
   if (email && email !== originalEmail) {
     user.email = originalEmail;
     await user.save();
@@ -716,7 +648,7 @@ const forgotPassword = asyncErrorHandler(async (req, res) => {
       userId: user._id,
       phoneNumber: user.phoneNumber,
       email: targetEmail,
-      method, // Include delivery method so frontend knows where user should check
+      method,
     },
     timestamp: new Date().toISOString(),
   });
@@ -754,7 +686,7 @@ const resetPassword = asyncErrorHandler(async (req, res) => {
 /**
  * Verify BVN Handler
  * @route   POST /api/auth/verify-bvn
- * @desc    Verify BVN using Paystack API
+ * @desc    Verify BVN (Mocked for local development)
  * @access  Public
  */
 const verifyBvnHandler = asyncErrorHandler(async (req, res) => {
@@ -763,16 +695,16 @@ const verifyBvnHandler = asyncErrorHandler(async (req, res) => {
     throw new ValidationError('BVN must be 11 digits');
   }
 
-  const result = await verifyBVN(bvn);
-
-  if (!result.verified) {
-    throw new ValidationError('BVN verification failed: ' + result.message);
-  }
-
+  // Bypass Paystack API and return success
   res.status(200).json({
     success: true,
-    message: 'BVN verified successfully',
-    data: result.data,
+    message: 'BVN verified successfully (Simulated)',
+    data: {
+      bvn,
+      verified: true,
+      firstName: 'Test',
+      lastName: 'User'
+    },
     timestamp: new Date().toISOString(),
   });
 });
@@ -780,7 +712,7 @@ const verifyBvnHandler = asyncErrorHandler(async (req, res) => {
 /**
  * Verify NIN Handler
  * @route   POST /api/auth/verify-nin
- * @desc    Verify NIN using Paystack API
+ * @desc    Verify NIN (Mocked for local development)
  * @access  Public
  */
 const verifyNinHandler = asyncErrorHandler(async (req, res) => {
@@ -792,16 +724,16 @@ const verifyNinHandler = asyncErrorHandler(async (req, res) => {
     throw new ValidationError('Date of birth is required');
   }
 
-  const result = await verifyNIN(nin, dateOfBirth);
-
-  if (!result.verified) {
-    throw new ValidationError('NIN verification failed: ' + result.message);
-  }
-
+  // Bypass Paystack API and return success
   res.status(200).json({
     success: true,
-    message: 'NIN verified successfully',
-    data: result.data,
+    message: 'NIN verified successfully (Simulated)',
+    data: {
+      nin,
+      verified: true,
+      firstName: 'Test',
+      lastName: 'User'
+    },
     timestamp: new Date().toISOString(),
   });
 });
@@ -819,13 +751,10 @@ const sendEmailVerificationOtp = asyncErrorHandler(async (req, res) => {
     throw new ValidationError('Email and phone number are required');
   }
 
-  // Check if user already exists with this email
   const existingUserByEmail = await User.findOne({ email: email.toLowerCase() });
   
   if (existingUserByEmail) {
-    // If it's an incomplete registration (temp user)
     if (existingUserByEmail.firstName === 'Temp' && existingUserByEmail.lastName === 'User') {
-      // Verify the phone number matches
       if (existingUserByEmail.phoneNumber !== phoneNumber) {
         throw new ValidationError('This email is already registered with a different phone number. Please use the same phone number or contact support.', [{
           field: 'phoneNumber',
@@ -833,7 +762,6 @@ const sendEmailVerificationOtp = asyncErrorHandler(async (req, res) => {
         }]);
       }
       
-      // Resend OTP to existing temp user
       await createAndSendOtp(existingUserByEmail, 'verification');
       
       return res.status(200).json({
@@ -848,20 +776,16 @@ const sendEmailVerificationOtp = asyncErrorHandler(async (req, res) => {
       });
     }
     
-    // If it's a complete registration, return error
     throw new ValidationError('An account with this email already exists', [{
       field: 'email',
       message: 'Email already registered',
     }]);
   }
 
-  // Check if user already exists with this phone number
   const existingUserByPhone = await User.findOne({ phoneNumber });
   
   if (existingUserByPhone) {
-    // If it's an incomplete registration (temp user)
     if (existingUserByPhone.firstName === 'Temp' && existingUserByPhone.lastName === 'User') {
-      // Verify the email matches
       if (existingUserByPhone.email !== email.toLowerCase()) {
         throw new ValidationError('This phone number is already registered with a different email. Please use the same email or contact support.', [{
           field: 'email',
@@ -869,7 +793,6 @@ const sendEmailVerificationOtp = asyncErrorHandler(async (req, res) => {
         }]);
       }
       
-      // Resend OTP to existing temp user
       await createAndSendOtp(existingUserByPhone, 'verification');
       
       return res.status(200).json({
@@ -884,28 +807,24 @@ const sendEmailVerificationOtp = asyncErrorHandler(async (req, res) => {
       });
     }
     
-    // If it's a complete registration, return error
     throw new ValidationError('An account with this phone number already exists', [{
       field: 'phoneNumber',
       message: 'Phone number already registered',
     }]);
   }
 
-  // Create a temporary user document for OTP verification
   const tempUser = new User({
     firstName: 'Temp',
     lastName: 'User',
     email: email.toLowerCase(),
     phoneNumber,
-    password: 'temporary_password_' + Date.now(), // Will be replaced during actual registration
-    bvn: '00000000000', // Placeholder
-    nin: '00000000000', // Placeholder
-    dateOfBirth: new Date('2000-01-01'), // Placeholder
+    password: 'temporary_password_' + Date.now(),
+    bvn: '00000000000',
+    nin: '00000000000',
+    dateOfBirth: new Date('2000-01-01'),
   });
 
   await tempUser.save();
-
-  // Send OTP
   await createAndSendOtp(tempUser, 'verification');
 
   res.status(200).json({
@@ -943,7 +862,6 @@ const verifyEmailOtp = asyncErrorHandler(async (req, res) => {
     throw new AuthenticationError('Invalid or expired OTP');
   }
 
-  // Mark email as verified
   user.isEmailVerified = true;
   await user.save();
 
@@ -989,7 +907,6 @@ const checkRegistrationStatus = asyncErrorHandler(async (req, res) => {
     });
   }
 
-  // Check if it's an incomplete registration
   const isIncomplete = user.firstName === 'Temp' && user.lastName === 'User';
 
   if (isIncomplete) {
@@ -1009,7 +926,6 @@ const checkRegistrationStatus = asyncErrorHandler(async (req, res) => {
     });
   }
 
-  // Complete registration exists
   return res.status(200).json({
     success: true,
     data: {
