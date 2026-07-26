@@ -43,10 +43,11 @@ const config = {
       credentials: true // Allow cookies to be sent
     },
     // Cookie settings for JWT tokens
+    // Cookie settings for JWT tokens
     cookie: {
       httpOnly: true, // Prevent XSS attacks
       secure: process.env.NODE_ENV === 'production', // HTTPS only in production
-      sameSite: 'strict', // CSRF protection
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Required for cross-site Vercel subdomains
       maxAge: 30 * 60 * 1000 // 30 minutes in milliseconds
     }
   },
