@@ -21,15 +21,22 @@ const Login = () => {
 
   useEffect(() => {
     const saved = localStorage.getItem('rememberedPhone');
-    if (saved) setFormData(prev => ({ ...prev, localPhone: saved.replace(/^\+234/, '') }));
+    if (saved) {
+      // Strip leading +234 or leading 0 if present
+      const cleaned = saved.replace(/^\+234/, '').replace(/^0/, '');
+      setFormData(prev => ({ ...prev, localPhone: cleaned }));
+    }
   }, []);
 
-  const fullPhone = formData.localPhone ? `+234${formData.localPhone}` : '';
+  // Format phone number: strip leading 0 if user types it, then attach +234
+  const cleanedPhone = formData.localPhone.replace(/^0/, '');
+  const fullPhone = cleanedPhone ? `+234${cleanedPhone}` : '';
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === 'localPhone') {
-      const digits = value.replace(/\D/g, '').slice(0, 10);
+      // Allow user to type up to 11 digits (e.g., 080... or 80...)
+      const digits = value.replace(/\D/g, '').slice(0, 11);
       setFormData(prev => ({ ...prev, localPhone: digits }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
@@ -40,8 +47,9 @@ const Login = () => {
   const validate = () => {
     const errors = {};
     if (loginMode === 'phone') {
-      if (!formData.localPhone) errors.localPhone = 'Phone number is required';
-      else if (formData.localPhone.length < 10) errors.localPhone = 'Enter a valid 10-digit number';
+      const p = formData.localPhone.replace(/^0/, '');
+      if (!p) errors.localPhone = 'Phone number is required';
+      else if (p.length !== 10) errors.localPhone = 'Enter a valid 10-digit number (e.g. 8012345678)';
     } else {
       if (!formData.email) errors.email = 'Email is required';
       else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) errors.email = 'Enter a valid email address';
@@ -77,7 +85,9 @@ const Login = () => {
       } else if (err instanceof APIError && err.statusCode === 429) {
         toast.error('Too many attempts. Please wait 15 minutes before trying again.');
       } else {
-        toast.error(err.message || 'An unexpected error occurred. Please try again.');
+        // Display specific validation error messages returned by Express validator
+        const errMsg = err?.data?.errors?.[0]?.msg || err.message || 'An unexpected error occurred. Please try again.';
+        toast.error(errMsg);
       }
     } finally {
       setIsLoading(false);
@@ -181,7 +191,7 @@ const Login = () => {
                 className="flex-1 px-4 py-4 focus:outline-none bg-transparent text-white placeholder:text-white/60"
                 disabled={isLoading}
                 autoComplete="tel"
-                maxLength={10}
+                maxLength={11}
               />
             </div>
             {fieldErrors.localPhone?.trim() && (

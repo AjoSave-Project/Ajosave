@@ -25,7 +25,7 @@ const {
 const generateToken = (userId, expiresIn = config.jwt.expiresIn) => {
   try {
     return jwt.sign(
-      { 
+      {
         id: userId,
         iat: Math.floor(Date.now() / 1000) // Issued at time
       },
@@ -136,7 +136,7 @@ const registerUser = asyncErrorHandler(async (req, res) => {
   try {
     // Check if user already exists (including temp users with verified email)
     const existingUser = await checkUserExists(normalizedEmail, phoneNumber);
-    
+
     if (existingUser) {
       // If it's a temp user with verified email, update it instead of creating new
       if (existingUser.firstName === 'Temp' && existingUser.isEmailVerified) {
@@ -149,9 +149,9 @@ const registerUser = asyncErrorHandler(async (req, res) => {
         existingUser.dateOfBirth = new Date(dateOfBirth);
         existingUser.isVerified = true; // Mark as verified since email was verified in step 2
         existingUser.verifiedAt = new Date();
-        
+
         const savedUser = await existingUser.save();
-        
+
         // Create wallet if doesn't exist
         let wallet = await Wallet.findOne({ userId: savedUser._id });
         if (!wallet) {
@@ -166,11 +166,11 @@ const registerUser = asyncErrorHandler(async (req, res) => {
           });
           await wallet.save();
         }
-        
+
         // Generate JWT token using the standard generateToken helper
         const token = generateToken(savedUser._id);
         setAuthCookie(res, token);
-        
+
         return res.status(201).json({
           success: true,
           message: 'Registration successful! Welcome to Ajosave.',
@@ -181,7 +181,7 @@ const registerUser = asyncErrorHandler(async (req, res) => {
           timestamp: new Date().toISOString()
         });
       }
-      
+
       // Determine which field is duplicate for better error message
       let duplicateField = '';
       if (existingUser.email === normalizedEmail) {
@@ -189,7 +189,7 @@ const registerUser = asyncErrorHandler(async (req, res) => {
       } else if (existingUser.phoneNumber === phoneNumber) {
         duplicateField = 'phone number';
       }
-      
+
       throw new ValidationError(`An account with this ${duplicateField} already exists`, [{
         field: existingUser.email === normalizedEmail ? 'email' : 'phoneNumber',
         message: `This ${duplicateField} is already registered`,
@@ -620,7 +620,7 @@ const forgotPassword = asyncErrorHandler(async (req, res) => {
   }
 
   const targetEmail = email || user.email;
-  
+
   const originalEmail = user.email;
   if (email && email !== user.email) {
     user.email = email;
@@ -633,13 +633,13 @@ const forgotPassword = asyncErrorHandler(async (req, res) => {
     await user.save();
   }
 
-  const message = method === 'sms' 
+  const message = method === 'sms'
     ? 'OTP sent to your registered phone number.'
     : method === 'email'
-    ? 'OTP sent to your registered email address.'
-    : method === 'console'
-    ? 'OTP generated successfully. Check server console for development OTP.'
-    : 'OTP sent successfully.';
+      ? 'OTP sent to your registered email address.'
+      : method === 'console'
+        ? 'OTP generated successfully. Check server console for development OTP.'
+        : 'OTP sent successfully.';
 
   res.status(200).json({
     success: true,
@@ -746,13 +746,13 @@ const verifyNinHandler = asyncErrorHandler(async (req, res) => {
  */
 const sendEmailVerificationOtp = asyncErrorHandler(async (req, res) => {
   const { email, phoneNumber } = req.body;
-  
+
   if (!email || !phoneNumber) {
     throw new ValidationError('Email and phone number are required');
   }
 
   const existingUserByEmail = await User.findOne({ email: email.toLowerCase() });
-  
+
   if (existingUserByEmail) {
     if (existingUserByEmail.firstName === 'Temp' && existingUserByEmail.lastName === 'User') {
       if (existingUserByEmail.phoneNumber !== phoneNumber) {
@@ -761,9 +761,9 @@ const sendEmailVerificationOtp = asyncErrorHandler(async (req, res) => {
           message: 'Phone number mismatch',
         }]);
       }
-      
+
       await createAndSendOtp(existingUserByEmail, 'verification');
-      
+
       return res.status(200).json({
         success: true,
         message: 'Verification code sent to your email',
@@ -775,7 +775,7 @@ const sendEmailVerificationOtp = asyncErrorHandler(async (req, res) => {
         timestamp: new Date().toISOString(),
       });
     }
-    
+
     throw new ValidationError('An account with this email already exists', [{
       field: 'email',
       message: 'Email already registered',
@@ -783,7 +783,7 @@ const sendEmailVerificationOtp = asyncErrorHandler(async (req, res) => {
   }
 
   const existingUserByPhone = await User.findOne({ phoneNumber });
-  
+
   if (existingUserByPhone) {
     if (existingUserByPhone.firstName === 'Temp' && existingUserByPhone.lastName === 'User') {
       if (existingUserByPhone.email !== email.toLowerCase()) {
@@ -792,9 +792,9 @@ const sendEmailVerificationOtp = asyncErrorHandler(async (req, res) => {
           message: 'Email mismatch',
         }]);
       }
-      
+
       await createAndSendOtp(existingUserByPhone, 'verification');
-      
+
       return res.status(200).json({
         success: true,
         message: 'Verification code sent to your email',
@@ -806,7 +806,7 @@ const sendEmailVerificationOtp = asyncErrorHandler(async (req, res) => {
         timestamp: new Date().toISOString(),
       });
     }
-    
+
     throw new ValidationError('An account with this phone number already exists', [{
       field: 'phoneNumber',
       message: 'Phone number already registered',
@@ -847,7 +847,7 @@ const sendEmailVerificationOtp = asyncErrorHandler(async (req, res) => {
  */
 const verifyEmailOtp = asyncErrorHandler(async (req, res) => {
   const { userId, otp } = req.body;
-  
+
   if (!userId || !otp) {
     throw new ValidationError('userId and otp are required');
   }
@@ -885,7 +885,7 @@ const verifyEmailOtp = asyncErrorHandler(async (req, res) => {
  */
 const checkRegistrationStatus = asyncErrorHandler(async (req, res) => {
   const { email, phoneNumber } = req.body;
-  
+
   if (!email && !phoneNumber) {
     throw new ValidationError('Email or phone number is required');
   }
