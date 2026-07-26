@@ -33,14 +33,24 @@ export const AuthProvider = ({ children }) => {
    * 
    * Attempts to fetch current user from backend to restore session
    */
+  // src/context/AuthContext.js
+
   const initializeAuth = async () => {
     try {
       setLoading(true);
+
+      // Check if token exists locally before bothering the server
+      const token = localStorage.getItem('authToken'); // Match key name
+      if (!token) {
+        console.log('ℹ️ No active session found in localStorage');
+        setUser(null);
+        setIsAuthenticated(false);
+        return;
+      }
+
       console.log('🔄 Initializing authentication...');
-      
-      // Try to get current user (will work if valid cookie exists)
       const response = await authService.getCurrentUser();
-      
+
       const user = response.data?.user || response.user;
       if (response.success && user) {
         setUser(user);
@@ -48,14 +58,14 @@ export const AuthProvider = ({ children }) => {
         console.log('✅ User authenticated:', user.email);
       }
     } catch (error) {
-      // 401 = no session, expected for logged-out users — don't log as error
       if (error instanceof APIError && error.statusCode === 401) {
-        console.log('ℹ️ No active session found');
+        console.log('ℹ️ Session expired or invalid');
       } else {
         console.error('❌ Auth initialization error:', error);
       }
-      
-      // Clear any stale auth state
+
+      // Clean up expired or invalid tokens
+      localStorage.removeItem('authToken');
       setUser(null);
       setIsAuthenticated(false);
     } finally {
@@ -73,9 +83,9 @@ export const AuthProvider = ({ children }) => {
     try {
       setError(null);
       console.log('🔐 Logging in...');
-      
+
       const response = await authService.login(credentials);
-      
+
       if (response.data?.requiresOtp) {
         setPendingOtp(true);
         return { requiresOtp: true, userId: response.data.userId, phoneNumber: response.data.phoneNumber, devOtp: response.data.devOtp };
@@ -109,9 +119,9 @@ export const AuthProvider = ({ children }) => {
     try {
       setError(null);
       console.log('📝 Signing up...');
-      
+
       const response = await authService.register(userData);
-      
+
       if (response.data?.requiresOtp) {
         setPendingOtp(true);
         return { requiresOtp: true, userId: response.data.userId, phoneNumber: response.data.phoneNumber, devOtp: response.data.devOtp };
@@ -158,21 +168,21 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       setLoading(true);
-      
+
       console.log('👋 Logging out...');
-      
+
       await authService.logout();
-      
+
       // Clear local state
       setUser(null);
       setIsAuthenticated(false);
       setError(null);
       localStorage.removeItem('authToken');
-      
+
       console.log('✅ Logout successful');
     } catch (error) {
       console.error('❌ Logout failed:', error);
-      
+
       // Even if logout API call fails, clear local state
       setUser(null);
       setIsAuthenticated(false);
@@ -193,11 +203,11 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      
+
       console.log('🔍 Verifying account...');
-      
+
       const response = await authService.verifyUser(verificationData);
-      
+
       const user = response.data?.user || response.user;
       if (response.success && user) {
         setUser(user);
@@ -209,7 +219,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('❌ Verification failed:', error);
       setError(error.message);
-      
+
       // Re-throw error so component can handle it
       throw error;
     } finally {
@@ -226,17 +236,17 @@ export const AuthProvider = ({ children }) => {
   const refreshAuth = async () => {
     try {
       console.log('🔄 Refreshing auth token...');
-      
+
       await authService.refreshToken();
-      
+
       console.log('✅ Token refreshed');
     } catch (error) {
       console.error('❌ Token refresh failed:', error);
-      
+
       // If token refresh fails, user needs to log in again
       setUser(null);
       setIsAuthenticated(false);
-      
+
       throw error;
     }
   };
