@@ -132,9 +132,10 @@ const OtpVerification = ({ userId, phoneNumber, devOtp, onSuccess, onBack, verif
             onChange={e => handleChange(e.target.value, i)}
             onKeyDown={e => handleKeyDown(e, i)}
             disabled={isLoading}
-            className={`w-12 h-14 text-center text-2xl font-bold border-2 rounded-xl focus:outline-none transition-colors ${
-              digit ? 'border-deepBlue-500 bg-deepBlue-50' : 'border-deepBlue-200 bg-white'
-            }`}
+            className={`w-12 h-14 text-center text-2xl font-bold border-2 rounded-xl focus:outline-none transition-colors text-white ${digit
+                ? 'border-deepBlue-400 bg-deepBlue-900 focus:border-deepBlue-300'
+                : 'border-deepBlue-800 bg-deepBlue-950 focus:border-deepBlue-500'
+              }`}
           />
         ))}
       </div>
@@ -145,27 +146,27 @@ const OtpVerification = ({ userId, phoneNumber, devOtp, onSuccess, onBack, verif
           <button
             onClick={handleResend}
             disabled={isResending}
-            className="text-deepBlue-600 text-sm font-semibold hover:underline flex items-center gap-1 mx-auto"
+            className="text-deepBlue-400 text-sm font-semibold hover:underline flex items-center gap-1 mx-auto"
           >
             <RefreshCw className="w-3 h-3" />
             {isResending ? 'Sending...' : 'Resend Code'}
           </button>
         ) : (
-          <p className="text-deepBlue-500 text-sm">
+          <p className="text-deepBlue-400 text-sm">
             Resend code in {timer}s
           </p>
         )}
       </div>
 
+
       {/* Verify button */}
       <button
         onClick={handleVerify}
         disabled={!isComplete || isLoading}
-        className={`w-full py-3 rounded-lg font-semibold transition duration-200 ${
-          isComplete && !isLoading
+        className={`w-full py-3 rounded-lg font-semibold transition duration-200 ${isComplete && !isLoading
             ? 'bg-deepBlue-600 hover:bg-deepBlue-700 text-white'
             : 'bg-deepBlue-200 cursor-not-allowed text-deepBlue-400'
-        }`}
+          }`}
       >
         {isLoading ? (
           <div className="flex items-center justify-center gap-2">
