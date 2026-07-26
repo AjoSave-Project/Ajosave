@@ -65,12 +65,12 @@ function GroupChatRow({ group, onClick }) {
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-center gap-4 px-5 py-4 hover:bg-deepBlue-50 transition-colors text-left group"
+      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-deepBlue-50 transition-colors text-left group"
     >
       {/* Avatar */}
       <div className="relative flex-shrink-0">
         <div
-          className={`w-12 h-12 rounded-full bg-gradient-to-br ${getAvatarGradient(group.name)} flex items-center justify-center`}
+          className={`w-10 h-10 rounded-full bg-gradient-to-br ${getAvatarGradient(group.name)} flex items-center justify-center`}
         >
           <span className="text-white font-bold text-sm">{getInitials(group.name)}</span>
         </div>
@@ -140,19 +140,19 @@ const GroupChats = () => {
 
   return (
     <div className="min-h-screen bg-deepBlue-50 pb-20">
-      <div className="container mx-auto max-w-2xl px-4 py-6">
+      <div className="container mx-auto max-w-xl px-3 py-4">
 
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-2xl font-bold text-deepBlue-800">Group Chats</h1>
+            <h1 className="text-xl font-bold text-deepBlue-800">Group Chats</h1>
             <p className="text-sm text-deepBlue-500 mt-0.5">
               {groups.length} group{groups.length !== 1 ? 's' : ''}
             </p>
           </div>
           <button
             onClick={() => navigate('/groups/create')}
-            className="flex items-center gap-2 bg-deepBlue-600 text-white px-4 py-2 rounded-xl font-semibold hover:bg-deepBlue-700 transition text-sm"
+            className="flex items-center gap-2 bg-deepBlue-600 text-white px-3 py-2 rounded-lg font-semibold hover:bg-deepBlue-700 transition text-sm"
           >
             <Plus className="w-4 h-4" />
             New Group
@@ -160,14 +160,14 @@ const GroupChats = () => {
         </div>
 
         {/* Search */}
-        <div className="relative mb-4">
+        <div className="relative mb-3">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-deepBlue-400" />
           <input
             type="text"
             placeholder="Search groups…"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-white border border-deepBlue-200 rounded-xl text-sm text-deepBlue-800 placeholder-deepBlue-400 focus:outline-none focus:border-deepBlue-400 transition"
+            className="w-full pl-10 pr-4 py-2.5 bg-white border border-deepBlue-200 rounded-lg text-sm text-deepBlue-800 placeholder-deepBlue-400 focus:outline-none focus:border-deepBlue-400 transition"
           />
         </div>
 
@@ -178,23 +178,23 @@ const GroupChats = () => {
           </div>
         ) : error ? (
           <div className="text-center py-16">
-            <p className="text-red-500 mb-4">{error}</p>
+            <p className="text-red-500 mb-3">{error}</p>
             <button
               onClick={fetchGroups}
-              className="bg-deepBlue-600 text-white px-6 py-2 rounded-lg hover:bg-deepBlue-700 transition"
+              className="bg-deepBlue-600 text-white px-4 py-2 rounded-lg hover:bg-deepBlue-700 transition"
             >
               Try Again
             </button>
           </div>
         ) : sorted.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="w-16 h-16 bg-deepBlue-100 rounded-full flex items-center justify-center mb-4">
+            <div className="w-14 h-14 bg-deepBlue-100 rounded-full flex items-center justify-center mb-3">
               <MessageCircle className="w-8 h-8 text-deepBlue-400" />
             </div>
             <h3 className="text-lg font-semibold text-deepBlue-800 mb-2">
               {search ? 'No groups match your search' : 'No group chats yet'}
             </h3>
-            <p className="text-deepBlue-500 text-sm mb-6 max-w-xs">
+            <p className="text-deepBlue-500 text-sm mb-4 max-w-xs">
               {search
                 ? 'Try a different name'
                 : 'Create or join a savings group to start chatting with your members'}
@@ -203,13 +203,13 @@ const GroupChats = () => {
               <div className="flex gap-3">
                 <button
                   onClick={() => navigate('/groups/create')}
-                  className="bg-deepBlue-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-deepBlue-700 transition text-sm"
+                  className="bg-deepBlue-600 text-white px-4 py-2.5 rounded-lg font-semibold hover:bg-deepBlue-700 transition text-sm"
                 >
                   Create Group
                 </button>
                 <button
                   onClick={() => navigate('/groups/join')}
-                  className="border-2 border-deepBlue-600 text-deepBlue-600 px-5 py-2.5 rounded-xl font-semibold hover:bg-deepBlue-50 transition text-sm"
+                  className="border-2 border-deepBlue-600 text-deepBlue-600 px-4 py-2.5 rounded-lg font-semibold hover:bg-deepBlue-50 transition text-sm"
                 >
                   Join Group
                 </button>
@@ -217,7 +217,7 @@ const GroupChats = () => {
             )}
           </div>
         ) : (
-          <div className="bg-white rounded-2xl border border-deepBlue-100 shadow-sm overflow-hidden divide-y divide-deepBlue-50">
+          <div className="bg-white rounded-xl border border-deepBlue-100 shadow-sm overflow-hidden divide-y divide-deepBlue-50">
             {sorted.map(group => (
               <GroupChatRow
                 key={group._id}

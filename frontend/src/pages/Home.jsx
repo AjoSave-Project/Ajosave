@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef, useCallback, memo } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { CheckCircle, User } from 'lucide-react'
+import { useEffect, useRef, useCallback, memo } from 'react'
+import { useNavigate, Navigate } from 'react-router-dom'
+import { User } from 'lucide-react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useAuth } from '../context/AuthContext'
@@ -26,7 +26,6 @@ SpinnerIcon.displayName = 'SpinnerIcon'
 const Home = () => {
   const navigate = useNavigate()
   const { isAuthenticated, loading, user } = useAuth()
-  const [showWelcomeBack, setShowWelcomeBack] = useState(false)
 
   // Refs for simple entrance animations
   const heroSectionRef = useRef(null)
@@ -37,16 +36,6 @@ const Home = () => {
   const handleHowItWorks = useCallback(() => navigate('/how-it-works'), [navigate])
   const handleContact = useCallback(() => navigate('/contact'), [navigate])
   const handlePrivacyPolicy = useCallback(() => navigate('/privacy-policy'), [navigate])
-
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      setShowWelcomeBack(true)
-      const timer = setTimeout(() => {
-        navigate('/dashboard')
-      }, 2000)
-      return () => clearTimeout(timer)
-    }
-  }, [isAuthenticated, user, navigate])
 
   const initializeAnimations = useCallback(() => {
     const ctx = gsap.context(() => {
@@ -83,10 +72,10 @@ const Home = () => {
   }, [])
 
   useEffect(() => {
-    if (!loading && !showWelcomeBack) {
+    if (!loading && !(isAuthenticated && user)) {
       return initializeAnimations()
     }
-  }, [loading, showWelcomeBack, initializeAnimations])
+  }, [loading, isAuthenticated, user, initializeAnimations])
 
   useEffect(() => {
     return () => {
@@ -127,26 +116,9 @@ const Home = () => {
     )
   }
 
-  // ── Welcome back screen ─────────────────────────────────────────────────────
-  if (showWelcomeBack && user) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center bg-white border border-deepBlue-100 rounded-xl p-8 max-w-md mx-4 shadow-sm">
-          <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle className="w-6 h-6 text-green-600" />
-          </div>
-          <h2 className="text-xl font-bold text-deepBlue-800 mb-1 tracking-tight">
-            Welcome back, {user.firstName}
-          </h2>
-          <p className="text-sm text-deepBlue-600 mb-6">
-            Syncing your session and redirecting to your dashboard...
-          </p>
-          <div className="w-full bg-deepBlue-50 h-1 rounded-full overflow-hidden">
-            <div className="bg-deepBlue-600 h-full w-2/3 rounded-full animate-pulse"></div>
-          </div>
-        </div>
-      </div>
-    )
+  // ── Redirect already-authenticated visitors straight to the dashboard ──────
+  if (isAuthenticated && user) {
+    return <Navigate to="/dashboard" replace />
   }
 
   // ── Main page ───────────────────────────────────────────────────────────────

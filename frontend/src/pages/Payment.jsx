@@ -174,33 +174,33 @@ const Payment = () => {
   // ── Select Group ────────────────────────────────────────────────────────────
   const renderSelectGroup = () => (
     <div className="min-h-screen bg-deepBlue-50 pb-20">
-      <div className="container mx-auto px-4 py-6 max-w-5xl">
-        <div className="flex items-center justify-between mb-6">
+      <div className="container mx-auto px-3 py-4 max-w-4xl">
+        <div className="flex items-center justify-between mb-4">
           <button onClick={() => navigate('/dashboard')} className="flex items-center text-deepBlue-600 hover:text-deepBlue-800">
             <ArrowLeft className="w-5 h-5 mr-2" /><span className="font-medium">Back</span>
           </button>
-          <h1 className="text-xl font-bold text-deepBlue-800">Make Contribution</h1>
-          <div className="w-20" />
+          <h1 className="text-lg font-bold text-deepBlue-800">Make Contribution</h1>
+          <div className="w-16" />
         </div>
 
         {/* Wallet balance */}
-        <div className="bg-deepBlue-600 text-white rounded-2xl p-4 mb-6">
+        <div className="bg-deepBlue-600 text-white rounded-xl p-3 mb-4">
           <p className="text-blue-100 text-sm mb-1">Wallet Balance</p>
-          <p className="text-2xl font-bold">₦{availableBalance.toLocaleString()}</p>
+          <p className="text-xl font-bold">₦{availableBalance.toLocaleString()}</p>
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 flex items-start gap-3">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4 flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
             <p className="text-red-700 text-sm">{error}</p>
           </div>
         )}
 
         {groups.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-2xl border border-deepBlue-100">
-            <Users className="w-16 h-16 text-deepBlue-300 mx-auto mb-4" />
+          <div className="text-center py-12 bg-white rounded-xl border border-deepBlue-100">
+            <Users className="w-14 h-14 text-deepBlue-300 mx-auto mb-3" />
             <h3 className="text-lg font-semibold text-deepBlue-800 mb-2">No Active Groups</h3>
-            <p className="text-deepBlue-600 mb-6">You don't have any active groups requiring contributions</p>
+            <p className="text-deepBlue-600 mb-4">You don't have any active groups requiring contributions</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -210,7 +210,7 @@ const Payment = () => {
               const myTurnForGroup = isMyTurn(group)
               return (
                 <div key={group._id} onClick={() => handleGroupSelect(group)}
-                  className="bg-white rounded-2xl p-4 shadow-sm border border-deepBlue-100 hover:shadow-md transition cursor-pointer">
+                  className="bg-white rounded-xl p-3 shadow-sm border border-deepBlue-100 hover:shadow-md transition cursor-pointer">
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -229,7 +229,7 @@ const Payment = () => {
                       }`}>{group.status.charAt(0).toUpperCase() + group.status.slice(1)}</span>
                     </div>
                     <div className="text-right">
-                      <p className="text-2xl font-bold text-deepBlue-800">₦{group.contributionAmount.toLocaleString()}</p>
+                      <p className="text-xl font-bold text-deepBlue-800">₦{group.contributionAmount.toLocaleString()}</p>
                       <p className="text-xs text-deepBlue-600">{group.frequency}</p>
                     </div>
                   </div>
@@ -245,7 +245,7 @@ const Payment = () => {
                     <button
                       onClick={(e) => { e.stopPropagation(); handleClaimPayout(group) }}
                       disabled={processing}
-                      className="w-full mt-3 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-2 rounded-xl font-semibold text-sm transition disabled:opacity-50"
+                      className="w-full mt-3 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-semibold text-sm transition disabled:opacity-50"
                     >
                       <Gift className="w-4 h-4" />
                       Claim Payout — ₦{(group.contributionAmount * group.maxMembers).toLocaleString()}
@@ -263,18 +263,18 @@ const Payment = () => {
   // ── Payment Details ─────────────────────────────────────────────────────────
   const renderPaymentDetails = () => (
     <div className="min-h-screen bg-deepBlue-50 pb-20">
-      <div className="container mx-auto px-4 py-6 max-w-2xl">
-        <div className="flex items-center justify-between mb-6">
+      <div className="container mx-auto px-3 py-4 max-w-xl">
+        <div className="flex items-center justify-between mb-4">
           <button onClick={() => setPaymentStep('selectGroup')} disabled={processing}
             className="flex items-center text-deepBlue-600 hover:text-deepBlue-800">
             <ArrowLeft className="w-5 h-5 mr-2" /><span className="font-medium">Back</span>
           </button>
-          <h1 className="text-xl font-bold text-deepBlue-800">Payment Details</h1>
-          <div className="w-20" />
+          <h1 className="text-lg font-bold text-deepBlue-800">Payment Details</h1>
+          <div className="w-16" />
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 flex items-start gap-3">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4 flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
             <p className="text-red-700 text-sm">{error}</p>
           </div>
@@ -284,18 +284,18 @@ const Payment = () => {
 
         {/* Turn indicator */}
         {!myTurn && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6 flex items-start gap-3">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4 flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
             <p className="text-yellow-800 text-sm font-medium">It is not your turn to contribute to this group yet. Please wait for your turn.</p>
           </div>
         )}
 
         {/* Payment method toggle */}
-        <div className="bg-white rounded-2xl shadow-sm border border-deepBlue-100 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-deepBlue-800 mb-4">Payment Method</h2>
+        <div className="bg-white rounded-xl shadow-sm border border-deepBlue-100 p-4 mb-4">
+          <h2 className="text-lg font-semibold text-deepBlue-800 mb-3">Payment Method</h2>
           <div className="grid grid-cols-2 gap-3">
             <button onClick={() => setPaymentMethod('wallet')}
-              className={`p-4 rounded-xl border-2 flex flex-col items-center gap-2 transition ${
+              className={`p-3 rounded-lg border-2 flex flex-col items-center gap-2 transition ${
                 paymentMethod === 'wallet' ? 'border-deepBlue-600 bg-deepBlue-50' : 'border-deepBlue-200'
               }`}>
               <Wallet className={`w-6 h-6 ${paymentMethod === 'wallet' ? 'text-deepBlue-600' : 'text-deepBlue-400'}`} />
@@ -303,7 +303,7 @@ const Payment = () => {
               <span className="text-xs text-deepBlue-500">₦{availableBalance.toLocaleString()}</span>
             </button>
             <button onClick={() => setPaymentMethod('card')}
-              className={`p-4 rounded-xl border-2 flex flex-col items-center gap-2 transition ${
+              className={`p-3 rounded-lg border-2 flex flex-col items-center gap-2 transition ${
                 paymentMethod === 'card' ? 'border-deepBlue-600 bg-deepBlue-50' : 'border-deepBlue-200'
               }`}>
               <CreditCard className={`w-6 h-6 ${paymentMethod === 'card' ? 'text-deepBlue-600' : 'text-deepBlue-400'}`} />
@@ -319,8 +319,8 @@ const Payment = () => {
         </div>
 
         {/* Summary */}
-        <div className="bg-white rounded-2xl shadow-sm border border-deepBlue-100 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-deepBlue-800 mb-4">Payment Summary</h2>
+        <div className="bg-white rounded-xl shadow-sm border border-deepBlue-100 p-4 mb-4">
+          <h2 className="text-lg font-semibold text-deepBlue-800 mb-3">Payment Summary</h2>
           <div className="space-y-3">
             {[
               ['Group', selectedGroup?.name],
@@ -337,7 +337,7 @@ const Payment = () => {
         </div>
 
         <button onClick={handlePay} disabled={!canPay}
-          className={`w-full py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 transition ${
+          className={`w-full py-3 rounded-lg font-semibold text-lg flex items-center justify-center gap-2 transition ${
             canPay ? 'bg-deepBlue-600 hover:bg-deepBlue-700 text-white' : 'bg-gray-300 text-gray-500 cursor-not-allowed'
           }`}>
           {processing ? <><LoadingSpinner size="sm" text="" /><span>Processing...</span></> : (
@@ -345,7 +345,7 @@ const Payment = () => {
           )}
         </button>
         {paymentMethod === 'card' && (
-          <p className="text-center text-sm text-deepBlue-500 mt-4 flex items-center justify-center gap-1">
+          <p className="text-center text-sm text-deepBlue-500 mt-3 flex items-center justify-center gap-1">
             <Shield className="w-4 h-4" /> Secured by Paystack
           </p>
         )}
@@ -355,15 +355,15 @@ const Payment = () => {
 
   // ── Success ─────────────────────────────────────────────────────────────────
   const renderSuccess = () => (
-    <div className="min-h-screen bg-deepBlue-50 flex items-center justify-center px-4 pb-20">
-      <div className="bg-white rounded-2xl shadow-lg border border-deepBlue-100 p-8 max-w-md w-full">
-        <div className="flex justify-center mb-6">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
-            <CheckCircle className="w-12 h-12 text-green-500" />
+    <div className="min-h-screen bg-deepBlue-50 flex items-center justify-center px-3 pb-20">
+      <div className="bg-white rounded-xl shadow-lg border border-deepBlue-100 p-6 max-w-md w-full">
+        <div className="flex justify-center mb-4">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+            <CheckCircle className="w-10 h-10 text-green-500" />
           </div>
         </div>
-        <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold text-deepBlue-800 mb-2">
+        <div className="text-center mb-4">
+          <h2 className="text-xl font-bold text-deepBlue-800 mb-2">
             {successData?.isPayout ? 'Payout Received!' : 'Payment Successful!'}
           </h2>
           <p className="text-deepBlue-600">
@@ -373,16 +373,16 @@ const Payment = () => {
           </p>
         </div>
         {successData?.transaction && (
-          <div className="bg-deepBlue-50 rounded-xl p-4 mb-6 space-y-2 text-sm">
+          <div className="bg-deepBlue-50 rounded-lg p-3 mb-4 space-y-2 text-sm">
             <div className="flex justify-between"><span className="text-deepBlue-600">Transaction ID</span><span className="font-medium">{successData.transaction.transactionId}</span></div>
             <div className="flex justify-between"><span className="text-deepBlue-600">Amount</span><span className="font-medium">₦{successData.transaction.amount.toLocaleString()}</span></div>
             <div className="flex justify-between"><span className="text-deepBlue-600">Status</span><span className="font-medium text-green-600">Completed</span></div>
           </div>
         )}
         <div className="space-y-3">
-          <button onClick={() => navigate('/dashboard')} className="w-full bg-deepBlue-600 text-white py-3 rounded-xl font-semibold hover:bg-deepBlue-700">Back to Dashboard</button>
+          <button onClick={() => navigate('/dashboard')} className="w-full bg-deepBlue-600 text-white py-3 rounded-lg font-semibold hover:bg-deepBlue-700">Back to Dashboard</button>
           <button onClick={() => { setSelectedGroup(null); setPaymentStep('selectGroup'); setSuccessData(null); setError(null); fetchData() }}
-            className="w-full border-2 border-deepBlue-600 text-deepBlue-600 py-3 rounded-xl font-semibold hover:bg-deepBlue-50">
+            className="w-full border-2 border-deepBlue-600 text-deepBlue-600 py-3 rounded-lg font-semibold hover:bg-deepBlue-50">
             Make Another Payment
           </button>
         </div>

@@ -167,11 +167,11 @@ const AppContent = () => {
         <Route 
           path="/dashboard" 
           element={
-            <PublicRoute>
+            <ProtectedRoute>
               <Layout>
                 <Dashboard />
               </Layout>
-            </PublicRoute>
+            </ProtectedRoute>
           } 
         />
         <Route 

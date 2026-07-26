@@ -91,10 +91,10 @@ const Dashboard = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-deepBlue-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-deepBlue-50 flex items-center justify-center p-3">
         <div className="text-center">
-          <p className="text-red-600 mb-4">{error}</p>
-          <button onClick={fetchDashboardData} className="bg-deepBlue-600 text-white px-6 py-2 rounded-lg hover:bg-deepBlue-700">
+          <p className="text-red-600 mb-3">{error}</p>
+          <button onClick={fetchDashboardData} className="bg-deepBlue-600 text-white px-4 py-2 rounded-lg hover:bg-deepBlue-700">
             Try Again
           </button>
         </div>
@@ -106,20 +106,20 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-deepBlue-50 pb-24">
-      <div className="container mx-auto py-4 px-4 sm:px-6 lg:px-10 max-w-6xl">
+      <div className="container mx-auto py-3 px-3 sm:px-4 lg:px-10 max-w-5xl">
         {/* Greeting */}
-        <div className="mb-4">
+        <div className="mb-3">
           <p className="text-deepBlue-500 text-xs">{getGreeting()},</p>
           <p className="text-lg font-bold text-deepBlue-800">{user?.firstName} 👋</p>
         </div>
 
         {/* Balance Card */}
-        <div className="rounded-2xl p-4 sm:p-5 text-white mb-4 shadow-lg" style={{ backgroundColor: '#0a79f0' }}>
+        <div className="rounded-xl p-3 sm:p-4 text-white mb-3 shadow-lg" style={{ backgroundColor: '#0a79f0' }}>
           <div className="flex justify-between items-start mb-3">
             <div className="flex-1">
               <p className="text-blue-200 text-xs mb-1">Total Balance</p>
               <div className="flex items-center space-x-2">
-                <h2 className="text-2xl sm:text-3xl font-bold">
+                <h2 className="text-xl sm:text-2xl font-bold">
                   {showBalance ? `₦${wallet?.totalBalance?.toLocaleString() || '0.00'}` : '₦ *****'}
                 </h2>
                 <button onClick={() => setShowBalance(!showBalance)} className="text-blue-200 hover:text-white transition">
@@ -129,7 +129,7 @@ const Dashboard = () => {
             </div>
             <div className="text-right">
               <p className="text-blue-200 text-xs mb-1">Active Groups</p>
-              <p className="text-2xl sm:text-3xl font-bold">{activeGroups.length}</p>
+              <p className="text-xl sm:text-2xl font-bold">{activeGroups.length}</p>
               {pendingGroups.length > 0 && (
                 <p className="text-blue-300 text-xs mt-1">{pendingGroups.length} pending</p>
               )}
@@ -167,12 +167,12 @@ const Dashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="mb-4">
+        <div className="mb-3">
           <h3 className="text-sm font-bold text-deepBlue-800 mb-2">Quick Actions</h3>
           <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
             {quickActions.map(({ icon: Icon, label, onClick }) => (
               <button key={label} onClick={onClick}
-                className="bg-white rounded-xl p-2 shadow-sm border border-deepBlue-100 hover:shadow-md transition flex flex-col items-center gap-1.5">
+                className="bg-white rounded-lg p-2 shadow-sm border border-deepBlue-100 hover:shadow-md transition flex flex-col items-center gap-1.5">
                 <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ backgroundColor: '#0a79f015' }}>
                   <Icon className="w-4 h-4" style={{ color: '#0a79f0' }} />
                 </div>
@@ -183,7 +183,7 @@ const Dashboard = () => {
         </div>
 
         {/* Main content — stacks on mobile, side-by-side on md+ */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {/* My Groups */}
           <div>
             <div className="flex justify-between items-center mb-2">
@@ -191,19 +191,19 @@ const Dashboard = () => {
               <button onClick={() => navigate('/groups')} className="text-xs font-medium" style={{ color: '#0a79f0' }}>View All</button>
             </div>
             {groups.length === 0 ? (
-              <div className="text-center py-8 bg-white rounded-2xl border border-deepBlue-100">
+              <div className="text-center py-6 bg-white rounded-xl border border-deepBlue-100">
                 <Users className="w-10 h-10 text-deepBlue-300 mx-auto mb-2" />
                 <p className="text-deepBlue-600 mb-3 text-sm">No groups yet</p>
                 <div className="flex justify-center space-x-2">
-                  <button onClick={() => navigate('/groups/create')} className="text-white text-xs px-4 py-1.5 rounded-lg" style={{ backgroundColor: '#0a79f0' }}>Create</button>
-                  <button onClick={() => navigate('/groups/join')} className="text-xs px-4 py-1.5 rounded-lg border" style={{ borderColor: '#0a79f0', color: '#0a79f0' }}>Join</button>
+                  <button onClick={() => navigate('/groups/create')} className="text-white text-xs px-3 py-1.5 rounded-lg" style={{ backgroundColor: '#0a79f0' }}>Create</button>
+                  <button onClick={() => navigate('/groups/join')} className="text-xs px-3 py-1.5 rounded-lg border" style={{ borderColor: '#0a79f0', color: '#0a79f0' }}>Join</button>
                 </div>
               </div>
             ) : (
               <div className="space-y-2">
                 {groups.slice(0, 3).map((group) => (
                   <div key={group._id} onClick={() => navigate(`/groups/${group._id}`)}
-                    className="bg-white rounded-xl p-3 shadow-sm border border-deepBlue-100 hover:shadow-md transition cursor-pointer">
+                    className="bg-white rounded-lg p-3 shadow-sm border border-deepBlue-100 hover:shadow-md transition cursor-pointer">
                     <div className="flex items-center space-x-3">
                       <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#0a79f015' }}>
                         <Users className="w-4 h-4" style={{ color: '#0a79f0' }} />
@@ -237,14 +237,14 @@ const Dashboard = () => {
               <button onClick={() => navigate('/wallet')} className="text-xs font-medium" style={{ color: '#0a79f0' }}>View All</button>
             </div>
             {recentTransactions.length === 0 ? (
-              <div className="text-center py-12 bg-white rounded-2xl border border-deepBlue-100">
+              <div className="text-center py-12 bg-white rounded-xl border border-deepBlue-100">
                 <List className="w-10 h-10 text-deepBlue-300 mx-auto mb-2" />
                 <p className="text-deepBlue-500 text-sm">No transactions yet</p>
               </div>
             ) : (
               <div className="space-y-2">
                 {recentTransactions.map((tx) => (
-                  <div key={tx._id} className="bg-white rounded-xl p-3 border border-deepBlue-100 flex items-center space-x-3">
+                  <div key={tx._id} className="bg-white rounded-lg p-3 border border-deepBlue-100 flex items-center space-x-3">
                     <div className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 ${tx.type === 'payout' ? 'bg-green-100' : 'bg-red-100'}`}>
                       {tx.type === 'payout'
                         ? <ArrowDown className="w-4 h-4 text-green-600" />
@@ -266,7 +266,7 @@ const Dashboard = () => {
 
         {/* Upcoming Contributions Alert */}
         {upcomingContributions.length > 0 && (
-          <div className="bg-blue-50 border border-blue-200 rounded-2xl p-3 mt-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 mt-3">
             <div className="flex items-start space-x-3">
               <Bell className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
               <div className="flex-1">

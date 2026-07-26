@@ -236,9 +236,9 @@ export default function Wallet() {
     return (
       <div className="min-h-screen bg-deepBlue-50 flex items-center justify-center">
         <div className="text-center">
-          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <p className="text-red-600 mb-4">{error}</p>
-          <button onClick={loadAll} className="flex items-center gap-2 mx-auto bg-deepBlue-600 text-white px-6 py-2 rounded-lg">
+          <AlertCircle className="w-10 h-10 text-red-500 mx-auto mb-3" />
+          <p className="text-red-600 mb-3">{error}</p>
+          <button onClick={loadAll} className="flex items-center gap-2 mx-auto bg-deepBlue-600 text-white px-4 py-2 rounded-lg">
             <RefreshCw className="w-4 h-4" /> Retry
           </button>
         </div>
@@ -256,20 +256,20 @@ export default function Wallet() {
 
       {/* ── Withdraw Modal ─────────────────────────────────────────────────── */}
       {showWithdrawModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[60]">
-          <div className="bg-white rounded-2xl w-full max-w-md">
-            <div className="flex items-center justify-between p-6 border-b border-deepBlue-100">
-              <h2 className="text-xl font-bold text-deepBlue-800">Withdraw Funds</h2>
-              <button onClick={() => setShowWithdrawModal(false)} className="text-deepBlue-400 hover:text-deepBlue-600 text-2xl leading-none">×</button>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-3 z-[60]">
+          <div className="bg-white rounded-xl w-full max-w-md">
+            <div className="flex items-center justify-between p-4 border-b border-deepBlue-100">
+              <h2 className="text-lg font-bold text-deepBlue-800">Withdraw Funds</h2>
+              <button onClick={() => setShowWithdrawModal(false)} className="text-deepBlue-400 hover:text-deepBlue-600 text-xl leading-none">×</button>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-4 space-y-3">
               {withdrawError && <p className="text-red-600 text-sm bg-red-50 p-3 rounded-lg">{withdrawError}</p>}
               <div>
                 <label className="block text-sm font-medium text-deepBlue-700 mb-2">Bank Account</label>
                 <select
                   value={withdrawForm.bankAccountId}
                   onChange={e => setWithdrawForm(p => ({ ...p, bankAccountId: e.target.value }))}
-                  className="w-full px-4 py-3 border border-deepBlue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-deepBlue-500"
+                  className="w-full px-3 py-3 border border-deepBlue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-deepBlue-500"
                 >
                   <option value="">Select account</option>
                   {bankAccounts.map(acc => (
@@ -285,14 +285,14 @@ export default function Wallet() {
                   type="number" min="1"
                   value={withdrawForm.amount}
                   onChange={e => setWithdrawForm(p => ({ ...p, amount: e.target.value }))}
-                  className="w-full px-4 py-3 border border-deepBlue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-deepBlue-500"
+                  className="w-full px-3 py-3 border border-deepBlue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-deepBlue-500"
                   placeholder="Enter amount"
                 />
                 {walletData && <p className="text-xs text-deepBlue-500 mt-1">Available: ₦{walletData.availableBalance.toLocaleString()}</p>}
               </div>
-              <div className="flex gap-3 mt-6">
-                <button onClick={() => setShowWithdrawModal(false)} className="flex-1 border border-deepBlue-200 text-deepBlue-600 py-3 rounded-xl font-semibold">Cancel</button>
-                <button onClick={handleWithdraw} disabled={withdrawing} className="flex-1 bg-deepBlue-600 text-white py-3 rounded-xl font-semibold disabled:opacity-50">
+              <div className="flex gap-3 mt-4">
+                <button onClick={() => setShowWithdrawModal(false)} className="flex-1 border border-deepBlue-200 text-deepBlue-600 py-3 rounded-lg font-semibold">Cancel</button>
+                <button onClick={handleWithdraw} disabled={withdrawing} className="flex-1 bg-deepBlue-600 text-white py-3 rounded-lg font-semibold disabled:opacity-50">
                   {withdrawing ? 'Processing...' : 'Withdraw'}
                 </button>
               </div>
@@ -303,13 +303,13 @@ export default function Wallet() {
 
       {/* ── Fund Wallet Modal ──────────────────────────────────────────────── */}
       {showFundModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[60]">
-          <div className="bg-white rounded-2xl w-full max-w-md">
-            <div className="flex items-center justify-between p-6 border-b border-deepBlue-100">
-              <h2 className="text-xl font-bold text-deepBlue-800">Fund Wallet</h2>
-              <button onClick={() => setShowFundModal(false)} className="text-deepBlue-400 hover:text-deepBlue-600 text-2xl leading-none">×</button>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-3 z-[60]">
+          <div className="bg-white rounded-xl w-full max-w-md">
+            <div className="flex items-center justify-between p-4 border-b border-deepBlue-100">
+              <h2 className="text-lg font-bold text-deepBlue-800">Fund Wallet</h2>
+              <button onClick={() => setShowFundModal(false)} className="text-deepBlue-400 hover:text-deepBlue-600 text-xl leading-none">×</button>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-4 space-y-3">
               {fundError && <p className="text-red-600 text-sm bg-red-50 p-3 rounded-lg">{fundError}</p>}
               <div>
                 <label className="block text-sm font-medium text-deepBlue-700 mb-2">Amount (₦)</label>
@@ -317,22 +317,22 @@ export default function Wallet() {
                   type="number" min="100"
                   value={fundAmount}
                   onChange={e => setFundAmount(e.target.value)}
-                  className="w-full px-4 py-3 border border-deepBlue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-deepBlue-500"
+                  className="w-full px-3 py-3 border border-deepBlue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-deepBlue-500"
                   placeholder="Minimum ₦100"
                 />
               </div>
               <div className="flex flex-wrap gap-2">
                 {[1000, 2000, 5000, 10000].map(amt => (
                   <button key={amt} onClick={() => setFundAmount(String(amt))}
-                    className="px-4 py-2 rounded-full bg-deepBlue-50 border border-deepBlue-200 text-deepBlue-700 text-sm font-medium hover:bg-deepBlue-100">
+                    className="px-3 py-2 rounded-full bg-deepBlue-50 border border-deepBlue-200 text-deepBlue-700 text-sm font-medium hover:bg-deepBlue-100">
                     ₦{amt.toLocaleString()}
                   </button>
                 ))}
               </div>
-              <div className="flex gap-3 mt-6">
-                <button onClick={() => setShowFundModal(false)} className="flex-1 border border-deepBlue-200 text-deepBlue-600 py-3 rounded-xl font-semibold">Cancel</button>
+              <div className="flex gap-3 mt-4">
+                <button onClick={() => setShowFundModal(false)} className="flex-1 border border-deepBlue-200 text-deepBlue-600 py-3 rounded-lg font-semibold">Cancel</button>
                 <button onClick={handleFundWallet} disabled={!fundAmount || parseFloat(fundAmount) < 100}
-                  className="flex-1 bg-deepBlue-600 text-white py-3 rounded-xl font-semibold disabled:opacity-50">
+                  className="flex-1 bg-deepBlue-600 text-white py-3 rounded-lg font-semibold disabled:opacity-50">
                   Proceed to Payment
                 </button>
               </div>
@@ -343,20 +343,20 @@ export default function Wallet() {
 
       {/* ── Auto-Withdrawal Modal ──────────────────────────────────────────── */}
       {showAutoWithdrawalModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[60]">
-          <div className="bg-white rounded-2xl w-full max-w-md">
-            <div className="flex items-center justify-between p-6 border-b border-deepBlue-100">
-              <h2 className="text-xl font-bold text-deepBlue-800">Auto-Withdrawal Setup</h2>
-              <button onClick={() => setShowAutoWithdrawalModal(false)} className="text-deepBlue-400 hover:text-deepBlue-600 text-2xl leading-none">×</button>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-3 z-[60]">
+          <div className="bg-white rounded-xl w-full max-w-md">
+            <div className="flex items-center justify-between p-4 border-b border-deepBlue-100">
+              <h2 className="text-lg font-bold text-deepBlue-800">Auto-Withdrawal Setup</h2>
+              <button onClick={() => setShowAutoWithdrawalModal(false)} className="text-deepBlue-400 hover:text-deepBlue-600 text-xl leading-none">×</button>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-4 space-y-3">
               {autoWithdrawalError && <p className="text-red-600 text-sm bg-red-50 p-3 rounded-lg">{autoWithdrawalError}</p>}
               <div>
                 <label className="block text-sm font-medium text-deepBlue-700 mb-2">Bank Account</label>
                 <select
                   value={autoWithdrawalSettings.bankAccount}
                   onChange={e => setAutoWithdrawalSettings(p => ({ ...p, bankAccount: e.target.value }))}
-                  className="w-full px-4 py-3 border border-deepBlue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-deepBlue-500"
+                  className="w-full px-3 py-3 border border-deepBlue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-deepBlue-500"
                 >
                   <option value="">Select account</option>
                   {bankAccounts.map(acc => (
@@ -380,7 +380,7 @@ export default function Wallet() {
                 <input type="number" min="100"
                   value={autoWithdrawalSettings.minAmount}
                   onChange={e => setAutoWithdrawalSettings(p => ({ ...p, minAmount: parseInt(e.target.value) }))}
-                  className="w-full px-4 py-3 border border-deepBlue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-deepBlue-500" />
+                  className="w-full px-3 py-3 border border-deepBlue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-deepBlue-500" />
               </div>
               <label className="flex items-center gap-3 cursor-pointer">
                 <input type="checkbox" checked={autoWithdrawalSettings.enabled}
@@ -388,10 +388,10 @@ export default function Wallet() {
                   className="w-4 h-4 text-deepBlue-600" />
                 <span className="text-sm text-deepBlue-700">Enable Auto-Withdrawal</span>
               </label>
-              <div className="flex gap-3 mt-6">
-                <button onClick={() => setShowAutoWithdrawalModal(false)} className="flex-1 border border-deepBlue-200 text-deepBlue-600 py-3 rounded-xl font-semibold">Cancel</button>
+              <div className="flex gap-3 mt-4">
+                <button onClick={() => setShowAutoWithdrawalModal(false)} className="flex-1 border border-deepBlue-200 text-deepBlue-600 py-3 rounded-lg font-semibold">Cancel</button>
                 <button onClick={handleSaveAutoWithdrawal} disabled={savingAutoWithdrawal}
-                  className="flex-1 bg-deepBlue-600 text-white py-3 rounded-xl font-semibold disabled:opacity-50">
+                  className="flex-1 bg-deepBlue-600 text-white py-3 rounded-lg font-semibold disabled:opacity-50">
                   {savingAutoWithdrawal ? 'Saving...' : 'Save Settings'}
                 </button>
               </div>
@@ -402,20 +402,20 @@ export default function Wallet() {
 
       {/* ── Lock Funds Modal ───────────────────────────────────────────────── */}
       {showLockModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[60]">
-          <div className="bg-white rounded-2xl w-full max-w-md">
-            <div className="flex items-center justify-between p-6 border-b border-deepBlue-100">
-              <h2 className="text-xl font-bold text-deepBlue-800">Lock Funds</h2>
-              <button onClick={() => setShowLockModal(false)} className="text-deepBlue-400 hover:text-deepBlue-600 text-2xl leading-none">×</button>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-3 z-[60]">
+          <div className="bg-white rounded-xl w-full max-w-md">
+            <div className="flex items-center justify-between p-4 border-b border-deepBlue-100">
+              <h2 className="text-lg font-bold text-deepBlue-800">Lock Funds</h2>
+              <button onClick={() => setShowLockModal(false)} className="text-deepBlue-400 hover:text-deepBlue-600 text-xl leading-none">×</button>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-4 space-y-3">
               {lockError && <p className="text-red-600 text-sm bg-red-50 p-3 rounded-lg">{lockError}</p>}
               <div>
                 <label className="block text-sm font-medium text-deepBlue-700 mb-2">Amount (₦)</label>
                 <input type="number" min="1"
                   value={lockForm.amount}
                   onChange={e => setLockForm(p => ({ ...p, amount: e.target.value }))}
-                  className="w-full px-4 py-3 border border-deepBlue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-deepBlue-500"
+                  className="w-full px-3 py-3 border border-deepBlue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-deepBlue-500"
                   placeholder="Amount to lock" />
                 {walletData && <p className="text-xs text-deepBlue-500 mt-1">Available: ₦{walletData.availableBalance.toLocaleString()}</p>}
               </div>
@@ -424,14 +424,14 @@ export default function Wallet() {
                 <input type="text" maxLength={100}
                   value={lockForm.label}
                   onChange={e => setLockForm(p => ({ ...p, label: e.target.value }))}
-                  className="w-full px-4 py-3 border border-deepBlue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-deepBlue-500"
+                  className="w-full px-3 py-3 border border-deepBlue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-deepBlue-500"
                   placeholder="e.g. Emergency fund" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-deepBlue-700 mb-2">Release Condition</label>
                 <select value={lockForm.releaseType}
                   onChange={e => setLockForm(p => ({ ...p, releaseType: e.target.value }))}
-                  className="w-full px-4 py-3 border border-deepBlue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-deepBlue-500">
+                  className="w-full px-3 py-3 border border-deepBlue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-deepBlue-500">
                   <option value="manual">Manual unlock</option>
                   <option value="date">Specific date</option>
                 </select>
@@ -443,13 +443,13 @@ export default function Wallet() {
                     value={lockForm.releaseDate}
                     min={new Date().toISOString().split('T')[0]}
                     onChange={e => setLockForm(p => ({ ...p, releaseDate: e.target.value }))}
-                    className="w-full px-4 py-3 border border-deepBlue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-deepBlue-500" />
+                    className="w-full px-3 py-3 border border-deepBlue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-deepBlue-500" />
                 </div>
               )}
-              <div className="flex gap-3 mt-6">
-                <button onClick={() => setShowLockModal(false)} className="flex-1 border border-deepBlue-200 text-deepBlue-600 py-3 rounded-xl font-semibold">Cancel</button>
+              <div className="flex gap-3 mt-4">
+                <button onClick={() => setShowLockModal(false)} className="flex-1 border border-deepBlue-200 text-deepBlue-600 py-3 rounded-lg font-semibold">Cancel</button>
                 <button onClick={handleCreateLock} disabled={locking}
-                  className="flex-1 bg-deepBlue-600 text-white py-3 rounded-xl font-semibold disabled:opacity-50">
+                  className="flex-1 bg-deepBlue-600 text-white py-3 rounded-lg font-semibold disabled:opacity-50">
                   {locking ? 'Locking...' : 'Lock Funds'}
                 </button>
               </div>
@@ -459,30 +459,30 @@ export default function Wallet() {
       )}
 
       {/* ── Main Content ───────────────────────────────────────────────────── */}
-      <div className="container mx-auto px-24 py-6 pb-24">
+      <div className="container mx-auto px-3 py-4 pb-24 max-w-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-4">
           <button onClick={() => navigate('/dashboard')} className="flex items-center text-deepBlue-600">
             <ArrowLeft className="w-5 h-5 mr-2" /> Back
           </button>
-          <h1 className="text-xl font-bold text-deepBlue-800">My Wallet</h1>
+          <h1 className="text-lg font-bold text-deepBlue-800">My Wallet</h1>
           <button onClick={loadAll} className="text-deepBlue-600 hover:text-deepBlue-800">
             <RefreshCw className="w-5 h-5" />
           </button>
         </div>
 
         {/* Balance Card */}
-        <div className="rounded-2xl p-6 text-white mb-6" style={{ backgroundColor: '#0a79f0' }}>
-          <div className="flex items-center space-x-3 mb-4">
-            <div className="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center">
+        <div className="rounded-xl p-4 text-white mb-4" style={{ backgroundColor: '#0a79f0' }}>
+          <div className="flex items-center space-x-3 mb-3">
+            <div className="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
               <WalletIcon className="w-6 h-6" />
             </div>
             <div>
               <p className="text-blue-100">Total Balance</p>
-              <h2 className="text-3xl font-bold">₦{(walletData?.totalBalance ?? 0).toLocaleString()}</h2>
+              <h2 className="text-2xl font-bold">₦{(walletData?.totalBalance ?? 0).toLocaleString()}</h2>
             </div>
           </div>
-          <div className="border-t border-blue-400 border-opacity-40 pt-4 grid grid-cols-2 gap-x-6 gap-y-2 text-sm mb-4">
+          <div className="border-t border-blue-400 border-opacity-40 pt-4 grid grid-cols-2 gap-x-6 gap-y-2 text-sm mb-3">
             <div className="flex justify-between"><span className="text-blue-200">Available</span><span className="font-semibold">₦{(walletData?.availableBalance ?? 0).toLocaleString()}</span></div>
             <div className="flex justify-between"><span className="text-blue-200">Locked</span><span className="font-semibold">₦{(walletData?.lockedBalance ?? 0).toLocaleString()}</span></div>
             <div className="flex justify-between"><span className="text-blue-200">Contributed</span><span className="font-semibold">₦{(walletData?.totalContributions ?? 0).toLocaleString()}</span></div>
@@ -490,27 +490,27 @@ export default function Wallet() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <button onClick={() => setShowFundModal(true)} disabled={funding}
-              className="bg-white text-deepBlue-600 py-2.5 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-deepBlue-50 disabled:opacity-60">
+              className="bg-white text-deepBlue-600 py-2.5 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-deepBlue-50 disabled:opacity-60">
               <Plus className="w-4 h-4" /> {funding ? 'Processing...' : 'Fund Wallet'}
             </button>
             <button onClick={() => setShowWithdrawModal(true)}
-              className="bg-white bg-opacity-20 text-white py-2.5 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-opacity-30">
+              className="bg-white bg-opacity-20 text-white py-2.5 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-opacity-30">
               <ArrowUp className="w-4 h-4" /> Withdraw
             </button>
             <button onClick={handleExport}
-              className="bg-white bg-opacity-20 text-white py-2.5 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-opacity-30">
+              className="bg-white bg-opacity-20 text-white py-2.5 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-opacity-30">
               <Download className="w-4 h-4" /> Export
             </button>
             <button onClick={() => setShowLockModal(true)}
-              className="bg-white bg-opacity-20 text-white py-2.5 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-opacity-30">
+              className="bg-white bg-opacity-20 text-white py-2.5 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-opacity-30">
               <Lock className="w-4 h-4" /> Lock Funds
             </button>
           </div>
         </div>
 
         {/* Bank Accounts */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-4 px-4">
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-3 px-3">
             <h2 className="text-lg font-semibold text-deepBlue-800">Bank Accounts</h2>
             <button onClick={() => setShowAddBankModal(true)} className="text-deepBlue-600 text-sm font-medium flex items-center gap-1">
               <Plus className="w-4 h-4" /> Add
@@ -518,13 +518,13 @@ export default function Wallet() {
           </div>
           {bankAccounts.length === 0 ? (
             <button onClick={() => setShowAddBankModal(true)}
-              className="mx-4 w-[calc(100%-2rem)] border-2 border-dashed border-deepBlue-200 rounded-xl p-4 text-deepBlue-500 flex items-center justify-center gap-2 hover:border-deepBlue-400">
+              className="mx-4 w-[calc(100%-2rem)] border-2 border-dashed border-deepBlue-200 rounded-lg p-3 text-deepBlue-500 flex items-center justify-center gap-2 hover:border-deepBlue-400">
               <Plus className="w-5 h-5" /> Add a bank account
             </button>
           ) : (
-            <div className="flex gap-3 overflow-x-auto pb-2 px-4 scrollbar-hide">
+            <div className="flex gap-3 overflow-x-auto pb-2 px-3 scrollbar-hide">
               {bankAccounts.map(acc => (
-                <div key={acc._id} className="min-w-[180px] rounded-xl p-4 text-white relative flex-shrink-0" style={{ backgroundColor: '#0a79f0' }}>
+                <div key={acc._id} className="min-w-[180px] rounded-lg p-3 text-white relative flex-shrink-0" style={{ backgroundColor: '#0a79f0' }}>
                   {acc.isPrimary && (
                     <span className="absolute top-2 right-2 bg-white bg-opacity-30 text-white text-xs font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
                       <Star className="w-3 h-3" /> Primary
@@ -551,13 +551,13 @@ export default function Wallet() {
 
         {/* Active Locks */}
         {locks.length > 0 && (
-          <div className="bg-white rounded-2xl shadow-sm border border-deepBlue-100 p-6 mb-6">
-            <h2 className="text-lg font-semibold text-deepBlue-800 mb-4">Locked Funds</h2>
+          <div className="bg-white rounded-xl shadow-sm border border-deepBlue-100 p-4 mb-4">
+            <h2 className="text-lg font-semibold text-deepBlue-800 mb-3">Locked Funds</h2>
             <div className="space-y-3">
               {locks.map(lock => (
-                <div key={lock._id} className="flex items-center justify-between p-3 bg-deepBlue-50 rounded-xl border border-deepBlue-100">
+                <div key={lock._id} className="flex items-center justify-between p-3 bg-deepBlue-50 rounded-lg border border-deepBlue-100">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-deepBlue-100 rounded-xl flex items-center justify-center">
+                    <div className="w-10 h-10 bg-deepBlue-100 rounded-lg flex items-center justify-center">
                       <Lock className="w-5 h-5 text-deepBlue-600" />
                     </div>
                     <div>
@@ -588,10 +588,10 @@ export default function Wallet() {
         )}
 
         {/* Transaction Filters */}
-        <div className="flex gap-2 mb-4 overflow-x-auto pb-1 scrollbar-hide">
+        <div className="flex gap-2 mb-3 overflow-x-auto pb-1 scrollbar-hide">
           {FILTERS.map(f => (
             <button key={f} onClick={() => setActiveFilter(f)}
-              className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-colors ${
+              className={`px-3 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-colors ${
                 activeFilter === f
                   ? 'bg-deepBlue-600 text-white'
                   : 'bg-white text-deepBlue-600 border border-deepBlue-200 hover:bg-deepBlue-50'
@@ -602,20 +602,20 @@ export default function Wallet() {
         </div>
 
         {/* Transactions */}
-        <div className="bg-white rounded-2xl shadow-sm border border-deepBlue-100 mb-6">
-          <div className="p-4 border-b border-deepBlue-100 flex justify-between items-center">
+        <div className="bg-white rounded-xl shadow-sm border border-deepBlue-100 mb-4">
+          <div className="p-3 border-b border-deepBlue-100 flex justify-between items-center">
             <h2 className="text-lg font-semibold text-deepBlue-800">Transactions</h2>
             <span className="text-sm text-deepBlue-500">{filteredTx.length} records</span>
           </div>
           {filteredTx.length === 0 ? (
-            <div className="p-8 text-center text-deepBlue-400">
-              <CreditCard className="w-12 h-12 mx-auto mb-3 opacity-40" />
+            <div className="p-6 text-center text-deepBlue-400">
+              <CreditCard className="w-10 h-10 mx-auto mb-3 opacity-40" />
               <p>No transactions found</p>
             </div>
           ) : (
             <div className="divide-y divide-deepBlue-100">
               {filteredTx.map(tx => (
-                <div key={tx._id} className="p-4 flex items-center justify-between">
+                <div key={tx._id} className="p-3 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center ${txSign(tx.type) === '+' ? 'bg-green-100' : 'bg-red-100'}`}>
                       {txSign(tx.type) === '+' ? <ArrowDown className="w-4 h-4 text-green-600" /> : <ArrowUp className="w-4 h-4 text-red-600" />}
@@ -639,9 +639,9 @@ export default function Wallet() {
         </div>
 
         {/* Auto-Withdrawal Setup */}
-        <div className="bg-white rounded-2xl shadow-sm border border-deepBlue-100 p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+        <div className="bg-white rounded-xl shadow-sm border border-deepBlue-100 p-4">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
               <Shield className="w-5 h-5 text-blue-600" />
             </div>
             <div>
@@ -650,7 +650,7 @@ export default function Wallet() {
             </div>
           </div>
           {autoWithdrawalSettings.enabled && (
-            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between">
+            <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between">
               <div>
                 <p className="font-medium text-green-800">Active</p>
                 <p className="text-sm text-green-700">{autoWithdrawalSettings.percentage}% of payouts</p>
@@ -659,7 +659,7 @@ export default function Wallet() {
             </div>
           )}
           <button onClick={() => setShowAutoWithdrawalModal(true)}
-            className="w-full bg-deepBlue-600 text-white py-3 rounded-xl font-semibold hover:bg-deepBlue-700">
+            className="w-full bg-deepBlue-600 text-white py-3 rounded-lg font-semibold hover:bg-deepBlue-700">
             {autoWithdrawalSettings.enabled ? 'Update Settings' : 'Setup Auto-Withdrawal'}
           </button>
         </div>
