@@ -5,6 +5,4 @@ node_modules/
 uploads/
 *.log
 .DS_Store
-backend/.env
-backend/.env.production
-backend/.env.*
+
