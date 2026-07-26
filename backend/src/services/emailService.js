@@ -10,6 +10,7 @@ const nodemailer = require('nodemailer');
 // Email configuration from environment variables
 const EMAIL_USER = process.env.EMAIL_USER;
 const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
+// Enforce using process.env.EMAIL_USER as fallback to avoid Gmail sender mismatch
 const EMAIL_FROM = process.env.EMAIL_FROM || process.env.EMAIL_USER;
 const EMAIL_FROM_NAME = process.env.EMAIL_FROM_NAME || 'AjoSave';
 
@@ -23,7 +24,6 @@ const createTransporter = () => {
   }
 
   try {
-    // Ensure nodemailer is properly loaded
     if (!nodemailer || typeof nodemailer.createTransport !== 'function') {
       console.error('❌ Nodemailer module not properly loaded');
       return null;
@@ -47,7 +47,6 @@ const createTransporter = () => {
 
 let transporter = null;
 
-// Lazy initialization - create transporter only when needed
 const getTransporter = () => {
   if (!transporter) {
     transporter = createTransporter();
@@ -64,7 +63,8 @@ const getTransporter = () => {
  * @returns {Promise<Object>} Result object with success status
  */
 const sendOtpEmail = async (email, otp, firstName = 'User') => {
-  const subject = 'Your AjoSave Verification Code';
+  // Placing the OTP code in the subject line dramatically improves inbox placement
+  const subject = `${otp} is your AjoSave verification code`;
   
   const htmlContent = `
     <!DOCTYPE html>
@@ -127,15 +127,6 @@ const sendOtpEmail = async (email, otp, firstName = 'User') => {
           color: #6b7280;
           font-size: 14px;
         }
-        .button {
-          display: inline-block;
-          background-color: #1e40af;
-          color: #ffffff;
-          padding: 12px 30px;
-          text-decoration: none;
-          border-radius: 6px;
-          margin: 20px 0;
-        }
       </style>
     </head>
     <body>
@@ -158,7 +149,7 @@ const sendOtpEmail = async (email, otp, firstName = 'User') => {
         <p>Enter this code in the AjoSave app to continue.</p>
         
         <div class="warning">
-          <strong>⚠️ Security Notice:</strong><br>
+          <strong>Security Notice:</strong><br>
           Never share this code with anyone. AjoSave staff will never ask for your verification code.
         </div>
         
@@ -168,7 +159,7 @@ const sendOtpEmail = async (email, otp, firstName = 'User') => {
           <p><strong>AjoSave</strong></p>
           <p>Saving Together, Growing Together</p>
           <p style="font-size: 12px; color: #9ca3af;">
-            This is an automated message, please do not reply to this email.
+            This is an automated transactional message, please do not reply to this email.
           </p>
         </div>
       </div>
@@ -197,10 +188,6 @@ AjoSave - Saving Together, Growing Together
 
 /**
  * Send Welcome Email
- * 
- * @param {string} email - Recipient email address
- * @param {string} firstName - User's first name
- * @returns {Promise<Object>} Result object with success status
  */
 const sendWelcomeEmail = async (email, firstName) => {
   const subject = 'Welcome to AjoSave! 🎉';
@@ -244,30 +231,21 @@ const sendWelcomeEmail = async (email, firstName) => {
     <body>
       <div class="container">
         <div class="logo">AjoSave</div>
-        
         <h2 style="color: #1e40af;">Welcome, ${firstName}! 🎉</h2>
-        
         <p>Thank you for joining AjoSave! We're excited to have you as part of our community savings platform.</p>
-        
         <h3 style="color: #1e40af;">What's Next?</h3>
-        
         <div class="feature">
           <strong>💰 Create or Join a Group</strong><br>
           Start saving with friends, family, or colleagues in a trusted savings group.
         </div>
-        
         <div class="feature">
           <strong>🔒 Secure Savings</strong><br>
           Your funds are protected with bank-level security and transparent tracking.
         </div>
-        
         <div class="feature">
           <strong>📊 Track Progress</strong><br>
           Monitor your savings, contributions, and payouts in real-time.
         </div>
-        
-        <p>If you have any questions, our support team is here to help!</p>
-        
         <p style="margin-top: 30px;">
           <strong>Happy Saving!</strong><br>
           The AjoSave Team
@@ -287,8 +265,6 @@ What's Next?
 - Start contributing to your financial goals
 - Track your progress in real-time
 
-If you have any questions, our support team is here to help!
-
 Happy Saving!
 The AjoSave Team
   `;
@@ -298,14 +274,9 @@ The AjoSave Team
 
 /**
  * Send Password Reset Email
- * 
- * @param {string} email - Recipient email address
- * @param {string} otp - 6-digit OTP code
- * @param {string} firstName - User's first name
- * @returns {Promise<Object>} Result object with success status
  */
 const sendPasswordResetEmail = async (email, otp, firstName = 'User') => {
-  const subject = 'Reset Your AjoSave Password';
+  const subject = `${otp} is your AjoSave password reset code`;
   
   const htmlContent = `
     <!DOCTYPE html>
@@ -357,24 +328,15 @@ const sendPasswordResetEmail = async (email, otp, firstName = 'User') => {
     <body>
       <div class="container">
         <div class="logo">AjoSave</div>
-        
         <h2 style="color: #1e40af;">Password Reset Request</h2>
-        
         <p>Hello ${firstName},</p>
-        
         <p>We received a request to reset your AjoSave password. Use the code below to proceed:</p>
-        
         <div class="otp-code">${otp}</div>
-        
         <p style="text-align: center; color: #6b7280; font-size: 14px;">Valid for 10 minutes</p>
-        
         <div class="warning">
-          <strong>⚠️ Security Alert:</strong><br>
+          <strong>Security Alert:</strong><br>
           If you didn't request a password reset, please ignore this email and ensure your account is secure.
         </div>
-        
-        <p>For security reasons, this code will expire in 10 minutes.</p>
-        
         <p style="margin-top: 30px;">
           <strong>Stay Safe!</strong><br>
           The AjoSave Team
@@ -407,17 +369,10 @@ The AjoSave Team
 
 /**
  * Generic Email Sender
- * 
- * @param {string} to - Recipient email address
- * @param {string} subject - Email subject
- * @param {string} text - Plain text content
- * @param {string} html - HTML content
- * @returns {Promise<Object>} Result object with success status
  */
 const sendEmail = async (to, subject, text, html) => {
   const transporter = getTransporter();
   
-  // If no transporter (no email config), throw error
   if (!transporter) {
     const errorMsg = 'Email service is not configured. Please set EMAIL_USER and EMAIL_PASSWORD environment variables.';
     console.error(`❌ ${errorMsg}`);
@@ -431,6 +386,12 @@ const sendEmail = async (to, subject, text, html) => {
       subject,
       text,
       html,
+      // High priority headers for transactional email delivery
+      headers: {
+        'X-Priority': '1',
+        'X-MSMail-Priority': 'High',
+        'Importance': 'high',
+      },
     };
 
     const info = await transporter.sendMail(mailOptions);
@@ -451,8 +412,6 @@ const sendEmail = async (to, subject, text, html) => {
 
 /**
  * Verify email configuration
- * 
- * @returns {Promise<boolean>} True if email is configured and working
  */
 const verifyEmailConfig = async () => {
   const transporter = getTransporter();
