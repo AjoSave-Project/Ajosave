@@ -73,9 +73,30 @@ const validateRegistration = [
 ];
 
 const validateLogin = [
-  body('phoneNumber').trim().notEmpty().withMessage('Phone number is required')
+  // Only require/validate phoneNumber when the request didn't send an email
+  // (i.e. the user chose the "Phone" tab on the frontend).
+  body('phoneNumber')
+    .if((value, { req }) => !req.body.email)
+    .trim().notEmpty().withMessage('Phone number is required')
     .matches(config.validation.phoneNumber.pattern)
     .withMessage('Please provide a valid Nigerian phone number'),
+
+  // Only require/validate email when the request didn't send a phoneNumber
+  // (i.e. the user chose the "Email" tab on the frontend).
+  body('email')
+    .if((value, { req }) => !req.body.phoneNumber)
+    .trim().notEmpty().withMessage('Email is required')
+    .isEmail().withMessage('Please provide a valid email address')
+    .normalizeEmail(),
+
+  // Belt-and-suspenders: reject requests that send neither, with one clear
+  // message instead of two confusing per-field ones.
+  body().custom((_, { req }) => {
+    if (!req.body.phoneNumber && !req.body.email) {
+      throw new Error('Phone number or email is required');
+    }
+    return true;
+  }),
 
   body('password').notEmpty().withMessage('Password is required'),
 
