@@ -48,8 +48,11 @@ const Signup = () => {
     if (!formData.lastName.trim() || formData.lastName.trim().length < 2) errors.lastName = 'Last name must be at least 2 characters';
     if (!formData.email || !/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(formData.email)) errors.email = 'Please enter a valid email address';
     if (!formData.localPhone || formData.localPhone.length < 10) errors.localPhone = 'Enter a valid 10-digit number';
-    if (!formData.bvn || formData.bvn.length !== 11) errors.bvn = `BVN must be exactly 11 digits (${formData.bvn.length}/11)`;
-    if (!formData.nin || formData.nin.length !== 11) errors.nin = `NIN must be exactly 11 digits (${formData.nin.length}/11)`;
+    
+    // --- REAL BVN & NIN VALIDATION COMMENTED OUT FOR TESTING ---
+    // if (!formData.bvn || formData.bvn.length !== 11) errors.bvn = `BVN must be exactly 11 digits (${formData.bvn.length}/11)`;
+    // if (!formData.nin || formData.nin.length !== 11) errors.nin = `NIN must be exactly 11 digits (${formData.nin.length}/11)`;
+    
     if (!formData.dateOfBirth) {
       errors.dateOfBirth = 'Date of birth is required';
     } else {
@@ -76,13 +79,19 @@ const Signup = () => {
 
     try {
       setIsLoading(true);
+
+      // --- SIMULATED BVN AND NIN DATA ---
+      // Uses user input if provided; defaults to a 11-digit mock string if left blank or partial
+      const simulatedBvn = formData.bvn.length === 11 ? formData.bvn : '12345678901';
+      const simulatedNin = formData.nin.length === 11 ? formData.nin : '12345678901';
+
       const result = await signup({
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
         email: formData.email.trim().toLowerCase(),
         phoneNumber: fullPhone,
-        bvn: formData.bvn,
-        nin: formData.nin,
+        bvn: simulatedBvn,
+        nin: simulatedNin,
         dateOfBirth: formData.dateOfBirth,
         password: formData.password,
       });
@@ -110,7 +119,6 @@ const Signup = () => {
   const handleOtpSuccess = ({ user, token }) => {
     completeOtpLogin(user, token);
     setSuccess(true);
-    // Navigation is handled by Auth.jsx useEffect watching isAuthenticated
   };
 
   if (success) {
@@ -177,20 +185,24 @@ const Signup = () => {
             : <p className="text-xs text-deepBlue-500 mt-1 flex items-center gap-1"><Info className="w-3 h-3" />10-digit number after +234</p>}
         </div>
 
-        {/* BVN */}
+        {/* BVN (Optional / Simulated in Test Mode) */}
         <div>
-          <label className="block text-sm font-medium text-deepBlue-700 mb-2">BVN *</label>
-          <input type="text" name="bvn" value={formData.bvn} onChange={handleChange} placeholder="12345678901" maxLength={11} className={inputCls('bvn')} disabled={isLoading} />
+          <label className="block text-sm font-medium text-deepBlue-700 mb-2">
+            BVN <span className="text-xs text-amber-600 font-normal">(Optional for testing)</span>
+          </label>
+          <input type="text" name="bvn" value={formData.bvn} onChange={handleChange} placeholder="12345678901 (Simulated)" maxLength={11} className={inputCls('bvn')} disabled={isLoading} />
           {hasErr('bvn') ? <p className="text-xs text-red-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('bvn')}</p>
-            : <p className="text-xs text-deepBlue-500 mt-1">11-digit Bank Verification Number ({formData.bvn.length}/11)</p>}
+            : <p className="text-xs text-deepBlue-500 mt-1">Leave blank to use mock BVN: 12345678901</p>}
         </div>
 
-        {/* NIN */}
+        {/* NIN (Optional / Simulated in Test Mode) */}
         <div>
-          <label className="block text-sm font-medium text-deepBlue-700 mb-2">NIN *</label>
-          <input type="text" name="nin" value={formData.nin} onChange={handleChange} placeholder="12345678901" maxLength={11} className={inputCls('nin')} disabled={isLoading} />
+          <label className="block text-sm font-medium text-deepBlue-700 mb-2">
+            NIN <span className="text-xs text-amber-600 font-normal">(Optional for testing)</span>
+          </label>
+          <input type="text" name="nin" value={formData.nin} onChange={handleChange} placeholder="12345678901 (Simulated)" maxLength={11} className={inputCls('nin')} disabled={isLoading} />
           {hasErr('nin') ? <p className="text-xs text-red-600 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('nin')}</p>
-            : <p className="text-xs text-deepBlue-500 mt-1">11-digit National Identification Number ({formData.nin.length}/11)</p>}
+            : <p className="text-xs text-deepBlue-500 mt-1">Leave blank to use mock NIN: 12345678901</p>}
         </div>
 
         {/* DOB with auto-format */}
