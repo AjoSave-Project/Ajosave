@@ -40,9 +40,14 @@ export default {
           from: { opacity: '0', transform: 'translateX(100%)' },
           to:   { opacity: '1', transform: 'translateX(0)' },
         },
+        slideFromRight: {
+          '0%': { opacity: '0', transform: 'translateX(100%)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
+        },
       },
       animation: {
         'slide-in': 'slide-in 0.2s ease-out',
+        slideFromRight: 'slideFromRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
       },
     },
   },

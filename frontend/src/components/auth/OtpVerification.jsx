@@ -7,12 +7,13 @@ import { useToast } from '../common/Toast';
 /**
  * OTP Verification component.
  * Props:
- *   userId      - string
- *   phoneNumber - string (for display)
- *   onSuccess   - fn({ user, token })
- *   onBack      - fn()
+ *   userId          - string
+ *   phoneNumber     - string (for display, optional)
+ *   onSuccess       - fn({ user, token }) | fn() — called on success
+ *   onBack          - fn()
+ *   verifyEndpoint  - string (default: '/auth/verify-otp'; use '/auth/verify-email-otp' for signup email step)
  */
-const OtpVerification = ({ userId, phoneNumber, devOtp, onSuccess, onBack }) => {
+const OtpVerification = ({ userId, phoneNumber, devOtp, onSuccess, onBack, verifyEndpoint = '/auth/verify-otp' }) => {
   const toast = useToast();
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [timer, setTimer] = useState(60);
@@ -69,6 +70,7 @@ const OtpVerification = ({ userId, phoneNumber, devOtp, onSuccess, onBack }) => 
       // Auto-fill new dev OTP if returned
       if (response.data?.devOtp) {
         setOtp(response.data.devOtp.split(''));
+        inputRefs.current[5]?.focus();
       }
       toast.success('New code sent!');
     } catch (err) {
@@ -83,7 +85,8 @@ const OtpVerification = ({ userId, phoneNumber, devOtp, onSuccess, onBack }) => 
     if (code.length !== 6) return;
     try {
       setIsLoading(true);
-      const response = await api.post('/auth/verify-otp', { userId, otp: code });
+      const response = await api.post(verifyEndpoint, { userId, otp: code });
+      // For email-otp endpoint, response has no user/token — just pass through
       const user = response.data?.user || response.user;
       const token = response.data?.token || response.token;
       onSuccess({ user, token });

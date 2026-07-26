@@ -14,7 +14,9 @@
     "db:clear:users": "node scripts/clearDatabase.js --collection=users",
     "db:clear:groups": "node scripts/clearDatabase.js --collection=groups",
     "db:clear:transactions": "node scripts/clearDatabase.js --collection=transactions",
-    "db:clear:except-settings": "node scripts/clearDatabase.js --all --except=settings"
+    "db:clear:except-settings": "node scripts/clearDatabase.js --all --except=settings",
+    "db:seed:users": "node scripts/seedUsers.js",
+    "db:seed:users:list": "node scripts/seedUsers.js --list"
   },
   "keywords": [],
   "author": "",
@@ -38,7 +40,8 @@
     "multer": "^2.1.1",
     "node-cron": "^3.0.3",
     "node-fetch": "^3.3.2",
-    "nodemailer": "^6.9.15"
+    "nodemailer": "^6.9.15",
+    "twilio": "^5.7.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

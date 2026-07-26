@@ -1,119 +1,91 @@
+const twilio = require('twilio');
 const config = require('../config/config');
 
-// Use node-fetch for Node.js environments
-let fetch;
-try {
-  // Try to use global fetch first (available in newer Node.js versions)
-  fetch = globalThis.fetch;
-  if (!fetch) {
-    // Fallback to node-fetch for older Node.js versions
-    const nodeFetch = require('node-fetch');
-    fetch = nodeFetch.default || nodeFetch;
-  }
-} catch (e) {
-  console.warn('⚠️ No fetch implementation available. SMS service will not work.');
-}
-
 /**
- * SMS Service for sending OTP via SMS
- * 
- * This service handles sending SMS messages for OTP verification.
- * Currently configured for Termii SMS service (popular in Nigeria).
- * 
- * To enable SMS functionality:
- * 1. Sign up for Termii account at https://termii.com
- * 2. Add your API key to environment variables as TERMII_API_KEY
- * 3. Add your sender ID as TERMII_SENDER_ID
+ * SMS Service — powered by Twilio
+ *
+ * Env vars required:
+ *   TWILIO_ACCOUNT_SID
+ *   TWILIO_AUTH_TOKEN
+ *   TWILIO_PHONE_NUMBER  (your Twilio number, e.g. +12345678900)
  */
 
-const TERMII_BASE_URL = 'https://api.ng.termii.com/api';
+let twilioClient = null;
+
+const getTwilioClient = () => {
+  if (twilioClient) return twilioClient;
+
+  const { accountSid, authToken } = config.sms.twilio;
+
+  if (!accountSid || !authToken) {
+    throw new Error('Twilio credentials not configured. Set TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN.');
+  }
+
+  twilioClient = twilio(accountSid, authToken);
+  return twilioClient;
+};
 
 /**
- * Send SMS using Termii API
- * 
- * @param {string} phoneNumber - Recipient phone number (e.g., +2348012345678)
- * @param {string} message - SMS message content
- * @returns {Promise<Object>} Result object
+ * Send SMS using Twilio
+ *
+ * @param {string} phoneNumber - Recipient phone number in E.164 format (e.g. +2348012345678)
+ * @param {string} message     - SMS body
+ * @returns {Promise<{success: boolean, messageId: string}>}
  */
 const sendSMS = async (phoneNumber, message) => {
-  // Check if fetch is available
-  if (!fetch) {
-    console.warn('⚠️ Fetch not available. Skipping SMS send.');
-    throw new Error('SMS service not available. Please contact support.');
+  const { phoneNumber: fromNumber } = config.sms.twilio;
+
+  if (!fromNumber) {
+    throw new Error('Twilio sender number not configured. Set TWILIO_PHONE_NUMBER.');
   }
 
-  // Check if SMS is configured
-  if (!config.sms?.termii?.apiKey) {
-    console.warn('⚠️ SMS service not configured. Skipping SMS send.');
-    throw new Error('SMS service not configured. Please contact support.');
-  }
+  // Ensure number is in E.164 format (Twilio requirement)
+  const to = phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
 
   try {
-    const payload = {
-      to: phoneNumber,
-      from: config.sms.termii.senderId || 'AjoSave',
-      sms: message,
-      type: 'plain',
-      api_key: config.sms.termii.apiKey,
-      channel: 'generic',
-    };
-
-    const response = await fetch(`${TERMII_BASE_URL}/sms/send`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
+    const client = getTwilioClient();
+    const msg = await client.messages.create({
+      body: message,
+      from: fromNumber,
+      to,
     });
 
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.message || 'Failed to send SMS');
-    }
-
-    console.log(`✅ SMS sent successfully to ${phoneNumber}`);
-    return { success: true, messageId: result.message_id };
+    console.log(`✅ SMS sent via Twilio to ${to} — SID: ${msg.sid}`);
+    return { success: true, messageId: msg.sid };
   } catch (error) {
-    console.error(`❌ SMS send failed for ${phoneNumber}:`, error.message);
+    console.error(`❌ Twilio SMS failed for ${to}:`, error.message);
     throw error;
   }
 };
 
 /**
- * Send OTP SMS
- * 
+ * Send an OTP SMS
+ *
  * @param {string} phoneNumber - Recipient phone number
- * @param {string} otp - 6-digit OTP code
- * @param {string} firstName - User's first name
- * @param {string} purpose - Purpose of OTP ('verification' or 'password-reset')
- * @returns {Promise<Object>} Result object
+ * @param {string} otp         - 6-digit OTP code
+ * @param {string} firstName   - User's first name
+ * @param {string} purpose     - 'verification' | 'password-reset'
  */
 const sendOtpSMS = async (phoneNumber, otp, firstName, purpose = 'verification') => {
   let message;
-  
+
   if (purpose === 'password-reset') {
-    message = `Hi ${firstName}, your AjoSave password reset code is: ${otp}. This code expires in 10 minutes. Do not share this code with anyone.`;
+    message = `Hi ${firstName}, your AjoSave password reset code is: ${otp}. Valid for 10 minutes. Do not share this code.`;
   } else {
-    message = `Hi ${firstName}, your AjoSave verification code is: ${otp}. This code expires in 10 minutes. Welcome to AjoSave!`;
+    message = `Hi ${firstName}, your AjoSave verification code is: ${otp}. Valid for 10 minutes. Welcome to AjoSave!`;
   }
 
   return await sendSMS(phoneNumber, message);
 };
 
 /**
- * Send general SMS notification
- * 
+ * Send a general notification SMS
+ *
  * @param {string} phoneNumber - Recipient phone number
- * @param {string} message - Message content
- * @returns {Promise<Object>} Result object
+ * @param {string} message     - Message content
  */
 const sendNotificationSMS = async (phoneNumber, message) => {
   return await sendSMS(phoneNumber, message);
 };
 
-module.exports = {
-  sendSMS,
-  sendOtpSMS,
-  sendNotificationSMS,
-};
+module.exports = { sendSMS, sendOtpSMS, sendNotificationSMS };

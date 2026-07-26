@@ -1,127 +1,162 @@
 import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { UserPlus, Users, CreditCard, Wallet, Shield, CheckCircle, ArrowRight, Play } from 'lucide-react';
+import {
+  UserPlus,
+  Users,
+  CreditCard,
+  Wallet,
+  ShieldCheck,
+  CheckCircle2,
+  TrendingUp,
+  ArrowRight,
+  Terminal,
+  Activity
+} from 'lucide-react';
 import HomeNavbar from '../components/layout/HomeNavbar';
 import HomeFooter from '../components/layout/HomeFooter';
 import AjoCycleAnimation from '../components/animations/AjoCycleAnimation';
+import MarketImg from '../assets/images/about.png';
 
+
+// ── TYPEWRITER NARRATION TERMINAL COMPONENT ──────────────────────────────
+const LiveTerminalNarrator = ({ currentEvent }) => {
+  const [typedText, setTypedText] = useState("");
+  const [logHistory, setLogHistory] = useState([]);
+  const [currentMonth, setCurrentMonth] = useState("");
+
+  useEffect(() => {
+    if (!currentEvent?.message) return;
+
+    // Track current month from MONTH_START events
+    if (currentEvent.type === "MONTH_START" && currentEvent.month) {
+      setCurrentMonth(currentEvent.month);
+    }
+
+    const fullMessage = currentEvent.message;
+    setTypedText("");
+    let charIndex = 0;
+
+    const typingInterval = setInterval(() => {
+      if (charIndex < fullMessage.length) {
+        setTypedText(fullMessage.slice(0, charIndex + 1));
+        charIndex++;
+      } else {
+        clearInterval(typingInterval);
+        setLogHistory((prev) => [fullMessage, ...prev.slice(0, 3)]);
+      }
+    }, 25);
+
+    return () => clearInterval(typingInterval);
+  }, [currentEvent]);
+
+  return (
+    <div className="w-full h-full mt-6 bg-slate-950 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-inner font-mono text-xs sm:text-sm">
+      {/* Month + live stream row */}
+      <div className="flex items-center gap-3 bg-slate-900/80 border border-emerald-500/30 rounded-xl px-4 py-3 shadow-sm mb-3">
+        <Terminal className="w-4 h-4 text-emerald-400 shrink-0 animate-pulse" />
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          {currentMonth && (
+            <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest bg-deepBlue-700 text-deepBlue-200 px-2.5 py-1 rounded-full">
+              {currentMonth}
+            </span>
+          )}
+          <p className="font-semibold text-emerald-300 tracking-wide leading-tight truncate">
+            {typedText || "Initializing rotation audit stream..."}
+            <span className="inline-block w-2 h-4 bg-emerald-400 ml-1.5 align-middle animate-ping" />
+          </p>
+        </div>
+      </div>
+
+      {/* History Ledger Stream */}
+      {logHistory.length > 0 && (
+        <div className="space-y-1.5 pt-2 border-t border-slate-800 text-[11px] sm:text-xs text-slate-400 font-mono">
+          <p className="text-[10px] uppercase tracking-wider font-bold text-slate-500 mb-1 flex items-center gap-1.5">
+            <Activity className="w-3 h-3 text-slate-500" /> Recent Audit Logs:
+          </p>
+          {logHistory.map((log, idx) => (
+            <p key={idx} className="opacity-75 truncate flex items-center gap-2 text-slate-300">
+              <span className="text-emerald-500 font-bold">›</span> {log}
+            </p>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ── MAIN HOW IT WORKS PAGE ────────────────────────────────────────────────
 const HowItWorks = () => {
   const heroTextRef = useRef(null);
   const heroAnimationRef = useRef(null);
-  const heroLeftRef = useRef(null);
   const stepsContainerRef = useRef(null);
   const stepRefs = useRef([]);
   const featureSectionRef = useRef(null);
   const featureCardsRef = useRef([]);
 
-  const [activeStepIndex, setActiveStepIndex] = useState(0);
+  const [currentAnimEvent, setCurrentAnimEvent] = useState(null);
 
-  // Curated, impactful copywriting matching the animation context
-  const narrations = [
-    {
-      title: "Identity Onboarding",
-      body: "Secure verification pipelines authenticate the user using biometrics and localized registries, establishing baseline trust parameters inside the node network instantly."
-    },
-    {
-      title: "Circle Integration",
-      body: "Algorithmic placement synchronizes your savings pathing into active community pools, aligning rotation turns perfectly with your timeline goals."
-    },
-    {
-      title: "Smart Contributions",
-      body: "Automated billing bridges collect set allocations transparently. The funds bypass middle systems, updating the cryptographic shared ledger in real time."
-    },
-    {
-      title: "Disposal Liquidation",
-      body: "When the cycle shifts position to your index, the consolidated smart-escrow pool triggers a flawless, single-transaction payout directly into your target bank account."
-    }
-  ];
-
-  // GSAP Entrance Choreography
   useEffect(() => {
-    // Register ScrollTrigger plugin
     gsap.registerPlugin(ScrollTrigger);
 
-    // 1. Hero Text Entrance: Slide in from the right (on page load)
-    gsap.fromTo(heroTextRef.current,
-      { opacity: 0, x: 50 },
-      {
-        opacity: 1,
-        x: 0,
-        duration: 1.0,
-        ease: 'power3.out',
-        delay: 0.2
-      }
+    // Hero Text Fade In
+    gsap.fromTo(
+      heroTextRef.current,
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 1, ease: 'power3.out' }
     );
 
-    // 2. Hero Animation Section: Triggered when scrolling to animation area
-    gsap.fromTo(heroAnimationRef.current,
-      { opacity: 0, y: 60 },
+    // Simulator Reveal
+    gsap.fromTo(
+      heroAnimationRef.current,
+      { opacity: 0, y: 30 },
       {
         opacity: 1,
         y: 0,
-        duration: 1.2,
+        duration: 0.9,
         ease: 'power2.out',
         scrollTrigger: {
           trigger: heroAnimationRef.current,
-          start: 'top 80%',
-          end: 'top 50%',
+          start: 'top 85%',
           toggleActions: 'play none none none'
         }
       }
     );
 
-    // 3. Hero Interactive Elements: Slide animation for the centered container
-    gsap.fromTo(heroLeftRef.current,
-      { opacity: 0, y: 60 },
-      { 
-        opacity: 1, 
-        y: 0, 
-        duration: 1.2, 
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: heroAnimationRef.current,
-          start: 'top 75%',
-          end: 'top 45%',
-          toggleActions: 'play none none none'
-        }
-      }
-    );
-
-    // 4. Steps Entrance: Individual steps slide up one by one
+    // Step Cards
     if (stepRefs.current.length > 0) {
-      gsap.fromTo(stepRefs.current,
-        { y: 60 },
+      gsap.fromTo(
+        stepRefs.current,
+        { opacity: 0, y: 30 },
         {
+          opacity: 1,
           y: 0,
-          duration: 0.8,
-          stagger: 0.2,
+          duration: 0.6,
+          stagger: 0.12,
           ease: 'power2.out',
           scrollTrigger: {
             trigger: stepsContainerRef.current,
             start: 'top 80%',
-            end: 'top 50%',
             toggleActions: 'play none none none'
           }
         }
       );
     }
 
-    // 5. Features Section: Staggered animation when reaching the section
+    // Feature Cards
     if (featureCardsRef.current.length > 0) {
-      gsap.fromTo(featureCardsRef.current,
-        { opacity: 0, scale: 0.9, y: 40 },
+      gsap.fromTo(
+        featureCardsRef.current,
+        { opacity: 0, y: 30 },
         {
           opacity: 1,
-          scale: 1,
           y: 0,
-          duration: 0.8,
-          stagger: 0.2,
-          ease: 'back.out(1.2)',
+          duration: 0.6,
+          stagger: 0.12,
+          ease: 'power2.out',
           scrollTrigger: {
             trigger: featureSectionRef.current,
             start: 'top 80%',
-            end: 'top 50%',
             toggleActions: 'play none none none'
           }
         }
@@ -131,176 +166,149 @@ const HowItWorks = () => {
 
   const steps = [
     {
-      icon: <UserPlus className="w-6 h-6 text-deepBlue-600" />,
+      icon: <UserPlus className="w-5 h-5 text-deepBlue-700" />,
       title: "Sign Up & Verify",
-      description: "Secure profile configuration backed by secure identity verification.",
-      details: ["BVN/NIN validation", "Secure profile setup"]
+      description: "Complete identity verification for group trust and financial safety.",
+      details: ["Instant Identity Check", "Bank Account Linking"]
     },
     {
-      icon: <Users className="w-6 h-6 text-deepBlue-600" />,
-      title: "Join a Circle",
-      description: "Match with optimized rotation timelines tailored to your goals.",
-      details: ["Custom group terms", "Automated scheduling"]
+      icon: <Users className="w-5 h-5 text-deepBlue-700" />,
+      title: "Join or Create Group",
+      description: "Pick a monthly contribution target and select an available rotation spot.",
+      details: ["Custom Cycles", "Fixed Turn Selection"]
     },
     {
-      icon: <CreditCard className="w-6 h-6 text-deepBlue-600" />,
-      title: "Contribute Funds",
-      description: "Punctual automation tracks contributions without manual friction.",
-      details: ["Payment reminders", "Real-time ledger shifts"]
+      icon: <CreditCard className="w-5 h-5 text-deepBlue-700" />,
+      title: "Contribute Monthly",
+      description: "Automated charges keep payouts on schedule with clear ledger tracking.",
+      details: ["Automated Billing", "Real-Time Tracking"]
     },
     {
-      icon: <Wallet className="w-6 h-6 text-deepBlue-600" />,
-      title: "Collect Pool",
-      description: "Instant disbursement directly into your bank account on cycle turn.",
-      details: ["Guaranteed turns", "Zero withdrawal lag"]
+      icon: <Wallet className="w-5 h-5 text-deepBlue-700" />,
+      title: "Receive Lump Sum",
+      description: "Collect the entire accumulated pool amount when your rotation turn arrives.",
+      details: ["Zero Delay Payouts", "Direct Deposit"]
     }
   ];
 
   const features = [
     {
-      icon: <Shield className="w-7 h-7 text-deepBlue-600" />,
-      title: "Escrow Assurance",
-      description: "Funds reside safely within secured capital pools protected by enterprise-grade cryptographic guardrails."
+      icon: <ShieldCheck className="w-6 h-6 text-blue-600" />,
+      title: "Protected Escrow",
+      description: "Pooled contributions are held securely in institutional-grade escrow structures until rotation day."
     },
     {
-      icon: <CheckCircle className="w-7 h-7 text-deepBlue-600" />,
-      title: "Verified Nodes",
-      description: "100% ID-mapped user profiles prevent network dropouts and ensure continuous cycle health."
+      icon: <CheckCircle2 className="w-6 h-6 text-emerald-600" />,
+      title: "100% Verified Members",
+      description: "Strict identity mapping eliminates anonymous dropouts and keeps community groups stable."
     },
     {
-      icon: <ArrowRight className="w-7 h-7 text-deepBlue-600" />,
-      title: "Unified Yield",
-      description: "Eliminate typical individual banking fees by grouping rotational capital dynamically."
+      icon: <TrendingUp className="w-6 h-6 text-indigo-600" />,
+      title: "Zero Management Fees",
+      description: "Enjoy lump-sum group saving without high interest costs or hidden service charges."
     }
   ];
 
   return (
-    <div className="min-h-screen bg-white text-deepBlue-800 overflow-x-hidden selection:bg-deepBlue-100 flex flex-col justify-between font-sans antialiased">
+    <div className="min-h-screen bg-slate-50 text-deepBlue-900 font-sans antialiased flex flex-col justify-between">
       <HomeNavbar />
 
-      <section className="container mx-auto px-6 lg:px-16 pt-16 pb-12">
-        <div ref={heroTextRef} className="max-w-4xl opacity-0">
-          <h1 className="text-4xl md:text-6xl font-black tracking-tight text-deepBlue-800 leading-[1.1] mb-6 overflow-hidden">
-            <span className="block animate-slideInLeft">A system built on absolute <span className="underline decoration-deepBlue-500 decoration-wavy decoration-2 underline-offset-4">transparency</span>.</span>
-          </h1> 
-          <p className="text-lg text-deepBlue-600 max-w-2xl font-normal leading-relaxed">
-            Witness how decentralized rotary savings operate. Our simulator charts live ledger balances while our automation engine drives secure capital pools forward.
-          </p>
-        </div>
-      </section>
-
-      <section 
-        ref={heroAnimationRef} 
-        className="relative py-5 opacity-0"
+      {/* ── HERO SECTION — stock image as full background ─────────────────── */}
+      <section
+        className="relative py-20 sm:py-28 border-b border-slate-800 overflow-hidden"
         style={{
-          backgroundImage: `linear-gradient(rgba(17, 24, 39, 0.85), rgba(17, 24, 39, 0.85)), url('https://images.unsplash.com/photo-1650803321892-efba59b28a60?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')`,
+          backgroundImage: `url(${MarketImg})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
         }}
       >
-        <div className="container mx-auto px-6 lg:px-16">
-          {/* Single centered animation */}
-          <div className="flex justify-center items-center min-h-[600px]">
-            <div 
-              ref={heroLeftRef}
-              className="w-full max-w-5xl opacity-0"
-            >
-              {/* Animation component */}
-              <div className="w-full">
-                <AjoCycleAnimation />
-              </div>
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-deepBlue-950/72" />
 
-              {/* Stepper Controller */}
-              <div className="flex items-center justify-center gap-2 mt-8 bg-deepBlue-100 p-1.5 rounded-xl border border-deepBlue-200/40 max-w-fit mx-auto">
-                {narrations.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setActiveStepIndex(idx)}
-                    className={`flex items-center justify-center font-mono text-xs font-bold w-9 h-9 rounded-lg transition-all ${
-                      activeStepIndex === idx 
-                        ? 'bg-deepBlue-800 text-white shadow-md' 
-                        : 'text-deepBlue-400 hover:text-deepBlue-800 hover:bg-deepBlue-200/50'
-                    }`}
-                  >
-                    0{idx + 1}
-                  </button>
-                ))}
-              </div>
-
-              {/* Narrator info below animation */}
-              <div className="mt-8 bg-blur-sm bg-white/20 border border-deepBlue-100 rounded-xl p-6">                
-                <h3 className="text-xl font-black text-white tracking-tight mb-3 transition-all duration-300">
-                  {narrations[activeStepIndex].title}
-                </h3>
-                <p className="text-sm text-white font-normal leading-relaxed transition-all duration-500">
-                  {narrations[activeStepIndex].body}
-                </p>
-
-                <div className="mt-6 pt-4 border-t border-deepBlue-200 border-dashed flex items-center justify-between text-xs font-mono text-deepBlue-400 font-bold">
-                  <span>SEGMENT: 0{activeStepIndex + 1} // 04</span>
-                  <span className="text-deepBlue-300 tracking-wider">SYNC ACTIVE</span>
-                </div>
-              </div>
-            </div>
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-8">
+          <div ref={heroTextRef} className="space-y-6 text-left max-w-2xl">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight">
+              Traditional group saving, modernized with{' '}
+              <span className="text-blue-400 underline decoration-blue-400 decoration-wavy underline-offset-8">
+                total transparency
+              </span>.
+            </h1>
           </div>
         </div>
       </section>
 
-      <section
-        ref={stepsContainerRef}
-        className="bg-white border-y border-deepBlue-200/80 my-16"
-      >
-        <div className="container mx-auto px-6 lg:px-16 py-20 flex flex-col items-center">
-          {/* Steps Horizontal Grid Stack */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-0 items-stretch w-full">
-            {steps.map((step, index) => (
+      {/* ── SIMULATOR & TYPEWRITER NARRATION SECTION ─────────────────────── */}
+      <section id="simulator" ref={heroAnimationRef} className="py-10 bg-deepBlue-950 text-white relative overflow-hidden">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 text-left">
+          <div className="max-w-2xl mb-8 space-y-2">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-deepBlue-600">
+              ROTATION DEMONSTRATION
+            </h2>
+            <p className="text-2xl sm:text-3xl font-extrabold text-deepBlue-900 tracking-tight">
+              Observe real-time contribution movements and pooled disbursement logic.
+            </p>
+          </div>
+
+          {/* Animation & Integrated Terminal Box */}
+          <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-3 sm:p-6 shadow-2xl">
+            <div className="w-full flex justify-center overflow-x-auto">
+              <AjoCycleAnimation onStepChange={(event) => setCurrentAnimEvent(event)} />
+            </div>
+
+            {/* Typewriter Narration Directly Below Animation */}
+            <LiveTerminalNarrator currentEvent={currentAnimEvent} />
+          </div>
+
+        </div>
+      </section>
+
+      {/* ── SECURITY & TRUST FEATURES ───────────────────────────────────── */}
+      <section ref={featureSectionRef} className="py-10 bg-slate-50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 space-y-12 text-left">
+
+          <div className="max-w-2xl space-y-2">
+            <span className="text-xs font-bold uppercase tracking-widest text-deepBlue-600">
+              Built on Trust
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-deepBlue-900 tracking-tight">
+              Designed for absolute peace of mind
+            </h2>
+          </div>
+
+          <div className="grid sm:grid-cols-3 gap-6">
+            {features.map((feat, index) => (
               <div
                 key={index}
-                ref={el => stepRefs.current[index] = el}
-                onClick={() => setActiveStepIndex(index)}
-                className={`group p-8 flex flex-col justify-between transition-all duration-300 cursor-pointer hover:bg-deepBlue-50/60 relative ${index < steps.length - 1
-                    ? 'border-b border-deepBlue-100 lg:border-b-0 lg:border-r-2 lg:border-l-0 lg:border-deepBlue-100'
-                    : ''
-                  }`}
+                ref={(el) => (featureCardsRef.current[index] = el)}
+                className="bg-white border border-slate-200/80 rounded-2xl p-6 space-y-3 shadow-sm hover:shadow-md transition-shadow text-left"
               >
-                {/* Micro Step Overlay Floating Tag */}
-                <div className="absolute top-6 right-8 font-mono text-xs font-bold text-deepBlue-300 group-hover:text-deepBlue-400 transition-colors">
-                  [0{index + 1}]
+                <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center">
+                  {feat.icon}
                 </div>
-
-                <div>
-                  <div className="w-12 h-12 bg-deepBlue-50 border border-deepBlue-100 rounded-xl flex items-center justify-center mb-6 shadow-sm group-hover:scale-105 transition-transform">
-                    {step.icon}
-                  </div>
-                  <h3 className="text-lg font-bold text-deepBlue-800 mb-2 tracking-tight">
-                    {step.title}
-                  </h3>
-                  <p className="text-xs text-deepBlue-600 leading-relaxed font-normal mb-6">
-                    {step.description}
-                  </p>
-                </div>
-
-                <div className="pt-4 border-t border-dashed border-deepBlue-100 mt-auto">
-                  <div className="flex flex-wrap gap-1.5">
-                    {step.details.map((detail, dIdx) => (
-                      <span key={dIdx} className="inline-flex items-center text-[10px] font-medium bg-deepBlue-100 text-deepBlue-600 px-2 py-0.5 rounded-md">
-                        {detail}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+                <h3 className="font-bold text-deepBlue-900 text-base">{feat.title}</h3>
+                <p className="text-xs text-slate-600 leading-relaxed">{feat.description}</p>
               </div>
             ))}
           </div>
 
-          {/* Centered Go / Call to Action Trigger */}
-          <div className="mt-14">
-            <button className="inline-flex items-center gap-2 px-8 py-3.5 bg-deepBlue-900 text-white rounded-xl font-medium tracking-wide shadow-md shadow-slate-950/10 hover:bg-slate-900 transition-all duration-300 hover:scale-[1.02] active:scale-98">
-              <span>Get Started Now</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+          {/* CTA Banner */}
+          <div className="bg-deepBlue-900 text-white rounded-3xl p-8 sm:p-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 shadow-xl text-left">
+            <div className="space-y-2 max-w-xl">
+              <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+                Ready to start your first savings circle?
+              </h3>
+              <p className="text-sm sm:text-base text-blue-100/90">
+                Join thousands of group savers taking advantage of seamless, transparent community thrift.
+              </p>
+            </div>
+            <a
+              href="/auth"
+              className="inline-flex items-center gap-2 bg-white text-deepBlue-900 px-7 py-3 rounded-xl font-bold text-sm hover:bg-slate-100 transition-colors shadow-md shrink-0 w-fit"
+            >
+              Get Started Now <ArrowRight className="w-4 h-4" />
+            </a>
           </div>
+
         </div>
       </section>
 

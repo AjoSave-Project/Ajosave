@@ -2,178 +2,194 @@ import React, { useState } from 'react';
 import { Eye, EyeOff, CheckCircle, AlertCircle, Info, Loader } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { APIError } from '../../services/api';
+import { api } from '../../services/api';
 import LoadingSpinner from '../common/LoadingSpinner';
 import OtpVerification from './OtpVerification';
 import { useToast } from '../common/Toast';
+
+// ─── Password validation (matches mobile complete-profile.tsx) ───────────────
+// Min 8 chars, must have uppercase, lowercase, number, AND special character
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
+const PASSWORD_HINT = 'Min 8 chars · uppercase · lowercase · number · special character (e.g. @$!#)';
+
+// ─── Step labels ─────────────────────────────────────────────────────────────
+const STEPS = ['Contact', 'Verify Email', 'Identity (KYC)', 'Complete Profile'];
 
 const SignupSteps = () => {
   const { signup, completeOtpLogin } = useAuth();
   const toast = useToast();
 
+  // step 1 = contact info, 2 = OTP, 3 = KYC, 4 = name+password
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState({
-    firstName: '', lastName: '', email: '',
-    localPhone: '', password: '', showPassword: false,
-  });
-  const [kycData, setKycData] = useState({
-    bvn: '', nin: '', dateOfBirth: '',
-  });
+
+  // Step 1 data
+  const [contact, setContact] = useState({ email: '', localPhone: '' });
+
+  // Step 2 OTP data (set after step-1 API call)
+  const [otpUserId, setOtpUserId] = useState(null);
+  const [otpDevCode, setOtpDevCode] = useState(null);
+
+  // Step 3 KYC data
+  const [kyc, setKyc] = useState({ bvn: '', nin: '', dateOfBirth: '' });
+  const [kycVerified, setKycVerified] = useState({ bvn: false, nin: false });
+  const [kycVerifying, setKycVerifying] = useState({ bvn: false, nin: false });
+
+  // Step 4 profile data
+  const [profile, setProfile] = useState({ firstName: '', lastName: '', password: '', showPassword: false });
+
   const [fieldErrors, setFieldErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  const [verificationStatus, setVerificationStatus] = useState({});
-  const [otpState, setOtpState] = useState(null);
+
+  // Final OTP (login 2FA after registration)
+  const [loginOtpState, setLoginOtpState] = useState(null);
   const [success, setSuccess] = useState(false);
 
-  const fullPhone = formData.localPhone ? `+234${formData.localPhone}` : '';
+  const fullPhone = contact.localPhone ? `+234${contact.localPhone}` : '';
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    let processed = value;
+  // ─── Helpers ───────────────────────────────────────────────────────────────
+  const clearErr = (...fields) =>
+    setFieldErrors(prev => { const n = { ...prev }; fields.forEach(f => delete n[f]); return n; });
 
-    if (name === 'localPhone') {
-      processed = value.replace(/\D/g, '').slice(0, 10);
-    } else if (name === 'dateOfBirth') {
-      const digits = value.replace(/\D/g, '').slice(0, 8);
-      if (digits.length > 6) processed = `${digits.slice(0,4)}-${digits.slice(4,6)}-${digits.slice(6)}`;
-      else if (digits.length > 4) processed = `${digits.slice(0,4)}-${digits.slice(4)}`;
-      else processed = digits;
-    }
+  const inputCls = (f) =>
+    `w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition duration-200 bg-transparent text-white placeholder:text-white/60 ${
+      fieldErrors[f] ? 'border-red-400' : 'border-white/20 hover:border-white/40 focus:border-white/60'
+    }`;
 
-    if (name === 'showPassword') {
-      setFormData(prev => ({ ...prev, [name]: !prev[name] }));
-    } else if (['bvn', 'nin', 'dateOfBirth'].includes(name)) {
-      if (name === 'bvn' || name === 'nin') {
-        processed = value.replace(/\D/g, '').slice(0, 11);
-      }
-      setKycData(prev => ({ ...prev, [name]: processed }));
-      setFieldErrors(prev => { const n = { ...prev }; delete n[name]; return n; });
-    } else {
-      setFormData(prev => ({ ...prev, [name]: processed }));
-      setFieldErrors(prev => { const n = { ...prev }; delete n[name]; return n; });
-    }
-  };
-
+  // ─── Step 1 validation ─────────────────────────────────────────────────────
   const validateStep1 = () => {
     const errors = {};
-    if (!formData.firstName.trim() || formData.firstName.trim().length < 2) errors.firstName = 'First name must be at least 2 characters';
-    if (!formData.lastName.trim() || formData.lastName.trim().length < 2) errors.lastName = 'Last name must be at least 2 characters';
-    if (!formData.email || !/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(formData.email)) errors.email = 'Please enter a valid email address';
-    if (!formData.localPhone || formData.localPhone.length < 10) errors.localPhone = 'Enter a valid 10-digit number';
-    if (!formData.password) errors.password = 'Password is required';
-    else if (formData.password.length < 6) errors.password = 'Password must be at least 6 characters';
-    else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) errors.password = 'Password must contain uppercase, lowercase, and number';
+    if (!contact.email || !/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(contact.email))
+      errors.email = 'Please enter a valid email address';
+    if (!contact.localPhone || contact.localPhone.length < 10)
+      errors.localPhone = 'Enter a valid 10-digit number';
     return errors;
   };
 
-  const validateStep2 = () => {
+  // ─── Step 3 validation ─────────────────────────────────────────────────────
+  const validateStep3 = () => {
     const errors = {};
-    if (!kycData.bvn || kycData.bvn.length !== 11) errors.bvn = `BVN must be exactly 11 digits (${kycData.bvn.length}/11)`;
-    if (!kycData.nin || kycData.nin.length !== 11) errors.nin = `NIN must be exactly 11 digits (${kycData.nin.length}/11)`;
-    if (!kycData.dateOfBirth) {
+    if (!kyc.bvn || kyc.bvn.length !== 11) errors.bvn = `BVN must be exactly 11 digits (${kyc.bvn.length}/11)`;
+    else if (!kycVerified.bvn) errors.bvn = 'Please verify your BVN before continuing';
+    if (!kyc.nin || kyc.nin.length !== 11) errors.nin = `NIN must be exactly 11 digits (${kyc.nin.length}/11)`;
+    else if (!kycVerified.nin) errors.nin = 'Please verify your NIN before continuing';
+    if (!kyc.dateOfBirth) {
       errors.dateOfBirth = 'Date of birth is required';
     } else {
-      const birth = new Date(kycData.dateOfBirth);
-      const age = new Date().getFullYear() - birth.getFullYear();
+      const birth = new Date(kyc.dateOfBirth);
       if (isNaN(birth.getTime())) errors.dateOfBirth = 'Enter a valid date (YYYY-MM-DD)';
-      else if (age < 18) errors.dateOfBirth = 'You must be at least 18 years old';
+      else {
+        const today = new Date();
+        const age = today.getFullYear() - birth.getFullYear() -
+          (today < new Date(today.getFullYear(), birth.getMonth(), birth.getDate()) ? 1 : 0);
+        if (age < 18) errors.dateOfBirth = 'You must be at least 18 years old';
+        else if (age > 90) errors.dateOfBirth = 'Please enter a valid date of birth';
+      }
     }
     return errors;
   };
 
-  const handleVerifyBVN = async () => {
-    if (!kycData.bvn || kycData.bvn.length !== 11) {
-      setFieldErrors(prev => ({ ...prev, bvn: 'BVN must be 11 digits' }));
-      return;
+  // ─── Step 4 validation (matches mobile complete-profile.tsx) ───────────────
+  const validateStep4 = () => {
+    const errors = {};
+    if (!profile.firstName.trim() || profile.firstName.trim().length < 2)
+      errors.firstName = 'First name must be at least 2 characters';
+    if (!profile.lastName.trim() || profile.lastName.trim().length < 2)
+      errors.lastName = 'Last name must be at least 2 characters';
+    if (!profile.password) {
+      errors.password = 'Password is required';
+    } else if (profile.password.length < 8) {
+      errors.password = 'Password must be at least 8 characters';
+    } else if (!PASSWORD_REGEX.test(profile.password)) {
+      errors.password = 'Must include uppercase, lowercase, number, and special character';
     }
+    return errors;
+  };
 
+  // ─── Step 1 submit — send email OTP ────────────────────────────────────────
+  const handleStep1 = async () => {
+    const errors = validateStep1();
+    if (Object.keys(errors).length > 0) { setFieldErrors(errors); return; }
     try {
       setIsLoading(true);
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/verify-bvn`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bvn: kycData.bvn }),
+      const res = await api.post('/auth/send-email-otp', {
+        email: contact.email.trim().toLowerCase(),
+        phoneNumber: fullPhone,
       });
+      setOtpUserId(res.data?.userId || res.userId);
+      setOtpDevCode(res.data?.devOtp || res.devOtp || null);
+      setCurrentStep(2);
+    } catch (err) {
+      if (err instanceof APIError) toast.error(err.message);
+      else toast.error('Failed to send verification code. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'BVN verification failed');
+  // ─── Step 2 — OTP verified callback ────────────────────────────────────────
+  const handleOtpEmailVerified = () => {
+    setCurrentStep(3);
+  };
 
-      setVerificationStatus(prev => ({ ...prev, bvn: { verified: true, data: data.data } }));
+  // ─── Step 3 — verify BVN ───────────────────────────────────────────────────
+  const handleVerifyBVN = async () => {
+    if (kyc.bvn.length !== 11) { setFieldErrors(p => ({ ...p, bvn: 'BVN must be 11 digits' })); return; }
+    try {
+      setKycVerifying(p => ({ ...p, bvn: true }));
+      clearErr('bvn');
+      await api.post('/auth/verify-bvn', { bvn: kyc.bvn });
+      setKycVerified(p => ({ ...p, bvn: true }));
       toast.success('BVN verified successfully');
     } catch (err) {
       toast.error(err.message || 'BVN verification failed');
-      setFieldErrors(prev => ({ ...prev, bvn: err.message }));
+      setFieldErrors(p => ({ ...p, bvn: err.message || 'BVN verification failed' }));
     } finally {
-      setIsLoading(false);
+      setKycVerifying(p => ({ ...p, bvn: false }));
     }
   };
 
+  // ─── Step 3 — verify NIN ───────────────────────────────────────────────────
   const handleVerifyNIN = async () => {
-    if (!kycData.nin || kycData.nin.length !== 11) {
-      setFieldErrors(prev => ({ ...prev, nin: 'NIN must be 11 digits' }));
-      return;
-    }
-    if (!kycData.dateOfBirth) {
-      setFieldErrors(prev => ({ ...prev, dateOfBirth: 'Date of birth is required' }));
-      return;
-    }
-
+    if (kyc.nin.length !== 11) { setFieldErrors(p => ({ ...p, nin: 'NIN must be 11 digits' })); return; }
+    if (!kyc.dateOfBirth) { setFieldErrors(p => ({ ...p, dateOfBirth: 'Enter date of birth before verifying NIN' })); return; }
     try {
-      setIsLoading(true);
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/verify-nin`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nin: kycData.nin, dateOfBirth: kycData.dateOfBirth }),
-      });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'NIN verification failed');
-
-      setVerificationStatus(prev => ({ ...prev, nin: { verified: true, data: data.data } }));
+      setKycVerifying(p => ({ ...p, nin: true }));
+      clearErr('nin');
+      await api.post('/auth/verify-nin', { nin: kyc.nin, dateOfBirth: kyc.dateOfBirth });
+      setKycVerified(p => ({ ...p, nin: true }));
       toast.success('NIN verified successfully');
     } catch (err) {
       toast.error(err.message || 'NIN verification failed');
-      setFieldErrors(prev => ({ ...prev, nin: err.message }));
+      setFieldErrors(p => ({ ...p, nin: err.message || 'NIN verification failed' }));
     } finally {
-      setIsLoading(false);
+      setKycVerifying(p => ({ ...p, nin: false }));
     }
   };
 
-  const handleNextStep = async () => {
-    if (currentStep === 1) {
-      const errors = validateStep1();
-      if (Object.keys(errors).length > 0) {
-        setFieldErrors(errors);
-        return;
-      }
-      setCurrentStep(2);
-    } else if (currentStep === 2) {
-      const errors = validateStep2();
-      if (Object.keys(errors).length > 0) {
-        setFieldErrors(errors);
-        return;
-      }
-      setCurrentStep(3);
-    }
+  const handleStep3 = () => {
+    const errors = validateStep3();
+    if (Object.keys(errors).length > 0) { setFieldErrors(errors); return; }
+    setCurrentStep(4);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (currentStep !== 3) return;
-
+  // ─── Step 4 submit — final registration ────────────────────────────────────
+  const handleStep4 = async () => {
+    const errors = validateStep4();
+    if (Object.keys(errors).length > 0) { setFieldErrors(errors); return; }
     try {
       setIsLoading(true);
       const result = await signup({
-        firstName: formData.firstName.trim(),
-        lastName: formData.lastName.trim(),
-        email: formData.email.trim().toLowerCase(),
+        firstName: profile.firstName.trim(),
+        lastName: profile.lastName.trim(),
+        email: contact.email.trim().toLowerCase(),
         phoneNumber: fullPhone,
-        bvn: kycData.bvn,
-        nin: kycData.nin,
-        dateOfBirth: kycData.dateOfBirth,
-        password: formData.password,
+        bvn: kyc.bvn,
+        nin: kyc.nin,
+        dateOfBirth: kyc.dateOfBirth,
+        password: profile.password,
       });
       if (result?.requiresOtp) {
-        setOtpState({ userId: result.userId, phoneNumber: result.phoneNumber, devOtp: result.devOtp });
+        setLoginOtpState({ userId: result.userId, phoneNumber: result.phoneNumber, devOtp: result.devOtp });
       }
     } catch (err) {
       if (err instanceof APIError) {
@@ -191,232 +207,336 @@ const SignupSteps = () => {
     }
   };
 
-  const handleOtpSuccess = ({ user, token }) => {
+  const handleLoginOtpSuccess = ({ user, token }) => {
     completeOtpLogin(user, token);
     setSuccess(true);
   };
 
+  // ─── DOB auto-format ───────────────────────────────────────────────────────
+  const handleDobChange = (e) => {
+    const digits = e.target.value.replace(/\D/g, '').slice(0, 8);
+    let formatted = digits;
+    if (digits.length > 6) formatted = `${digits.slice(0,4)}-${digits.slice(4,6)}-${digits.slice(6)}`;
+    else if (digits.length > 4) formatted = `${digits.slice(0,4)}-${digits.slice(4)}`;
+    setKyc(p => ({ ...p, dateOfBirth: formatted }));
+    clearErr('dateOfBirth');
+    // Reset NIN verification if DOB changes (NIN verify uses DOB)
+    if (kycVerified.nin) {
+      setKycVerified(p => ({ ...p, nin: false }));
+    }
+  };
+
+  // ─── Success state ─────────────────────────────────────────────────────────
   if (success) {
     return (
       <div className="text-center py-8">
-        <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+        <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+          <CheckCircle className="w-8 h-8 text-green-400" />
+        </div>
         <h3 className="text-xl font-semibold text-white mb-2">Account Created!</h3>
-        <p className="text-white/80 mb-2">Your wallet has been created automatically.</p>
+        <p className="text-white/80 mb-4">Your wallet has been created automatically.</p>
         <LoadingSpinner size="md" text="Redirecting to dashboard..." />
       </div>
     );
   }
 
-  if (otpState) {
+  // ─── Login 2FA OTP after registration ─────────────────────────────────────
+  if (loginOtpState) {
     return (
       <div>
-        <h3 className="text-lg font-semibold text-white text-center mb-2">Verify Your Phone</h3>
+        <h3 className="text-lg font-semibold text-white text-center mb-4">Verify Your Identity</h3>
+        <p className="text-sm text-white/70 text-center mb-4">We've sent a code to your phone to complete sign-in.</p>
         <OtpVerification
-          userId={otpState.userId}
-          phoneNumber={otpState.phoneNumber}
-          devOtp={otpState.devOtp}
-          onSuccess={handleOtpSuccess}
-          onBack={() => setOtpState(null)}
+          userId={loginOtpState.userId}
+          phoneNumber={loginOtpState.phoneNumber}
+          devOtp={loginOtpState.devOtp}
+          onSuccess={handleLoginOtpSuccess}
+          onBack={() => setLoginOtpState(null)}
         />
       </div>
     );
   }
 
-  const hasErr = (f) => !!fieldErrors[f];
-  const getErr = (f) => fieldErrors[f];
-  const inputCls = (f) => `w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition duration-200 ${
-    hasErr(f) ? 'border-red-500 focus:ring-red-500 bg-red-50/20' : 'border-white/20 focus:ring-white/40 bg-transparent text-white placeholder:text-white/60'
-  }`;
+  // ─── Step 2 — email OTP verification ──────────────────────────────────────
+  if (currentStep === 2) {
+    return (
+      <div>
+        <StepIndicator current={2} total={4} labels={STEPS} />
+        <div className="text-center mb-6">
+          <h2 className="text-xl font-bold text-white mb-1">Verify Your Email</h2>
+          <p className="text-sm text-white/70">
+            A 6-digit code was sent to <span className="font-semibold">{contact.email.replace(/(.{2})(.*)(@.*)/, '$1***$3')}</span>
+          </p>
+        </div>
+        <OtpVerification
+          userId={otpUserId}
+          devOtp={otpDevCode}
+          onSuccess={handleOtpEmailVerified}
+          onBack={() => setCurrentStep(1)}
+          verifyEndpoint="/auth/verify-email-otp"
+        />
+      </div>
+    );
+  }
 
+  // ─── Main render ───────────────────────────────────────────────────────────
   return (
     <div>
-      {/* Step Indicator */}
-      <div className="flex justify-between mb-8">
-        {[1, 2, 3].map((step) => (
-          <div key={step} className="flex items-center flex-1">
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition duration-200 ${
-              step < currentStep ? 'bg-green-500 text-white' :
-              step === currentStep ? 'bg-white/20 text-white border-2 border-white/40' :
-              'bg-white/10 text-white/60'
-            }`}>
-              {step < currentStep ? <CheckCircle size={20} /> : step}
-            </div>
-            {step < 3 && (
-              <div className={`flex-1 h-1 mx-2 transition duration-200 ${
-                step < currentStep ? 'bg-green-500' : 'bg-white/20'
-              }`} />
-            )}
+      <StepIndicator current={currentStep} total={4} labels={STEPS} />
+
+      {/* ── Step 1: Contact Info ────────────────────────────────────────────── */}
+      {currentStep === 1 && (
+        <div className="space-y-4">
+          <div className="text-center mb-2">
+            <h2 className="text-xl font-bold text-white mb-1">Contact Information</h2>
+            <p className="text-xs text-white/60">We'll send a verification code to your email</p>
           </div>
+
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">Email Address *</label>
+            <input
+              type="email" value={contact.email} placeholder="you@example.com"
+              className={inputCls('email')} autoComplete="email" disabled={isLoading}
+              onChange={e => { setContact(p => ({ ...p, email: e.target.value })); clearErr('email'); }}
+            />
+            {fieldErrors.email && <Err msg={fieldErrors.email} />}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">Phone Number *</label>
+            <div className={`flex items-center border-2 rounded-xl overflow-hidden transition duration-200 ${fieldErrors.localPhone ? 'border-red-400' : 'border-white/20 hover:border-white/40'}`}>
+              <span className="px-3 py-3 bg-white/10 border-r border-white/20 text-sm font-semibold text-white whitespace-nowrap">🇳🇬 +234</span>
+              <input
+                type="tel" value={contact.localPhone} placeholder="8012345678" maxLength={10}
+                className="flex-1 px-3 py-3 focus:outline-none bg-transparent text-white placeholder:text-white/60"
+                disabled={isLoading}
+                onChange={e => { setContact(p => ({ ...p, localPhone: e.target.value.replace(/\D/g, '').slice(0, 10) })); clearErr('localPhone'); }}
+              />
+            </div>
+            {fieldErrors.localPhone ? <Err msg={fieldErrors.localPhone} /> : <Hint msg="10-digit number after +234" />}
+          </div>
+
+          <NavButton label="Continue →" onClick={handleStep1} loading={isLoading} />
+        </div>
+      )}
+
+      {/* ── Step 3: KYC ─────────────────────────────────────────────────────── */}
+      {currentStep === 3 && (
+        <div className="space-y-4">
+          <div className="text-center mb-2">
+            <h2 className="text-xl font-bold text-white mb-1">Verify Your Identity</h2>
+            <p className="text-xs text-white/60">BVN and NIN verification is required for your security</p>
+          </div>
+
+          <div className="bg-white/10 border border-white/20 rounded-xl p-3">
+            <p className="text-xs text-white/80">Enter your BVN and NIN, then tap Verify for each. Date of birth is required to verify your NIN.</p>
+          </div>
+
+          {/* Date of Birth first — NIN verify depends on it */}
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">Date of Birth *</label>
+            <input
+              type="text" value={kyc.dateOfBirth} placeholder="YYYY-MM-DD"
+              maxLength={10} inputMode="numeric"
+              className={inputCls('dateOfBirth')} disabled={isLoading}
+              onChange={handleDobChange}
+            />
+            {fieldErrors.dateOfBirth ? <Err msg={fieldErrors.dateOfBirth} /> : <Hint msg="You must be at least 18 years old" />}
+          </div>
+
+          {/* BVN */}
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">BVN (11 digits) *</label>
+            <div className="flex gap-2">
+              <input
+                type="text" value={kyc.bvn} placeholder="12345678901" maxLength={11}
+                className={`flex-1 ${inputCls('bvn')}`}
+                disabled={isLoading || kycVerified.bvn}
+                onChange={e => { setKyc(p => ({ ...p, bvn: e.target.value.replace(/\D/g, '').slice(0, 11) })); setKycVerified(p => ({ ...p, bvn: false })); clearErr('bvn'); }}
+              />
+              <button
+                type="button" onClick={handleVerifyBVN}
+                disabled={isLoading || kycVerifying.bvn || kyc.bvn.length !== 11 || kycVerified.bvn}
+                className={`px-4 py-3 rounded-xl font-semibold text-sm transition duration-200 min-w-[90px] ${
+                  kycVerified.bvn ? 'bg-green-500 text-white' :
+                  kyc.bvn.length !== 11 ? 'bg-white/10 text-white/40 cursor-not-allowed' :
+                  'bg-white/20 hover:bg-white/30 text-white border border-white/40'
+                }`}
+              >
+                {kycVerifying.bvn ? <Loader size={16} className="animate-spin mx-auto" /> : kycVerified.bvn ? '✓ Verified' : 'Verify'}
+              </button>
+            </div>
+            {fieldErrors.bvn ? <Err msg={fieldErrors.bvn} /> : <Hint msg={`Bank Verification Number (${kyc.bvn.length}/11)`} />}
+          </div>
+
+          {/* NIN */}
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">NIN (11 digits) *</label>
+            <div className="flex gap-2">
+              <input
+                type="text" value={kyc.nin} placeholder="12345678901" maxLength={11}
+                className={`flex-1 ${inputCls('nin')}`}
+                disabled={isLoading || kycVerified.nin}
+                onChange={e => { setKyc(p => ({ ...p, nin: e.target.value.replace(/\D/g, '').slice(0, 11) })); setKycVerified(p => ({ ...p, nin: false })); clearErr('nin'); }}
+              />
+              <button
+                type="button" onClick={handleVerifyNIN}
+                disabled={isLoading || kycVerifying.nin || kyc.nin.length !== 11 || !kyc.dateOfBirth || kycVerified.nin}
+                className={`px-4 py-3 rounded-xl font-semibold text-sm transition duration-200 min-w-[90px] ${
+                  kycVerified.nin ? 'bg-green-500 text-white' :
+                  kyc.nin.length !== 11 || !kyc.dateOfBirth ? 'bg-white/10 text-white/40 cursor-not-allowed' :
+                  'bg-white/20 hover:bg-white/30 text-white border border-white/40'
+                }`}
+              >
+                {kycVerifying.nin ? <Loader size={16} className="animate-spin mx-auto" /> : kycVerified.nin ? '✓ Verified' : 'Verify'}
+              </button>
+            </div>
+            {fieldErrors.nin ? <Err msg={fieldErrors.nin} /> : <Hint msg={`National Identification Number (${kyc.nin.length}/11)`} />}
+          </div>
+
+          <div className="flex gap-3 pt-2">
+            <button type="button" onClick={() => setCurrentStep(1)} disabled={isLoading} className="flex-1 py-3 rounded-xl font-semibold border-2 border-white/30 text-white hover:bg-white/10 transition">← Back</button>
+            <button type="button" onClick={handleStep3} disabled={isLoading} className="flex-1 py-3 rounded-xl font-semibold bg-white/20 hover:bg-white/30 text-white border border-white/40 transition">Continue →</button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Step 4: Name + Password ──────────────────────────────────────────── */}
+      {currentStep === 4 && (
+        <div className="space-y-4">
+          <div className="text-center mb-2">
+            <h2 className="text-xl font-bold text-white mb-1">Complete Your Profile</h2>
+            <p className="text-xs text-white/60">Almost done — just your name and a secure password</p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            {[['firstName', 'First Name', 'John', 'given-name'], ['lastName', 'Last Name', 'Doe', 'family-name']].map(([name, label, ph, ac]) => (
+              <div key={name}>
+                <label className="block text-sm font-medium text-white mb-2">{label} *</label>
+                <input
+                  type="text" value={profile[name]} placeholder={ph} autoComplete={ac}
+                  className={inputCls(name)} disabled={isLoading}
+                  onChange={e => { setProfile(p => ({ ...p, [name]: e.target.value })); clearErr(name); }}
+                />
+                {fieldErrors[name] && <Err msg={fieldErrors[name]} />}
+              </div>
+            ))}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">Password *</label>
+            <div className={`relative border-2 rounded-xl transition duration-200 ${fieldErrors.password ? 'border-red-400' : 'border-white/20 hover:border-white/40 focus-within:border-white/60'}`}>
+              <input
+                type={profile.showPassword ? 'text' : 'password'}
+                value={profile.password} placeholder="Create a strong password"
+                autoComplete="new-password"
+                className="w-full px-4 py-3 focus:outline-none bg-transparent pr-12 rounded-xl text-white placeholder:text-white/60"
+                disabled={isLoading}
+                onChange={e => { setProfile(p => ({ ...p, password: e.target.value })); clearErr('password'); }}
+              />
+              <button
+                type="button" tabIndex={-1}
+                onClick={() => setProfile(p => ({ ...p, showPassword: !p.showPassword }))}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition"
+              >
+                {profile.showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+            {fieldErrors.password ? <Err msg={fieldErrors.password} /> : <Hint msg={PASSWORD_HINT} />}
+
+            {/* Live password strength indicator */}
+            {profile.password && <PasswordStrength password={profile.password} />}
+          </div>
+
+          <div className="flex gap-3 pt-2">
+            <button type="button" onClick={() => setCurrentStep(3)} disabled={isLoading} className="flex-1 py-3 rounded-xl font-semibold border-2 border-white/30 text-white hover:bg-white/10 transition">← Back</button>
+            <button type="button" onClick={handleStep4} disabled={isLoading} className={`flex-1 py-3 rounded-xl font-semibold transition ${isLoading ? 'bg-white/10 cursor-not-allowed text-white/50' : 'bg-green-600 hover:bg-green-700 text-white'}`}>
+              {isLoading ? <div className="flex items-center justify-center gap-2"><LoadingSpinner size="sm" text="" /><span>Creating...</span></div> : 'Create Account'}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ─── Sub-components ───────────────────────────────────────────────────────────
+
+const Err = ({ msg }) => (
+  <p className="text-xs text-red-400 mt-1 flex items-center gap-1">
+    <AlertCircle className="w-3 h-3 flex-shrink-0" />{msg}
+  </p>
+);
+
+const Hint = ({ msg }) => (
+  <p className="text-xs text-white/50 mt-1 flex items-center gap-1">
+    <Info className="w-3 h-3 flex-shrink-0" />{msg}
+  </p>
+);
+
+const NavButton = ({ label, onClick, loading }) => (
+  <button
+    type="button" onClick={onClick} disabled={loading}
+    className={`w-full py-3 rounded-xl font-semibold transition duration-200 ${
+      loading ? 'bg-white/10 cursor-not-allowed text-white/50' : 'bg-white/20 hover:bg-white/30 text-white border border-white/40'
+    }`}
+  >
+    {loading
+      ? <div className="flex items-center justify-center gap-2"><LoadingSpinner size="sm" text="" /><span>Sending...</span></div>
+      : label}
+  </button>
+);
+
+const StepIndicator = ({ current, total, labels }) => (
+  <div className="flex justify-between mb-6">
+    {Array.from({ length: total }, (_, i) => i + 1).map((step) => (
+      <div key={step} className="flex items-center flex-1">
+        <div className="flex flex-col items-center gap-1">
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm transition-all ${
+            step < current ? 'bg-green-500 text-white' :
+            step === current ? 'bg-white/20 text-white border-2 border-white/60 ring-2 ring-white/20' :
+            'bg-white/10 text-white/40'
+          }`}>
+            {step < current ? <CheckCircle size={16} /> : step}
+          </div>
+          <span className={`text-[10px] hidden sm:block font-medium ${step === current ? 'text-white' : 'text-white/40'}`}>
+            {labels[step - 1]}
+          </span>
+        </div>
+        {step < total && (
+          <div className={`flex-1 h-0.5 mx-1 mb-4 transition-all ${step < current ? 'bg-green-500' : 'bg-white/20'}`} />
+        )}
+      </div>
+    ))}
+  </div>
+);
+
+// Live password strength — matches mobile's requirement set
+const PasswordStrength = ({ password }) => {
+  const checks = [
+    { label: '8+ chars',     pass: password.length >= 8 },
+    { label: 'Uppercase',    pass: /[A-Z]/.test(password) },
+    { label: 'Lowercase',    pass: /[a-z]/.test(password) },
+    { label: 'Number',       pass: /\d/.test(password) },
+    { label: 'Special char', pass: /[@$!%*?&#^()_+\-=[\]{};':"\\|,.<>/?]/.test(password) },
+  ];
+  const passed = checks.filter(c => c.pass).length;
+  const color = passed <= 2 ? 'bg-red-500' : passed <= 3 ? 'bg-yellow-500' : passed === 4 ? 'bg-blue-400' : 'bg-green-500';
+
+  return (
+    <div className="mt-2 space-y-1.5">
+      <div className="flex gap-1">
+        {checks.map((_, i) => (
+          <div key={i} className={`h-1 flex-1 rounded-full transition-all ${i < passed ? color : 'bg-white/20'}`} />
         ))}
       </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Step 1: Basic Info */}
-        {currentStep === 1 && (
-          <>
-            <h2 className="text-2xl font-bold text-white mb-6">Create Your Account</h2>
-            
-            <div className="grid grid-cols-2 gap-4">
-              {[['firstName', 'First Name', 'John', 'given-name'], ['lastName', 'Last Name', 'Doe', 'family-name']].map(([name, label, ph, ac]) => (
-                <div key={name}>
-                  <label className="block text-sm font-medium text-white mb-2">{label} *</label>
-                  <input type="text" name={name} value={formData[name]} onChange={handleChange} placeholder={ph} className={inputCls(name)} disabled={isLoading} autoComplete={ac} />
-                  {hasErr(name) && <p className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr(name)}</p>}
-                </div>
-              ))}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-white mb-2">Email Address *</label>
-              <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="john@example.com" className={inputCls('email')} disabled={isLoading} autoComplete="email" />
-              {hasErr('email') && <p className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('email')}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-white mb-2">Phone Number *</label>
-              <div className={`flex items-center border rounded-lg overflow-hidden transition duration-200 ${hasErr('localPhone') ? 'border-red-500 bg-red-50/20' : 'border-white/20'}`}>
-                <span className="px-3 py-3 bg-white/10 border-r border-white/20 text-sm font-medium text-white whitespace-nowrap">🇳🇬 +234</span>
-                <input type="tel" name="localPhone" value={formData.localPhone} onChange={handleChange} placeholder="8012345678" className="flex-1 px-3 py-3 focus:outline-none bg-transparent text-white placeholder:text-white/60" disabled={isLoading} maxLength={10} />
-              </div>
-              {hasErr('localPhone') ? <p className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('localPhone')}</p>
-                : <p className="text-xs text-white/60 mt-1 flex items-center gap-1"><Info className="w-3 h-3" />10-digit number after +234</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-white mb-2">Password *</label>
-              <div className={`relative border rounded-lg transition duration-200 ${hasErr('password') ? 'border-red-500 bg-red-50/20' : 'border-white/20'}`}>
-                <input type={formData.showPassword ? 'text' : 'password'} name="password" value={formData.password} onChange={handleChange} placeholder="Create a strong password" className="w-full px-4 py-3 focus:outline-none bg-transparent pr-12 rounded-lg text-white placeholder:text-white/60" disabled={isLoading} autoComplete="new-password" />
-                <button type="button" onClick={() => setFormData(prev => ({ ...prev, showPassword: !prev.showPassword }))} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white" tabIndex={-1}>
-                  {formData.showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
-              {hasErr('password') ? <p className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('password')}</p>
-                : <p className="text-xs text-white/60 mt-1">At least 6 characters with uppercase, lowercase, and number</p>}
-            </div>
-          </>
-        )}
-
-        {/* Step 2: KYC Verification */}
-        {currentStep === 2 && (
-          <>
-            <h2 className="text-2xl font-bold text-white mb-6">Verify Your Identity</h2>
-            
-            <div className="bg-white/10 border border-white/20 rounded-lg p-4 mb-6 backdrop-blur-sm">
-              <p className="text-sm text-white/90">We need to verify your identity using your BVN and NIN for security purposes.</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-white mb-2">BVN (11 digits) *</label>
-              <div className="flex gap-2">
-                <input type="text" name="bvn" value={kycData.bvn} onChange={handleChange} placeholder="12345678901" maxLength={11} className={`flex-1 ${inputCls('bvn')}`} disabled={isLoading || verificationStatus.bvn?.verified} />
-                <button type="button" onClick={handleVerifyBVN} disabled={isLoading || kycData.bvn.length !== 11 || verificationStatus.bvn?.verified} className={`px-4 py-3 rounded-lg font-semibold transition duration-200 ${
-                  verificationStatus.bvn?.verified ? 'bg-green-500 text-white' :
-                  isLoading || kycData.bvn.length !== 11 ? 'bg-white/10 text-white/60 cursor-not-allowed' :
-                  'bg-white/20 hover:bg-white/30 text-white border border-white/40'
-                }`}>
-                  {isLoading ? <Loader size={18} className="animate-spin" /> : verificationStatus.bvn?.verified ? '✓ Verified' : 'Verify'}
-                </button>
-              </div>
-              {hasErr('bvn') ? <p className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('bvn')}</p>
-                : <p className="text-xs text-white/60 mt-1">11-digit Bank Verification Number ({kycData.bvn.length}/11)</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-white mb-2">NIN (11 digits) *</label>
-              <div className="flex gap-2">
-                <input type="text" name="nin" value={kycData.nin} onChange={handleChange} placeholder="12345678901" maxLength={11} className={`flex-1 ${inputCls('nin')}`} disabled={isLoading || verificationStatus.nin?.verified} />
-                <button type="button" onClick={handleVerifyNIN} disabled={isLoading || kycData.nin.length !== 11 || !kycData.dateOfBirth || verificationStatus.nin?.verified} className={`px-4 py-3 rounded-lg font-semibold transition duration-200 ${
-                  verificationStatus.nin?.verified ? 'bg-green-500 text-white' :
-                  isLoading || kycData.nin.length !== 11 || !kycData.dateOfBirth ? 'bg-white/10 text-white/60 cursor-not-allowed' :
-                  'bg-white/20 hover:bg-white/30 text-white border border-white/40'
-                }`}>
-                  {isLoading ? <Loader size={18} className="animate-spin" /> : verificationStatus.nin?.verified ? '✓ Verified' : 'Verify'}
-                </button>
-              </div>
-              {hasErr('nin') ? <p className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('nin')}</p>
-                : <p className="text-xs text-white/60 mt-1">11-digit National Identification Number ({kycData.nin.length}/11)</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-white mb-2">Date of Birth *</label>
-              <input type="text" name="dateOfBirth" value={kycData.dateOfBirth} onChange={handleChange} placeholder="YYYY-MM-DD" maxLength={10} className={inputCls('dateOfBirth')} disabled={isLoading} inputMode="numeric" />
-              {hasErr('dateOfBirth') ? <p className="text-xs text-red-400 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{getErr('dateOfBirth')}</p>
-                : <p className="text-xs text-white/60 mt-1">You must be at least 18 years old</p>}
-            </div>
-          </>
-        )}
-
-        {/* Step 3: Review */}
-        {currentStep === 3 && (
-          <>
-            <h2 className="text-2xl font-bold text-white mb-6">Review Your Information</h2>
-            
-            <div className="space-y-4 bg-white/10 p-6 rounded-lg mb-6 backdrop-blur-sm">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-xs text-white/80 font-semibold">First Name</p>
-                  <p className="text-sm text-white">{formData.firstName}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-white/80 font-semibold">Last Name</p>
-                  <p className="text-sm text-white">{formData.lastName}</p>
-                </div>
-              </div>
-              <div>
-                <p className="text-xs text-white/80 font-semibold">Email</p>
-                <p className="text-sm text-white">{formData.email}</p>
-              </div>
-              <div>
-                <p className="text-xs text-white/80 font-semibold">Phone</p>
-                <p className="text-sm text-white">{fullPhone}</p>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-xs text-white/80 font-semibold">BVN</p>
-                  <p className="text-sm text-white">{kycData.bvn}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-white/80 font-semibold">NIN</p>
-                  <p className="text-sm text-white">{kycData.nin}</p>
-                </div>
-              </div>
-            </div>
-
-            {verificationStatus.bvn?.verified && verificationStatus.nin?.verified && (
-              <div className="bg-green-500/20 border border-green-400/30 rounded-lg p-4 mb-6 backdrop-blur-sm">
-                <div className="flex items-center gap-2 mb-2">
-                  <CheckCircle className="w-5 h-5 text-green-400" />
-                  <span className="text-green-300 font-semibold">All verifications passed</span>
-                </div>
-                <p className="text-sm text-green-200">Your identity has been verified successfully.</p>
-              </div>
-            )}
-          </>
-        )}
-
-        {/* Navigation Buttons */}
-        <div className="flex gap-4 pt-6">
-          {currentStep > 1 && (
-            <button type="button" onClick={() => setCurrentStep(currentStep - 1)} disabled={isLoading} className="flex-1 py-3 rounded-lg font-semibold border-2 border-white/40 text-white hover:bg-white/10 transition duration-200 disabled:opacity-50">
-              Back
-            </button>
-          )}
-          {currentStep < 3 && (
-            <button type="button" onClick={handleNextStep} disabled={isLoading} className={`flex-1 py-3 rounded-lg font-semibold transition duration-200 ${isLoading ? 'bg-white/20 cursor-not-allowed text-white/60' : 'bg-white/20 hover:bg-white/30 text-white border border-white/40'}`}>
-              {isLoading ? <div className="flex items-center justify-center gap-2"><LoadingSpinner size="sm" text="" /><span>Processing...</span></div> : 'Continue'}
-            </button>
-          )}
-          {currentStep === 3 && (
-            <button type="submit" disabled={isLoading || !verificationStatus.bvn?.verified || !verificationStatus.nin?.verified} className={`flex-1 py-3 rounded-lg font-semibold transition duration-200 ${
-              isLoading || !verificationStatus.bvn?.verified || !verificationStatus.nin?.verified
-                ? 'bg-white/10 cursor-not-allowed text-white/60'
-                : 'bg-green-600 hover:bg-green-700 text-white'
-            }`}>
-              {isLoading ? <div className="flex items-center justify-center gap-2"><LoadingSpinner size="sm" text="" /><span>Creating Account...</span></div> : 'Create Account'}
-            </button>
-          )}
-        </div>
-      </form>
+      <div className="flex flex-wrap gap-x-3 gap-y-1">
+        {checks.map(c => (
+          <span key={c.label} className={`text-[10px] font-medium ${c.pass ? 'text-green-400' : 'text-white/40'}`}>
+            {c.pass ? '✓' : '○'} {c.label}
+          </span>
+        ))}
+      </div>
     </div>
   );
 };

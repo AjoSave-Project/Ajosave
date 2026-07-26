@@ -3,6 +3,7 @@ const User = require('../models/Users');
 const Wallet = require('../models/Wallets');
 const config = require('../config/config');
 const { createAndSendOtp, verifyOtp: verifyOtpCode } = require('../services/otpService');
+const { checkVerificationCode } = require('../services/twilioVerifyService');
 const { verifyBVN, verifyNIN } = require('../services/paystackVerification');
 const {
   AppError,
@@ -173,12 +174,9 @@ const registerUser = asyncErrorHandler(async (req, res) => {
           await wallet.save();
         }
         
-        // Generate JWT token
-        const token = jwt.sign(
-          { userId: savedUser._id, email: savedUser.email },
-          config.jwt.secret,
-          { expiresIn: config.jwt.expiresIn }
-        );
+        // Generate JWT token using the standard generateToken helper
+        const token = generateToken(savedUser._id);
+        setAuthCookie(res, token);
         
         return res.status(201).json({
           success: true,
@@ -256,12 +254,9 @@ const registerUser = asyncErrorHandler(async (req, res) => {
 
     await newWallet.save();
 
-    // Generate JWT token
-    const token = jwt.sign(
-      { userId: savedUser._id, email: savedUser.email },
-      config.jwt.secret,
-      { expiresIn: config.jwt.expiresIn }
-    );
+    // Generate JWT token using the standard generateToken helper
+    const token = generateToken(savedUser._id);
+    setAuthCookie(res, token);
 
     res.status(201).json({
       success: true,
@@ -286,20 +281,26 @@ const registerUser = asyncErrorHandler(async (req, res) => {
  * Login User Handler - UPDATED
  * 
  * @route   POST /api/auth/login
- * @desc    Authenticate user and provide access token
+ * @desc    Authenticate user with phone number OR email + password
  * @access  Public
  */
 const loginUser = asyncErrorHandler(async (req, res) => {
-  const { phoneNumber, password } = req.body;
+  const { phoneNumber, email, password } = req.body;
 
-
+  if (!password) throw new ValidationError('Password is required');
+  if (!phoneNumber && !email) throw new ValidationError('Phone number or email is required');
 
   try {
-    // Find user by phone number (include password for verification)
-    const user = await User.findOne({ phoneNumber }).select('+password');
+    // Find user by phone number or email
+    let user;
+    if (phoneNumber) {
+      user = await User.findOne({ phoneNumber }).select('+password');
+    } else {
+      user = await User.findOne({ email: email.toLowerCase().trim() }).select('+password');
+    }
 
     if (!user) {
-      throw new AuthenticationError('Invalid phone number or password');
+      throw new AuthenticationError('Invalid credentials');
     }
 
     // Verify password using the method defined in User model
@@ -307,7 +308,7 @@ const loginUser = asyncErrorHandler(async (req, res) => {
 
     if (!isPasswordValid) {
       console.warn(`🚫 Invalid password attempt for user: ${user._id}`);
-      throw new AuthenticationError('Invalid phone number or password');
+      throw new AuthenticationError('Invalid credentials');
     }
 
     // NEW: Check if wallet exists, create if it doesn't
@@ -329,24 +330,26 @@ const loginUser = asyncErrorHandler(async (req, res) => {
     await user.save();
 
     // Send OTP for 2FA
-    await createAndSendOtp(user, 'verification');
+    const otpResult = await createAndSendOtp(user, 'verification');
 
 
     res.status(200).json({
       success: true,
-      message: 'Credentials verified. Please check your email for verification code.',
+      message: 'Credentials verified. Please enter the verification code sent to your phone.',
       data: {
         requiresOtp: true,
         email: user.email,
         phoneNumber: user.phoneNumber,
         userId: user._id,
+        // Only included in development builds for the dev auto-fill banner
+        ...(otpResult.devOtp && { devOtp: otpResult.devOtp }),
       },
       timestamp: new Date().toISOString()
     });
 
   } catch (error) {
     // Log login error
-    console.error(`❌ Login failed for ${phoneNumber}:`, error.message);
+    console.error(`❌ Login failed for ${phoneNumber || email}:`, error.message);
     
     // Re-throw the error to be handled by global error handler
     throw error;
@@ -541,13 +544,14 @@ const sendOtp = asyncErrorHandler(async (req, res) => {
   const user = await User.findById(userId).select('+otpCode +otpExpiry');
   if (!user) throw new AuthenticationError('User not found');
 
-  await createAndSendOtp(user, 'verification');
+  const otpResult = await createAndSendOtp(user, 'verification');
 
   res.status(200).json({
     success: true,
     message: 'OTP sent successfully to your email',
     data: {
       email: user.email,
+      ...(otpResult.devOtp && { devOtp: otpResult.devOtp }),
     },
     timestamp: new Date().toISOString(),
   });
@@ -566,8 +570,35 @@ const verifyOtpHandler = asyncErrorHandler(async (req, res) => {
   const user = await User.findById(userId).select('+otpCode +otpExpiry +password');
   if (!user) throw new AuthenticationError('User not found');
 
-  const valid = await verifyOtpCode(user, otp);
-  if (!valid) throw new AuthenticationError('Invalid or expired OTP');
+  let verified = false;
+  let twilioAttempted = false;
+
+  // If user has a phone number, try Twilio Verify first (SMS flow)
+  if (user.phoneNumber) {
+    try {
+      const result = await checkVerificationCode(user.phoneNumber, otp);
+      twilioAttempted = true;
+      verified = result.valid;
+      if (verified) {
+        console.log(`✅ Twilio Verify approved for ${user.phoneNumber}`);
+      } else {
+        console.warn(`⚠️ Twilio Verify rejected code for ${user.phoneNumber} (status: ${result.status})`);
+      }
+    } catch (twilioErr) {
+      // Twilio service error (network, config, trial restrictions) — fall back to DB hash
+      console.warn(`⚠️ Twilio Verify check threw error: ${twilioErr.message}. Falling back to DB OTP.`);
+      twilioAttempted = false; // treat as if SMS wasn't attempted so we don't double-penalise
+    }
+  }
+
+  // Fallback to locally-stored hash — used when:
+  //  a) no phone number on account, or
+  //  b) Twilio threw a service error (not a wrong-code rejection)
+  if (!verified && !twilioAttempted) {
+    verified = await verifyOtpCode(user, otp);
+  }
+
+  if (!verified) throw new AuthenticationError('Invalid or expired OTP');
 
   // Mark phone as verified
   if (!user.isPhoneVerified) {
@@ -578,8 +609,6 @@ const verifyOtpHandler = asyncErrorHandler(async (req, res) => {
   // Issue token
   const token = generateToken(user._id);
   setAuthCookie(res, token);
-
-
 
   res.status(200).json({
     success: true,

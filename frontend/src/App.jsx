@@ -7,6 +7,7 @@ import { useNetworkStatus } from './hooks/useNetworkStatus'
 import { useHomePageScrollbar } from './hooks/useHomePageScrollbar'
 import SessionTimeoutWarning from './components/common/SessionTimeoutWarning'
 import NetworkStatus from './components/common/NetworkStatus'
+import ScrollToTop from './components/common/ScrollToTop'
 import Layout from './components/layout/Layout'
 import Home from './pages/Home'
 import About from './pages/About'
@@ -78,6 +79,8 @@ const AppContent = () => {
         isOnline={networkStatus.isOnline} 
         isSlowConnection={networkStatus.isSlowConnection} 
       />
+
+      <ScrollToTop />
       
       <Routes>
         {/* Public Routes - No Layout wrapper */}
@@ -164,11 +167,11 @@ const AppContent = () => {
         <Route 
           path="/dashboard" 
           element={
-            <ProtectedRoute>
+            <PublicRoute>
               <Layout>
                 <Dashboard />
               </Layout>
-            </ProtectedRoute>
+            </PublicRoute>
           } 
         />
         <Route 

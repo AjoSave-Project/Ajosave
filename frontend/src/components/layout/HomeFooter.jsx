@@ -48,8 +48,7 @@ const HomeFooter = () => {
           <div className="lg:col-span-2"> 
               <span className="text-xl font-bold">AjoSave</span>
             <p className="text-deepBlue-200 mb-6 max-w-md">
-              Building Nigeria's financial future through transparent, community-driven savings. 
-              Join our beta program and help shape the future of fintech.
+              Your community savings, organised and transparent. AjoSave makes it simple to save together — whether you are a family, a group of friends, or a cooperative.
             </p>
             
             {/* Download Buttons */}
@@ -166,7 +165,7 @@ const HomeFooter = () => {
                 © {new Date().getFullYear()} AjoSave. All rights reserved.
               </p>
               <p className="text-deepBlue-400 text-xs mt-1">
-                Beta Platform • Community-Driven Development
+                The modern way to save with your community.
               </p>
             </div>
           </div>

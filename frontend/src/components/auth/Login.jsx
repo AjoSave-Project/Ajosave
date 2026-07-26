@@ -10,7 +10,9 @@ const Login = () => {
   const { login, completeOtpLogin } = useAuth();
   const toast = useToast();
 
-  const [formData, setFormData] = useState({ localPhone: '', password: '' });
+  // 'phone' | 'email'
+  const [loginMode, setLoginMode] = useState('phone');
+  const [formData, setFormData] = useState({ localPhone: '', email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
@@ -37,8 +39,13 @@ const Login = () => {
 
   const validate = () => {
     const errors = {};
-    if (!formData.localPhone) errors.localPhone = 'Phone number is required';
-    else if (formData.localPhone.length < 10) errors.localPhone = 'Enter a valid 10-digit number';
+    if (loginMode === 'phone') {
+      if (!formData.localPhone) errors.localPhone = 'Phone number is required';
+      else if (formData.localPhone.length < 10) errors.localPhone = 'Enter a valid 10-digit number';
+    } else {
+      if (!formData.email) errors.email = 'Email is required';
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) errors.email = 'Enter a valid email address';
+    }
     if (!formData.password) errors.password = 'Password is required';
     return errors;
   };
@@ -51,14 +58,22 @@ const Login = () => {
 
     try {
       setIsLoading(true);
-      const result = await login({ phoneNumber: fullPhone, password: formData.password });
+      const credentials = loginMode === 'phone'
+        ? { phoneNumber: fullPhone, password: formData.password }
+        : { email: formData.email.trim(), password: formData.password };
+
+      const result = await login(credentials);
       if (result?.requiresOtp) {
-        setOtpState({ userId: result.userId, phoneNumber: result.phoneNumber, devOtp: result.devOtp });
+        setOtpState({
+          userId: result.userId,
+          phoneNumber: result.phoneNumber,
+          devOtp: result.devOtp,
+        });
       }
     } catch (err) {
       if (err instanceof APIError && err.statusCode === 401) {
-        toast.error('Invalid phone number or password');
-        setFieldErrors({ localPhone: ' ', password: ' ' });
+        toast.error('Invalid credentials. Please check and try again.');
+        setFieldErrors({ localPhone: ' ', email: ' ', password: ' ' });
       } else if (err instanceof APIError && err.statusCode === 429) {
         toast.error('Too many attempts. Please wait 15 minutes before trying again.');
       } else {
@@ -72,7 +87,6 @@ const Login = () => {
   const handleOtpSuccess = ({ user, token }) => {
     completeOtpLogin(user, token);
     setSuccess(true);
-    // Navigation is handled by Auth.jsx useEffect watching isAuthenticated
   };
 
   if (success) {
@@ -101,7 +115,7 @@ const Login = () => {
           </div>
           <h3 className="text-lg font-bold text-white mb-2 tracking-tight">Verify Your Identity</h3>
           <p className="text-sm text-white/80">
-            We've sent a verification code to secure your account
+            We've sent a verification code to your phone
           </p>
         </div>
         <OtpVerification
@@ -118,45 +132,103 @@ const Login = () => {
   return (
     <div className="space-y-6">
       <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Phone Number with enhanced styling */}
-        <div className="space-y-2">
-          <label className="block text-sm font-semibold text-white">Phone Number</label>
-          <div className={`flex items-center border-2 rounded-xl overflow-hidden transition-all duration-200 ${
-            fieldErrors.localPhone 
-              ? 'border-red-400 bg-red-50/20' 
-              : 'border-white/20 hover:border-white/40 focus-within:border-white/60 focus-within:shadow-lg focus-within:shadow-white/10'
-          }`}>
-            <div className="px-4 py-4 bg-white/10 border-r border-white/20 flex items-center gap-2">
-              <span className="text-lg">🇳🇬</span>
-              <span className="text-sm font-semibold text-white">+234</span>
-            </div>
-            <input
-              type="tel"
-              name="localPhone"
-              value={formData.localPhone}
-              onChange={handleChange}
-              placeholder="8012345678"
-              className="flex-1 px-4 py-4 focus:outline-none bg-transparent text-white placeholder:text-white/60"
-              disabled={isLoading}
-              autoComplete="tel"
-              maxLength={10}
-            />
-          </div>
-          {fieldErrors.localPhone?.trim() && (
-            <p className="text-xs text-red-600 flex items-center gap-1.5 mt-2">
-              <AlertCircle className="w-3 h-3" />
-              {fieldErrors.localPhone}
-            </p>
-          )}
+
+        {/* Login mode toggle */}
+        <div className="flex rounded-xl overflow-hidden border border-white/20 bg-white/10">
+          <button
+            type="button"
+            onClick={() => { setLoginMode('phone'); setFieldErrors({}); }}
+            className={`flex-1 py-2.5 text-sm font-semibold transition-all ${
+              loginMode === 'phone'
+                ? 'bg-white/20 text-white'
+                : 'text-white/60 hover:text-white hover:bg-white/10'
+            }`}
+          >
+            Phone
+          </button>
+          <button
+            type="button"
+            onClick={() => { setLoginMode('email'); setFieldErrors({}); }}
+            className={`flex-1 py-2.5 text-sm font-semibold transition-all ${
+              loginMode === 'email'
+                ? 'bg-white/20 text-white'
+                : 'text-white/60 hover:text-white hover:bg-white/10'
+            }`}
+          >
+            Email
+          </button>
         </div>
 
-        {/* Password with enhanced styling */}
+        {/* Phone Number input */}
+        {loginMode === 'phone' && (
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-white">Phone Number</label>
+            <div className={`flex items-center border-2 rounded-xl overflow-hidden transition-all duration-200 ${
+              fieldErrors.localPhone
+                ? 'border-red-400 bg-red-50/20'
+                : 'border-white/20 hover:border-white/40 focus-within:border-white/60'
+            }`}>
+              <div className="px-4 py-4 bg-white/10 border-r border-white/20 flex items-center gap-2">
+                <span className="text-lg">🇳🇬</span>
+                <span className="text-sm font-semibold text-white">+234</span>
+              </div>
+              <input
+                type="tel"
+                name="localPhone"
+                value={formData.localPhone}
+                onChange={handleChange}
+                placeholder="8012345678"
+                className="flex-1 px-4 py-4 focus:outline-none bg-transparent text-white placeholder:text-white/60"
+                disabled={isLoading}
+                autoComplete="tel"
+                maxLength={10}
+              />
+            </div>
+            {fieldErrors.localPhone?.trim() && (
+              <p className="text-xs text-red-400 flex items-center gap-1.5 mt-2">
+                <AlertCircle className="w-3 h-3" />
+                {fieldErrors.localPhone}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Email input */}
+        {loginMode === 'email' && (
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-white">Email Address</label>
+            <div className={`border-2 rounded-xl overflow-hidden transition-all duration-200 ${
+              fieldErrors.email
+                ? 'border-red-400 bg-red-50/20'
+                : 'border-white/20 hover:border-white/40 focus-within:border-white/60'
+            }`}>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="you@example.com"
+                className="w-full px-4 py-4 focus:outline-none bg-transparent text-white placeholder:text-white/60"
+                disabled={isLoading}
+                autoComplete="email"
+              />
+            </div>
+            {fieldErrors.email?.trim() && (
+              <p className="text-xs text-red-400 flex items-center gap-1.5 mt-2">
+                <AlertCircle className="w-3 h-3" />
+                {fieldErrors.email}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Password */}
         <div className="space-y-2">
           <label className="block text-sm font-semibold text-white">Password</label>
           <div className={`relative border-2 rounded-xl transition-all duration-200 ${
-            fieldErrors.password 
-              ? 'border-red-400 bg-red-50/20' 
-              : 'border-white/20 hover:border-white/40 focus-within:border-white/60 focus-within:shadow-lg focus-within:shadow-white/10'
+            fieldErrors.password
+              ? 'border-red-400 bg-red-50/20'
+              : 'border-white/20 hover:border-white/40 focus-within:border-white/60'
           }`}>
             <input
               type={showPassword ? 'text' : 'password'}
@@ -178,20 +250,20 @@ const Login = () => {
             </button>
           </div>
           {fieldErrors.password?.trim() && (
-            <p className="text-xs text-red-600 flex items-center gap-1.5 mt-2">
+            <p className="text-xs text-red-400 flex items-center gap-1.5 mt-2">
               <AlertCircle className="w-3 h-3" />
               {fieldErrors.password}
             </p>
           )}
         </div>
 
-        {/* Enhanced submit button */}
+        {/* Submit */}
         <button
           type="submit"
           disabled={isLoading}
           className={`w-full py-4 rounded-xl font-semibold transition-all duration-200 ${
-            isLoading 
-              ? 'bg-white/20 cursor-not-allowed text-white/60' 
+            isLoading
+              ? 'bg-white/20 cursor-not-allowed text-white/60'
               : 'bg-white/20 hover:bg-white/30 text-white shadow-lg hover:shadow-xl hover:shadow-white/10 transform hover:scale-[1.02] active:scale-[0.98] border border-white/30'
           }`}
         >
@@ -205,11 +277,10 @@ const Login = () => {
           )}
         </button>
 
-        {/* Forgot password link */}
         <div className="text-center pt-2">
-          <button 
-            type="button" 
-            className="text-white/80 text-sm hover:text-white font-medium hover:underline underline-offset-2 transition-all" 
+          <button
+            type="button"
+            className="text-white/80 text-sm hover:text-white font-medium hover:underline underline-offset-2 transition-all"
             disabled={isLoading}
           >
             Forgot your password?
@@ -217,11 +288,10 @@ const Login = () => {
         </div>
       </form>
 
-      {/* Additional info */}
       <div className="pt-4 border-t border-white/20">
         <div className="text-center">
           <p className="text-xs text-white/60 leading-relaxed">
-            By signing in, you agree to our terms of service and privacy policy. 
+            By signing in, you agree to our terms of service and privacy policy.
             Your data is protected with bank-level security.
           </p>
         </div>
