@@ -30,12 +30,6 @@ const CTASection = ({ onJoinBeta, onPrivacyPolicy }) => {
           >
             Start Saving for Free
           </button>
-          <button
-            onClick={onPrivacyPolicy}
-            className="text-xs text-deepBlue-200 hover:text-white underline text-center pt-1"
-          >
-            Read our privacy policy
-          </button>
         </div>
       </div>
     </div>
