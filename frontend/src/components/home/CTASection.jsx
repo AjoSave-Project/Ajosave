@@ -3,7 +3,7 @@ import { CheckCircle } from 'lucide-react'
 const CTASection = ({ onJoinBeta, onPrivacyPolicy }) => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-20">
-      <div className="border border-deepBlue-800 bg-deepBlue-800 text-white rounded-2xl p-8 lg:p-12 relative overflow-hidden grid md:grid-cols-12 gap-8 items-center">
+      <div className="border border-blue-500 bg-blue-500 text-white rounded-2xl p-8 lg:p-12 relative overflow-hidden grid md:grid-cols-12 gap-8 items-center">
         <div className="md:col-span-8 space-y-4 z-10">
           <h3 className="text-2xl font-bold tracking-tight">
             Ready to save together?

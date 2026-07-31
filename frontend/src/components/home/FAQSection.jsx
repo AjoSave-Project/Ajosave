@@ -51,7 +51,7 @@ const FAQSection = ({ onContact }) => {
     <div className="bg-gradient-to-br from-deepBlue-50/40 to-blue-50/60 py-20 border-b border-deepBlue-100/60">
       <div className="max-w-4xl mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold tracking-tight text-deepBlue-800 mt-8 mb-4 overflow-hidden">
+          <h2 className="text-3xl font-bold tracking-tight text-blue-500 mt-8 mb-4 overflow-hidden">
             <span className="block animate-slideUpReveal-scroll faq-header">Common questions</span>
           </h2>
           <p className="text-deepBlue-600 mb-6 max-w-2xl mx-auto leading-relaxed">

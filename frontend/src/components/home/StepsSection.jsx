@@ -97,7 +97,7 @@ export default function StepsSection() {
         {/* ================= HEADER SECTION ================= */}
         <div className="text-center max-w-3xl mx-auto mb-6">
           {/* Heading: Shows short text on mobile, long text on large screens */}
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-primary-900 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-primary-500 tracking-tight">
             <span className="block sm:hidden">Four steps to saving together.</span>
             <span className="hidden sm:block">From zero to your first group payout in minutes.</span>
           </h2>
@@ -119,7 +119,7 @@ export default function StepsSection() {
                   key={step.id}
                   onClick={() => setActiveStep(step.id)}
                   className={`flex-1 min-w-[50px] py-2 rounded-lg text-xs font-bold transition-all ${isActive
-                    ? 'bg-blue-600 text-white shadow-md'
+                    ? 'bg-blue-300 text-white shadow-md'
                     : 'bg-white text-slate-600 border border-slate-200'
                     }`}
                 >
@@ -180,7 +180,7 @@ export default function StepsSection() {
                     </div>
                     <div>
                       <h4
-                        className={`text-xl font-bold transition-colors ${isActive ? 'text-blue-900' : 'text-slate-700'
+                        className={`text-xl font-bold transition-colors ${isActive ? 'text-blue-500' : 'text-slate-700'
                           }`}
                       >
                         {step.title}

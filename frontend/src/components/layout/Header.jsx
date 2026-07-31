@@ -1,5 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+// frontend/src/components/layout/Header.jsx
+// Note: The authenticated app header is now handled directly inside Layout.jsx.
+// This component is kept for any standalone use outside the main Layout.
+
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { LogOut, User, Wallet, Users, Building2, Bell, Settings, HelpCircle, ChevronRight, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -21,10 +25,10 @@ const SettingsSidebar = ({ open, onClose, user, onLogout }) => {
     <>
       {open && <div className="fixed inset-0 bg-black bg-opacity-40 z-40" onClick={onClose} />}
       <div
-        className={`fixed left-0 w-72 bg-white z-50 shadow-2xl transform transition-transform duration-300 flex flex-col ${open ? 'translate-x-0' : '-translate-x-full'}`}
-        style={{ top: 0, bottom: '64px' }}
+        className={`fixed left-0 top-0 bottom-0 w-72 bg-white z-50 shadow-2xl transform transition-transform duration-300 flex flex-col ${
+          open ? 'translate-x-0' : '-translate-x-full'
+        }`}
       >
-        {/* Header */}
         <div className="p-5 pt-12 border-b border-gray-100 flex-shrink-0">
           <div className="flex items-center space-x-3">
             <div className="w-12 h-12 rounded-full flex items-center justify-center text-white text-lg font-bold flex-shrink-0" style={{ backgroundColor: '#0a79f0' }}>
@@ -40,7 +44,6 @@ const SettingsSidebar = ({ open, onClose, user, onLogout }) => {
           </div>
         </div>
 
-        {/* Nav items — scrollable */}
         <nav className="py-2 flex-1 overflow-y-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {items.map(({ icon: Icon, label, path }) => (
             <button key={label} onClick={() => path ? nav(path) : onClose()}
@@ -54,7 +57,6 @@ const SettingsSidebar = ({ open, onClose, user, onLogout }) => {
           ))}
         </nav>
 
-        {/* Logout — always visible at bottom */}
         <div className="border-t border-gray-100 pb-8 flex-shrink-0">
           <button onClick={onLogout}
             className="w-full flex items-center space-x-3 px-5 py-4 hover:bg-red-50 transition">
@@ -73,17 +75,6 @@ const Header = () => {
   const { user, logout, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      setIsScrolled(scrollTop > 10);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const handleLogout = async () => {
     setSidebarOpen(false);
@@ -100,27 +91,27 @@ const Header = () => {
   return (
     <>
       <SettingsSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} user={user} onLogout={handleLogout} />
-      <div className="fixed top-4 right-4 z-50">
-        <div className={`mx-auto max-w-6xl rounded-2xl transform -skew-x-1 px-4 py-2 transition-all duration-300 ${
-          isScrolled 
-            ? ' border border-deepBlue-200 backdrop-blur-md' 
-            : 'bg-white'
-        }`}>
-        <div className="container mx-auto flex items-center justify-between transform skew-x-1">
+      <div className="bg-white border-b border-deepBlue-100">
+        <div className="px-4 py-2.5 flex items-center justify-between">
           {user && (
-            <button onClick={() => setSidebarOpen(true)}
-              className="flex items-center space-x-2 hover:bg-deepBlue-50 rounded-xl px-2 py-1 transition">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
-                style={{ backgroundColor: '#0a79f0' }}>
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="flex items-center space-x-2.5 hover:bg-deepBlue-50 rounded-xl px-2 py-1 transition"
+            >
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
+                style={{ backgroundColor: '#0a79f0' }}
+              >
                 {user.firstName?.[0]?.toUpperCase() ?? 'U'}
               </div>
-              <div className="hidden sm:block text-left">
-                <p className="text-sm font-semibold text-deepBlue-800">{user.firstName} {user.lastName}</p>
-                <p className="text-xs text-deepBlue-500">{user.email}</p>
+              <div className="text-left">
+                <p className="text-sm font-semibold text-deepBlue-800 leading-tight">
+                  {user.firstName} {user.lastName}
+                </p>
+                <p className="text-[11px] text-deepBlue-400 leading-tight">{user.email}</p>
               </div>
             </button>
           )}
-        </div>
         </div>
       </div>
     </>

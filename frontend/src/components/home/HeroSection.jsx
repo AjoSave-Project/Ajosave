@@ -32,7 +32,7 @@ const HeroSection = ({ sectionRef, onJoinBeta, onHowItWorks }) => {
             <div className="overflow-hidden px-4 lg:pl-4 lg:pr-0 w-full flex justify-center lg:justify-end">
               <h1 className="text-3xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.15] max-w-4xl animate-slideFromRight [animation-delay:50ms]">
                 <span>
-                  Save together. <span className="text-blue-300">Trust the process.</span>
+                  Save together. <span className="text-blue-400">Trust the process.</span>
                 </span>
               </h1>
             </div>
@@ -40,9 +40,12 @@ const HeroSection = ({ sectionRef, onJoinBeta, onHowItWorks }) => {
             {/* Line 2: Subtitle */}
             <div className="overflow-hidden px-4 lg:pl-4 lg:pr-0 w-full flex justify-center lg:justify-end">
               <p className="text-lg lg:text-xl text-white/90 leading-relaxed max-w-2xl animate-slideFromRight [animation-delay:100ms]">
-                AjoSave brings the Ajo tradition online. Create a group, invite your people, contribute on time, and track every naira — no spreadsheets, no chasing, no confusion.
+                <span className="hidden md:inline">
+                  AjoSave brings the Ajo tradition online. Create a group, invite your people, contribute on time, and track every naira — no spreadsheets, no chasing, no confusion.
+                </span>
               </p>
             </div>
+
 
             {/* Line 3: Action Buttons */}
             <div className="overflow-hidden px-4 lg:pl-4 lg:pr-0 w-full flex justify-center lg:justify-end">

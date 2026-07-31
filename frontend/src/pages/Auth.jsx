@@ -62,7 +62,7 @@ const Auth = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-primary-950 text-slate-100 antialiased selection:bg-blue-500/20 overflow-x-hidden">
+    <div className="min-h-screen bg-primary-500 text-slate-100 antialiased selection:bg-blue-500/20 overflow-x-hidden">
       {/* Hero Section with Slanted Background */}
       <div 
         className="relative min-h-screen flex flex-col justify-between overflow-hidden pb-16"
