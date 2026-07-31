@@ -68,7 +68,7 @@ const FAQSection = ({ onContact }) => {
               <MessageCircle className="w-4 h-4 text-white" />
             </div>
             <div className="text-left">
-              <div className="text-sm font-semibold text-deepBlue-800 group-hover:text-deepBlue-900">
+              <div className="text-sm font-semibold text-deepBlue-800 group-hover:text-blue-500">
                 Join r/AjoSave Community
               </div>
               <div className="text-xs text-deepBlue-600">

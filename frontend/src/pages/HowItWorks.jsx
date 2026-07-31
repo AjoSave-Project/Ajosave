@@ -210,7 +210,7 @@ const HowItWorks = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 text-deepBlue-900 font-sans antialiased flex flex-col justify-between">
+    <div className="min-h-screen bg-slate-50 text-blue-500 font-sans antialiased flex flex-col justify-between">
       <HomeNavbar />
 
       {/* ── HERO SECTION — stock image as full background ─────────────────── */}
@@ -244,7 +244,7 @@ const HowItWorks = () => {
             <h2 className="text-xs font-bold uppercase tracking-widest text-deepBlue-600">
               ROTATION DEMONSTRATION
             </h2>
-            <p className="text-2xl sm:text-3xl font-extrabold text-deepBlue-900 tracking-tight">
+            <p className="text-2xl sm:text-3xl font-extrabold text-blue-500 tracking-tight">
               Observe real-time contribution movements and pooled disbursement logic.
             </p>
           </div>
@@ -270,7 +270,7 @@ const HowItWorks = () => {
             <span className="text-xs font-bold uppercase tracking-widest text-deepBlue-600">
               Built on Trust
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-deepBlue-900 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-blue-500 tracking-tight">
               Designed for absolute peace of mind
             </h2>
           </div>
@@ -285,7 +285,7 @@ const HowItWorks = () => {
                 <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center">
                   {feat.icon}
                 </div>
-                <h3 className="font-bold text-deepBlue-900 text-base">{feat.title}</h3>
+                <h3 className="font-bold text-blue-500 text-base">{feat.title}</h3>
                 <p className="text-xs text-slate-600 leading-relaxed">{feat.description}</p>
               </div>
             ))}
@@ -303,7 +303,7 @@ const HowItWorks = () => {
             </div>
             <a
               href="/auth"
-              className="inline-flex items-center gap-2 bg-white text-deepBlue-900 px-7 py-3 rounded-xl font-bold text-sm hover:bg-slate-100 transition-colors shadow-md shrink-0 w-fit"
+              className="inline-flex items-center gap-2 bg-white text-blue-500 px-7 py-3 rounded-xl font-bold text-sm hover:bg-slate-100 transition-colors shadow-md shrink-0 w-fit"
             >
               Get Started Now <ArrowRight className="w-4 h-4" />
             </a>

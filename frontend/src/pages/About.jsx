@@ -133,7 +133,7 @@ const About = () => {
             <span className="text-xs font-bold uppercase tracking-widest text-deepBlue-500 bg-deepBlue-50 px-3 py-1 rounded-full">
               Our Journey
             </span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-deepBlue-900 tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-blue-500 tracking-tight">
               From a hackathon idea to a working product.
             </h2>
             <p className="text-deepBlue-600 text-base">
@@ -186,7 +186,7 @@ const About = () => {
               <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
                 <ShieldCheck className="w-5 h-5" />
               </div>
-              <h4 className="font-bold text-deepBlue-900 text-base">Transparent Ledgers</h4>
+              <h4 className="font-bold text-blue-500 text-base">Transparent Ledgers</h4>
               <p className="text-xs text-deepBlue-600 leading-relaxed">
                 Every contribution gets recorded instantly. Every member can view total pool status anytime.
               </p>
@@ -196,7 +196,7 @@ const About = () => {
               <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
                 <Bell className="w-5 h-5" />
               </div>
-              <h4 className="font-bold text-deepBlue-900 text-base">Automated Reminders</h4>
+              <h4 className="font-bold text-blue-500 text-base">Automated Reminders</h4>
               <p className="text-xs text-deepBlue-600 leading-relaxed">
                 No awkward manual follow-ups. System notifications keep every member on schedule.
               </p>
@@ -206,7 +206,7 @@ const About = () => {
               <div className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
                 <RefreshCw className="w-5 h-5" />
               </div>
-              <h4 className="font-bold text-deepBlue-900 text-base">Guaranteed Rotation</h4>
+              <h4 className="font-bold text-blue-500 text-base">Guaranteed Rotation</h4>
               <p className="text-xs text-deepBlue-600 leading-relaxed">
                 Clear payout schedules prevent disputes and maintain turn transparency for all members.
               </p>
@@ -216,7 +216,7 @@ const About = () => {
           {/* Pull Quote & Current Phase */}
           <div className="space-y-8 max-w-3xl mx-auto pt-4">
             <blockquote className="border-l-4 border-deepBlue-600 pl-6 py-2 my-6">
-              <p className="text-xl sm:text-2xl font-bold text-deepBlue-900 leading-snug italic">
+              <p className="text-xl sm:text-2xl font-bold text-blue-500 leading-snug italic">
                 "The tradition works. We are just making it easier to trust."
               </p>
             </blockquote>
@@ -230,17 +230,17 @@ const About = () => {
               <div className="grid sm:grid-cols-3 gap-6">
                 <div>
                   <span className="text-xs font-mono font-bold text-deepBlue-500">2025</span>
-                  <p className="text-xs font-bold text-deepBlue-900 mt-1">Codefest Hackathon</p>
+                  <p className="text-xs font-bold text-blue-500 mt-1">Codefest Hackathon</p>
                   <p className="text-xs text-deepBlue-500 mt-0.5">Prototype designed and core architecture built</p>
                 </div>
                 <div>
                   <span className="text-xs font-mono font-bold text-deepBlue-500">2026</span>
-                  <p className="text-xs font-bold text-deepBlue-900 mt-1">Platform Expansion</p>
+                  <p className="text-xs font-bold text-blue-500 mt-1">Platform Expansion</p>
                   <p className="text-xs text-deepBlue-500 mt-0.5">Full backend security and mobile development</p>
                 </div>
                 <div>
                   <span className="text-xs font-mono font-bold text-deepBlue-500">NOW</span>
-                  <p className="text-xs font-bold text-deepBlue-900 mt-1">Open Beta</p>
+                  <p className="text-xs font-bold text-blue-500 mt-1">Open Beta</p>
                   <p className="text-xs text-deepBlue-500 mt-0.5">Active testing with early savings groups</p>
                 </div>
               </div>
@@ -256,7 +256,7 @@ const About = () => {
 
           <div className="max-w-xl mb-14">
             <span className="text-xs font-bold uppercase tracking-widest text-deepBlue-500">The team</span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-deepBlue-900 mt-3 leading-tight tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-blue-500 mt-3 leading-tight tracking-tight">
               Five people. One shared obsession.
             </h2>
             <p className="mt-4 text-deepBlue-600 text-base leading-relaxed">
@@ -292,7 +292,7 @@ const About = () => {
           </p>
           <a
             href="/auth"
-            className="inline-flex items-center gap-2 bg-white text-deepBlue-900 px-6 py-3 rounded-lg font-semibold text-sm hover:bg-deepBlue-50 transition-colors shadow-sm"
+            className="inline-flex items-center gap-2 bg-white text-blue-500 px-6 py-3 rounded-lg font-semibold text-sm hover:bg-deepBlue-50 transition-colors shadow-sm"
           >
             Start Saving for Free <ArrowRight className="w-4 h-4" />
           </a>
@@ -318,7 +318,7 @@ const TeamCard = ({ member }) => (
     {/* Info */}
     <div className="p-5">
       <p className="text-xs font-bold uppercase tracking-widest text-deepBlue-500 mb-1">{member.role}</p>
-      <h3 className="text-base font-bold text-deepBlue-900 leading-snug mb-2">{member.name}</h3>
+      <h3 className="text-base font-bold text-blue-500 leading-snug mb-2">{member.name}</h3>
       <p className="text-sm text-deepBlue-600 leading-relaxed">{member.bio}</p>
     </div>
   </div>
