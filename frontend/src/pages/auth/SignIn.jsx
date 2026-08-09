@@ -81,7 +81,12 @@ const SignIn = () => {
           devOtp: result.devOtp,
         });
       } else {
-        navigate('/dashboard', { replace: true });
+        // Redirect based on user role
+        if (result?.user?.role === 'admin' || result?.user?.role === 'moderator') {
+          navigate('/admin/dashboard', { replace: true });
+        } else {
+          navigate('/dashboard', { replace: true });
+        }
       }
     } catch (error) {
       toast.error(error.message || 'Invalid phone number or password');
@@ -93,7 +98,12 @@ const SignIn = () => {
 
   const handleOtpSuccess = ({ user, token }) => {
     completeOtpLogin(user, token);
-    navigate('/dashboard', { replace: true });
+    // Redirect based on user role
+    if (user.role === 'admin' || user.role === 'moderator') {
+      navigate('/admin/dashboard', { replace: true });
+    } else {
+      navigate('/dashboard', { replace: true });
+    }
   };
 
   if (otpState) {
