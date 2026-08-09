@@ -8,12 +8,13 @@ import { useToast } from '../common/Toast';
  * OTP Verification component.
  * Props:
  *   userId          - string
- *   phoneNumber     - string (for display, optional)
+ *   phoneNumber     - string (for display, optional - deprecated, use email)
+ *   email           - string (for display, preferred)
  *   onSuccess       - fn({ user, token }) | fn() — called on success
  *   onBack          - fn()
  *   verifyEndpoint  - string (default: '/auth/verify-otp'; use '/auth/verify-email-otp' for signup email step)
  */
-const OtpVerification = ({ userId, phoneNumber, devOtp, onSuccess, onBack, verifyEndpoint = '/auth/verify-otp' }) => {
+const OtpVerification = ({ userId, phoneNumber, email, onSuccess, onBack, verifyEndpoint = '/auth/verify-otp' }) => {
   const toast = useToast();
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [timer, setTimer] = useState(60);
@@ -24,11 +25,7 @@ const OtpVerification = ({ userId, phoneNumber, devOtp, onSuccess, onBack, verif
 
   useEffect(() => {
     inputRefs.current[0]?.focus();
-    // Auto-fill in dev mode
-    if (devOtp) {
-      setOtp(devOtp.split(''));
-    }
-  }, [devOtp]);
+  }, []);
 
   useEffect(() => {
     if (timer <= 0) { setCanResend(true); return; }
@@ -67,11 +64,6 @@ const OtpVerification = ({ userId, phoneNumber, devOtp, onSuccess, onBack, verif
       setTimer(60);
       setCanResend(false);
       inputRefs.current[0]?.focus();
-      // Auto-fill new dev OTP if returned
-      if (response.data?.devOtp) {
-        setOtp(response.data.devOtp.split(''));
-        inputRefs.current[5]?.focus();
-      }
       toast.success('New code sent!');
     } catch (err) {
       toast.error('Failed to resend OTP. Please try again.');
@@ -99,25 +91,22 @@ const OtpVerification = ({ userId, phoneNumber, devOtp, onSuccess, onBack, verif
     }
   };
 
-  const masked = phoneNumber
+  // Mask email for display (show first 2 chars, hide middle, show domain)
+  const maskedEmail = email
+    ? email.replace(/(.{2})(.*)(@.*)/, '$1***$3')
+    : '';
+
+  // Fallback to phone if email not provided (backwards compatibility)
+  const maskedPhone = phoneNumber
     ? phoneNumber.replace(/(\+?\d{3})\d+(\d{4})/, '$1****$2')
     : '';
+
+  const displayMasked = maskedEmail || maskedPhone || 'your email';
 
   const isComplete = otp.every(d => d !== '');
 
   return (
     <div>
-      <div className="text-center mb-6">
-        <p className="text-deepBlue-600 text-sm">
-          We sent a 6-digit code to <span className="font-semibold">{masked}</span>
-        </p>
-      </div>
-
-      {devOtp && (
-        <div className="mb-4 px-3 py-2 bg-yellow-50 border border-yellow-300 rounded-lg text-center">
-          <p className="text-xs text-yellow-700 font-medium">DEV MODE — OTP auto-filled: <span className="font-mono font-bold">{devOtp}</span></p>
-        </div>
-      )}
 
       {/* OTP boxes */}
       <div className="flex justify-center gap-3 mb-6" onPaste={handlePaste}>

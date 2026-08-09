@@ -23,6 +23,8 @@ import CreateAccount from './pages/auth/CreateAccount'
 import VerifyContact from './pages/auth/VerifyContact'
 import KYCVerify from './pages/auth/KYCVerify'
 import CompleteProfile from './pages/auth/CompleteProfile'
+import ForgotPassword from './pages/auth/ForgotPassword'
+import ResetPassword from './pages/auth/ResetPassword'
 import Dashboard from './pages/Dashboard'
 import Groups from './pages/Groups'
 import GroupDetail from './pages/GroupDetail'
@@ -161,6 +163,22 @@ const AppContent = () => {
           element={
             <PublicRoute>
               <CompleteProfile />
+            </PublicRoute>
+          } 
+        />
+        <Route 
+          path="/auth/forgot-password" 
+          element={
+            <PublicRoute>
+              <ForgotPassword />
+            </PublicRoute>
+          } 
+        />
+        <Route 
+          path="/auth/reset-password" 
+          element={
+            <PublicRoute>
+              <ResetPassword />
             </PublicRoute>
           } 
         />

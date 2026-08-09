@@ -92,7 +92,7 @@ export const AuthProvider = ({ children }) => {
 
       if (response.data?.requiresOtp) {
         setPendingOtp(true);
-        return { requiresOtp: true, userId: response.data.userId, phoneNumber: response.data.phoneNumber, devOtp: response.data.devOtp };
+        return { requiresOtp: true, userId: response.data.userId, phoneNumber: response.data.phoneNumber };
       }
 
       const user = response.data?.user || response.user;
@@ -130,7 +130,7 @@ export const AuthProvider = ({ children }) => {
 
       if (response.data?.requiresOtp) {
         setPendingOtp(true);
-        return { requiresOtp: true, userId: response.data.userId, phoneNumber: response.data.phoneNumber, devOtp: response.data.devOtp };
+        return { requiresOtp: true, userId: response.data.userId, phoneNumber: response.data.phoneNumber };
       }
 
       const user = response.data?.user || response.user;

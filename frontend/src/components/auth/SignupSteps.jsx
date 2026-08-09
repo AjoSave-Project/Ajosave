@@ -27,7 +27,6 @@ const SignupSteps = () => {
 
   // Step 2 OTP data (set after step-1 API call)
   const [otpUserId, setOtpUserId] = useState(null);
-  const [otpDevCode, setOtpDevCode] = useState(null);
 
   // Step 3 KYC data
   const [kyc, setKyc] = useState({ bvn: '', nin: '', dateOfBirth: '' });
@@ -116,7 +115,6 @@ const SignupSteps = () => {
         phoneNumber: fullPhone,
       });
       setOtpUserId(res.data?.userId || res.userId);
-      setOtpDevCode(res.data?.devOtp || res.devOtp || null);
       setCurrentStep(2);
     } catch (err) {
       if (err instanceof APIError) toast.error(err.message);
@@ -189,7 +187,7 @@ const SignupSteps = () => {
         password: profile.password,
       });
       if (result?.requiresOtp) {
-        setLoginOtpState({ userId: result.userId, phoneNumber: result.phoneNumber, devOtp: result.devOtp });
+        setLoginOtpState({ userId: result.userId, phoneNumber: result.phoneNumber, email: result.email });
       }
     } catch (err) {
       if (err instanceof APIError) {
@@ -245,11 +243,11 @@ const SignupSteps = () => {
     return (
       <div>
         <h3 className="text-lg font-semibold text-white text-center mb-4">Verify Your Identity</h3>
-        <p className="text-sm text-white/70 text-center mb-4">We've sent a code to your phone to complete sign-in.</p>
+        <p className="text-sm text-white/70 text-center mb-4">We've sent a code to your email to complete sign-in.</p>
         <OtpVerification
           userId={loginOtpState.userId}
           phoneNumber={loginOtpState.phoneNumber}
-          devOtp={loginOtpState.devOtp}
+          email={loginOtpState.email}
           onSuccess={handleLoginOtpSuccess}
           onBack={() => setLoginOtpState(null)}
         />
@@ -270,7 +268,7 @@ const SignupSteps = () => {
         </div>
         <OtpVerification
           userId={otpUserId}
-          devOtp={otpDevCode}
+          email={contact.email}
           onSuccess={handleOtpEmailVerified}
           onBack={() => setCurrentStep(1)}
           verifyEndpoint="/auth/verify-email-otp"

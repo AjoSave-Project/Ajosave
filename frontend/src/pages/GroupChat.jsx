@@ -160,7 +160,7 @@ function MessageBubble({ message, isOwn, showAvatar, currentUserId }) {
   const readCount = message.readBy.length
 
   return (
-    <div className={`flex items-end gap-2 mb-1 ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
+    <div className={`flex items-start gap-2 mb-1 ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
       {/* Avatar slot */}
       <div className="w-8 flex-shrink-0">
         {!isOwn && showAvatar ? (
@@ -281,7 +281,7 @@ const GroupChat = () => {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-64px)] bg-deepBlue-50">
+    <div className="flex flex-col h-full min-h-0 bg-deepBlue-50">
       {/* ── Header ──────────────────────────────────────────────────────── */}
       <div className="flex items-center gap-3 px-4 py-3 bg-white border-b border-deepBlue-100 shadow-sm flex-shrink-0">
         <button
@@ -318,7 +318,7 @@ const GroupChat = () => {
       </div>
 
       {/* ── Messages ────────────────────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-0.5">
+      <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-0.5">
         {messages.map((msg, index) => (
           <div key={msg._id}>
             {shouldShowDateDivider(messages, index) && (

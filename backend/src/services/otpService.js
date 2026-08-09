@@ -74,27 +74,15 @@ const createAndSendOtp = async (user, purpose = 'verification') => {
   user.otpExpiry = expiry;
   await user.save();
 
-  const isDev = process.env.NODE_ENV === 'development';
-
-  // Development mode - log OTP to console for testing
-  if (isDev) {
-    console.log(`🔐 [DEV] OTP for ${user.phoneNumber}: ${otp}`);
-  }
+  // Log OTP to console for backend debugging (never return in response)
+  console.log(`🔐 OTP for ${user.phoneNumber || user.email}: ${otp}`);
 
   try {
     const result = await sendOtpViaEmailOrSMS(user.email, user.phoneNumber, otp, user.firstName, purpose);
     console.log(`✅ OTP sent successfully via ${result.method} for ${purpose}`);
-    // In development, include the raw OTP in the return value so the API can surface it to the frontend dev banner
-    return { expiry, method: result.method, ...(isDev && { devOtp: otp }) };
+    return { expiry, method: result.method };
   } catch (error) {
     console.error(`⚠️ Failed to send OTP:`, error.message);
-    
-    // In development, allow the process to continue even if sending fails
-    if (isDev) {
-      console.log(`🔧 [DEV] Continuing without sending OTP - check console for OTP: ${otp}`);
-      return { expiry, method: 'console', devOtp: otp };
-    }
-    
     throw new Error('Failed to send verification code. Please try again.');
   }
 };

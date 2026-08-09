@@ -472,7 +472,7 @@ export default function Wallet() {
         </div>
 
         {/* Balance Card */}
-        <div className="rounded-xl p-4 text-white mb-4" style={{ backgroundColor: '#3d71d9' }}>
+        <div className="rounded-xl p-4 text-white mb-4 bg-deepBlue-600">
           <div className="flex items-center space-x-3 mb-3">
             <div className="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
               <WalletIcon className="w-6 h-6" />

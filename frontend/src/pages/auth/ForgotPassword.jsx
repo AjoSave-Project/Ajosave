@@ -1,38 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Eye, EyeOff, User, AlertCircle } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, AlertCircle, Mail } from 'lucide-react';
+import authService from '../../services/authServices';
 import { useToast } from '../../components/common/Toast';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-import OtpVerification from '../../components/auth/OtpVerification';
 
 /**
- * Sign In Screen
- * 
- * User login with phone number and password
- * Matches mobile signin experience with card design
+ * Forgot Password Screen - Step 1
+ * User enters phone number and email to receive OTP
  */
-const SignIn = () => {
+const ForgotPassword = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { login, completeOtpLogin } = useAuth();
   const toast = useToast();
 
   const [formData, setFormData] = useState({
     localPhone: '',
-    password: '',
+    email: '',
   });
-  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  const [otpState, setOtpState] = useState(null);
-
-  // Show success message if coming from password reset
-  useEffect(() => {
-    if (location.state?.resetSuccess) {
-      toast.success('Password reset successfully! Please sign in with your new password.');
-    }
-  }, [location.state, toast]);
 
   const fullPhone = formData.localPhone ? `+234${formData.localPhone}` : '';
 
@@ -54,14 +40,19 @@ const SignIn = () => {
 
   const validate = () => {
     const newErrors = {};
+    
     if (!formData.localPhone.trim()) {
       newErrors.localPhone = 'Phone number is required';
     } else if (formData.localPhone.length < 10) {
       newErrors.localPhone = 'Enter a valid 10-digit number';
     }
-    if (!formData.password.trim()) {
-      newErrors.password = 'Password is required';
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
     }
+
     return newErrors;
   };
 
@@ -76,84 +67,40 @@ const SignIn = () => {
 
     try {
       setIsLoading(true);
-      const result = await login({ 
-        phoneNumber: fullPhone, 
-        password: formData.password 
-      });
+      const response = await authService.forgotPassword(fullPhone, formData.email.trim());
 
-      if (result?.requiresOtp) {
-        setOtpState({
-          userId: result.userId,
-          phoneNumber: result.phoneNumber,
-          email: result.email,
-        });
-      } else {
-        // Redirect based on user role
-        if (result?.user?.role === 'admin' || result?.user?.role === 'moderator') {
-          navigate('/admin/dashboard', { replace: true });
-        } else {
-          navigate('/dashboard', { replace: true });
-        }
-      }
+      // Navigate to reset password screen with userId and email
+      navigate('/auth/reset-password', {
+        state: {
+          userId: response.data?.userId || response.userId || '',
+          email: response.data?.email || response.email || formData.email,
+          phoneNumber: response.data?.phoneNumber || response.phoneNumber || fullPhone,
+          method: response.data?.method || response.method || 'email',
+        },
+      });
     } catch (error) {
-      toast.error(error.message || 'Invalid phone number or password');
-      setFormData(prev => ({ ...prev, password: '' }));
+      toast.error(error.message || 'Failed to send verification code. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
-
-  const handleOtpSuccess = ({ user, token }) => {
-    completeOtpLogin(user, token);
-    // Redirect based on user role
-    if (user.role === 'admin' || user.role === 'moderator') {
-      navigate('/admin/dashboard', { replace: true });
-    } else {
-      navigate('/dashboard', { replace: true });
-    }
-  };
-
-  if (otpState) {
-    return (
-      <div className="min-h-screen bg-white home-page-scrollbar">
-        <div className="container mx-auto px-4 py-8 max-w-md">
-          <button
-            onClick={() => setOtpState(null)}
-            className="flex items-center text-deepBlue-600 hover:text-deepBlue-800 mb-6"
-          >
-            <ArrowLeft className="w-5 h-5 mr-1" />
-            <span>Back</span>
-          </button>
-          
-          <h2 className="text-2xl font-bold text-deepBlue-800 text-center mb-6">
-            Verify Your Identity
-          </h2>
-          
-          <OtpVerification
-            userId={otpState.userId}
-            phoneNumber={otpState.phoneNumber}
-            email={otpState.email}
-            onSuccess={handleOtpSuccess}
-            onBack={() => setOtpState(null)}
-          />
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-white flex flex-col home-page-scrollbar">
       {/* Top Section */}
       <div className="bg-white px-6 pt-8 pb-16">
         <button
-          onClick={() => navigate('/welcome')}
+          onClick={() => navigate('/auth/signin')}
           className="text-deepBlue-600 hover:text-deepBlue-800 mb-8"
         >
           <ArrowLeft className="w-6 h-6" />
         </button>
 
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-deepBlue-600">Welcome Back</h1>
+          <h1 className="text-3xl font-bold text-deepBlue-600 mb-2">Forgot Password?</h1>
+          <p className="text-sm text-gray-600">
+            Enter your phone number and email to receive a verification code
+          </p>
         </div>
       </div>
 
@@ -162,7 +109,7 @@ const SignIn = () => {
         {/* Avatar - positioned to overlap */}
         <div className="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
           <div className="w-24 h-24 rounded-full bg-deepBlue-600 flex items-center justify-center shadow-lg">
-            <User className="w-12 h-12 text-white" />
+            <Mail className="w-12 h-12 text-white" />
           </div>
         </div>
 
@@ -199,46 +146,31 @@ const SignIn = () => {
               )}
             </div>
 
-            {/* Password */}
+            {/* Email */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2 ml-3">
-                Password
+                Email Address
               </label>
-              <div className={`relative bg-white rounded-lg border ${
-                errors.password ? 'border-red-500' : 'border-gray-200'
+              <div className={`bg-white rounded-lg border ${
+                errors.email ? 'border-red-500' : 'border-gray-200'
               }`}>
                 <input
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  value={formData.password}
+                  type="email"
+                  name="email"
+                  value={formData.email}
                   onChange={handleChange}
-                  placeholder="Enter Password"
-                  className="w-full px-4 py-3 focus:outline-none bg-transparent pr-12 rounded-lg"
+                  placeholder="you@example.com"
+                  className="w-full px-4 py-3 focus:outline-none bg-transparent rounded-lg"
                   disabled={isLoading}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-800"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
               </div>
-              {errors.password && (
+              {errors.email && (
                 <p className="text-xs text-red-600 mt-1 flex items-center gap-1 ml-1">
                   <AlertCircle className="w-3 h-3" />
-                  {errors.password}
+                  {errors.email}
                 </p>
               )}
             </div>
-
-            <button
-              type="button"
-              onClick={() => navigate('/auth/forgot-password')}
-              className="text-deepBlue-700 text-sm font-medium hover:underline ml-3"
-            >
-              Forgot Password?
-            </button>
 
             {/* Submit Button */}
             <div className="pt-4">
@@ -250,7 +182,7 @@ const SignIn = () => {
                 }`}
               >
                 <span className="text-lg">
-                  {isLoading ? 'Signing in...' : 'Sign in'}
+                  {isLoading ? 'Sending...' : 'Send Verification Code'}
                 </span>
                 {isLoading ? (
                   <LoadingSpinner size="sm" />
@@ -259,15 +191,15 @@ const SignIn = () => {
                 )}
               </button>
 
-              {/* Sign Up Link */}
+              {/* Back to Sign In */}
               <div className="text-center mt-4">
-                <span className="text-sm text-gray-600">Don't have an account? </span>
+                <span className="text-sm text-gray-600">Remember your password? </span>
                 <button
                   type="button"
-                  onClick={() => navigate('/auth/signup')}
+                  onClick={() => navigate('/auth/signin')}
                   className="text-sm text-deepBlue-600 font-semibold hover:underline"
                 >
-                  Sign Up
+                  Sign In
                 </button>
               </div>
             </div>
@@ -278,4 +210,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default ForgotPassword;

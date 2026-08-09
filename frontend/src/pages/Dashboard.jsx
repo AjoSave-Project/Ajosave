@@ -114,7 +114,7 @@ const Dashboard = () => {
         </div>
 
         {/* Balance Card */}
-        <div className="rounded-xl p-3 sm:p-4 text-white mb-3 shadow-lg" style={{ backgroundColor: '#3d71d9' }}>
+        <div className="rounded-xl p-3 sm:p-4 text-white mb-3 shadow-lg bg-deepBlue-600">
           <div className="flex justify-between items-start mb-3">
             <div className="flex-1">
               <p className="text-deepBlue-200 text-xs mb-1">Total Balance</p>

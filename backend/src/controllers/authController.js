@@ -317,13 +317,12 @@ const loginUser = asyncErrorHandler(async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Credentials verified. Please enter the verification code sent to your phone.',
+      message: 'Credentials verified. Please enter the verification code sent to your email.',
       data: {
         requiresOtp: true,
         email: user.email,
         phoneNumber: user.phoneNumber,
         userId: user._id,
-        ...(otpResult.devOtp && { devOtp: otpResult.devOtp }),
       },
       timestamp: new Date().toISOString()
     });
@@ -497,7 +496,6 @@ const sendOtp = asyncErrorHandler(async (req, res) => {
     message: 'OTP sent successfully to your email',
     data: {
       email: user.email,
-      ...(otpResult.devOtp && { devOtp: otpResult.devOtp }),
     },
     timestamp: new Date().toISOString(),
   });

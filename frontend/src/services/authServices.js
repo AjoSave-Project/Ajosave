@@ -249,6 +249,45 @@ const verifyOtp = async (userId, otp) => {
 };
 
 /**
+ * Forgot Password - Request OTP for password reset
+ * 
+ * @param {string} phoneNumber - User's phone number
+ * @param {string} email - User's email
+ * @returns {Promise<Object>} Response with userId and delivery info
+ */
+const forgotPassword = async (phoneNumber, email) => {
+  try {
+    console.log('🔐 Requesting password reset OTP');
+    const response = await api.post('/auth/forgot-password', { phoneNumber, email });
+    console.log('✅ Password reset OTP sent');
+    return response;
+  } catch (error) {
+    console.error('❌ Forgot password failed:', error.message);
+    throw error;
+  }
+};
+
+/**
+ * Reset Password - Set new password with OTP
+ * 
+ * @param {string} userId - User ID
+ * @param {string} otp - OTP code
+ * @param {string} newPassword - New password
+ * @returns {Promise<Object>} Response confirming password reset
+ */
+const resetPassword = async (userId, otp, newPassword) => {
+  try {
+    console.log('🔐 Resetting password');
+    const response = await api.post('/auth/reset-password', { userId, otp, newPassword });
+    console.log('✅ Password reset successful');
+    return response;
+  } catch (error) {
+    console.error('❌ Reset password failed:', error.message);
+    throw error;
+  }
+};
+
+/**
  * Auth Service Object
  * 
  * Export all authentication functions as a single object
@@ -265,6 +304,8 @@ const authService = {
   sendOtp,
   verifyContactOtp,
   verifyOtp,
+  forgotPassword,
+  resetPassword,
 };
 
 export default authService;

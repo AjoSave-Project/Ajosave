@@ -144,7 +144,7 @@ const Signup = () => {
       });
 
       if (result?.requiresOtp) {
-        setOtpState({ userId: result.userId, phoneNumber: result.phoneNumber, devOtp: result.devOtp });
+        setOtpState({ userId: result.userId, phoneNumber: result.phoneNumber, email: result.email });
       }
     } catch (err) {
       if (err instanceof APIError) {
@@ -183,11 +183,11 @@ const Signup = () => {
   if (otpState) {
     return (
       <div>
-        <h3 className="text-lg font-semibold text-deepBlue-800 text-center mb-2">Verify Your Phone</h3>
+        <h3 className="text-lg font-semibold text-deepBlue-800 text-center mb-2">Verify Your Email</h3>
         <OtpVerification
           userId={otpState.userId}
           phoneNumber={otpState.phoneNumber}
-          devOtp={otpState.devOtp}
+          email={otpState.email}
           onSuccess={handleOtpSuccess}
           onBack={() => setOtpState(null)}
         />

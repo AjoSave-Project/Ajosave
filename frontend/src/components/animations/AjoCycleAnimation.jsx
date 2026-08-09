@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { gsap } from "gsap";
-import AdunniImg from "../../assets/images/Adunni.jpg";
+import AdeyemiImg from "../../assets/images/Adeyemi.jpg";
 import BolajiImg from "../../assets/images/Bolaji.jpg";
 import ChiomaImg from "../../assets/images/Chioma.jpg";
 import DayoImg   from "../../assets/images/Dayo.jpg";
@@ -8,7 +8,7 @@ import EmekaImg  from "../../assets/images/Emeka.jpg";
 import FatimaImg from "../../assets/images/Fatima.jpg";
 
 const MEMBERS = [
-  { id: 1, name: "Adunni", avatar: AdunniImg, contribution: 50000, color: "#2563eb" },
+  { id: 1, name: "Adeyemi", avatar: AdeyemiImg, contribution: 50000, color: "#2563eb" },
   { id: 2, name: "Bolaji", avatar: BolajiImg, contribution: 50000, color: "#16a34a" },
   { id: 3, name: "Chioma", avatar: ChiomaImg, contribution: 50000, color: "#9333ea" },
   { id: 4, name: "Dayo",   avatar: DayoImg,   contribution: 50000, color: "#f59e0b" },

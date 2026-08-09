@@ -110,7 +110,6 @@ const CompleteProfile = () => {
           userId: result.userId,
           email: result.email,
           phoneNumber: result.phoneNumber,
-          devOtp: result.devOtp,
         });
       } else {
         navigate('/dashboard', { replace: true });

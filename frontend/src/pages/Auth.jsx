@@ -3,10 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import Login from '../components/auth/Login'
 import SignupSteps from '../components/auth/SignupSteps'
+import ForgotPassword from '../components/auth/ForgotPassword'
+import ResetPassword from '../components/auth/ResetPassword'
 import { ArrowLeft, Shield, CheckCircle, Users, Zap } from 'lucide-react'
 
 const Auth = () => {
   const [activeTab, setActiveTab] = useState('login')
+  const [resetPasswordData, setResetPasswordData] = useState(null)
   const navigate = useNavigate()
   const { loading, isAuthenticated, pendingOtp } = useAuth()
 
@@ -15,6 +18,25 @@ const Auth = () => {
       navigate('/dashboard', { replace: true })
     }
   }, [isAuthenticated, pendingOtp, loading, navigate])
+
+  const handleForgotPassword = () => {
+    setActiveTab('forgotPassword')
+  }
+
+  const handleOtpSent = (data) => {
+    setResetPasswordData(data)
+    setActiveTab('resetPassword')
+  }
+
+  const handleResetSuccess = () => {
+    setResetPasswordData(null)
+    setActiveTab('login')
+  }
+
+  const handleBackToLogin = () => {
+    setResetPasswordData(null)
+    setActiveTab('login')
+  }
 
   if (loading) {
     return (
@@ -102,7 +124,7 @@ const Auth = () => {
                     Secure Authentication
                   </span>
                   <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
-                    Join the future of <span className="text-deepBlue-300 underline decoration-deepBlue-300/40 underline-offset-4">group savings</span>.
+                    Join the future of <span className="text-deepBlue-300 underline decoration-wavy decoration-deepBlue-300/40 underline-offset-4">group savings</span>.
                   </h1>
                   <p className="text-sm sm:text-base text-slate-200 leading-relaxed max-w-xl font-normal">
                     Experience transparent, digital Ajo with verified members and automated rotations. Your money, your community, secured by technology.
@@ -128,48 +150,66 @@ const Auth = () => {
               {/* Right Side Form Container */}
               <div className="lg:col-span-6 flex justify-center lg:justify-end">
                 <div className="w-full max-w-md">
-                  <div className="bg-deepBlue-900 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 p-6 sm:p-7">
+                  <div className=" linear-gradient(to bottom right, #153f91ff, #0e2657) backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 p-6 sm:p-7">
                     
                     {/* Tab Navigation Toggle */}
-                    <div className="flex bg-white/10 rounded-xl p-1 border border-white/15 mb-6">
-                      <button
-                        onClick={() => setActiveTab('login')}
-                        className={`flex-1 py-2 rounded-lg font-semibold transition-all duration-200 text-xs sm:text-sm ${
-                          activeTab === 'login'
-                            ? 'bg-deepBlue-600 text-white shadow-md'
-                            : 'text-white/70 hover:text-white hover:bg-white/5'
-                        }`}
-                      >
-                        Sign In
-                      </button>
-                      <button
-                        onClick={() => setActiveTab('signup')}
-                        className={`flex-1 py-2 rounded-lg font-semibold transition-all duration-200 text-xs sm:text-sm ${
-                          activeTab === 'signup'
-                            ? 'bg-deepBlue-600 text-white shadow-md'
-                            : 'text-white/70 hover:text-white hover:bg-white/5'
-                        }`}
-                      >
-                        Sign Up
-                      </button>
-                    </div>
+                    {activeTab !== 'forgotPassword' && activeTab !== 'resetPassword' && (
+                      <div className="flex bg-white/10 rounded-xl p-1 border border-white/15 mb-6">
+                        <button
+                          onClick={() => setActiveTab('login')}
+                          className={`flex-1 py-2 rounded-lg font-semibold transition-all duration-200 text-xs sm:text-sm ${
+                            activeTab === 'login'
+                              ? 'bg-deepBlue-600 text-white shadow-md'
+                              : 'text-white/70 hover:text-white hover:bg-white/5'
+                          }`}
+                        >
+                          Sign In
+                        </button>
+                        <button
+                          onClick={() => setActiveTab('signup')}
+                          className={`flex-1 py-2 rounded-lg font-semibold transition-all duration-200 text-xs sm:text-sm ${
+                            activeTab === 'signup'
+                              ? 'bg-deepBlue-600 text-white shadow-md'
+                              : 'text-white/70 hover:text-white hover:bg-white/5'
+                          }`}
+                        >
+                          Sign Up
+                        </button>
+                      </div>
+                    )}
 
                     {/* Header Banner */}
                     <div className="text-center mb-5">
                       <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">
-                        {activeTab === 'login' ? 'Welcome back' : 'Create your account'}
+                        {activeTab === 'login' && 'Welcome back'}
+                        {activeTab === 'signup' && 'Create your account'}
+                        {activeTab === 'forgotPassword' && 'Reset Password'}
+                        {activeTab === 'resetPassword' && 'Reset Password'}
                       </h2>
                       <p className="text-xs text-slate-300 mt-1">
-                        {activeTab === 'login' 
-                          ? 'Sign in to access your savings dashboard' 
-                          : 'Join our beta program and start saving'
-                        }
+                        {activeTab === 'login' && 'Sign in to access your savings dashboard'}
+                        {activeTab === 'signup' && 'Join our beta program and start saving'}
+                        {activeTab === 'forgotPassword' && 'Enter your details to receive a verification code'}
+                        {activeTab === 'resetPassword' && 'Enter the code and your new password'}
                       </p>
                     </div>
 
                     {/* Auth Components */}
                     <div>
-                      {activeTab === 'login' ? <Login /> : <SignupSteps />}
+                      {activeTab === 'login' && <Login onForgotPassword={handleForgotPassword} />}
+                      {activeTab === 'signup' && <SignupSteps />}
+                      {activeTab === 'forgotPassword' && (
+                        <ForgotPassword onBack={handleBackToLogin} onOtpSent={handleOtpSent} />
+                      )}
+                      {activeTab === 'resetPassword' && resetPasswordData && (
+                        <ResetPassword
+                          userId={resetPasswordData.userId}
+                          email={resetPasswordData.email}
+                          phoneNumber={resetPasswordData.phoneNumber}
+                          onSuccess={handleResetSuccess}
+                          onBack={handleBackToLogin}
+                        />
+                      )}
                     </div>
 
                   </div>

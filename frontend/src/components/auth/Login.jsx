@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Eye, EyeOff, CheckCircle, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { APIError } from '../../services/api';
@@ -6,7 +6,7 @@ import LoadingSpinner from '../common/LoadingSpinner';
 import OtpVerification from './OtpVerification';
 import { useToast } from '../common/Toast';
 
-const Login = () => {
+const Login = ({ onForgotPassword }) => {
   const { login, completeOtpLogin } = useAuth();
   const toast = useToast();
 
@@ -75,7 +75,7 @@ const Login = () => {
         setOtpState({
           userId: result.userId,
           phoneNumber: result.phoneNumber,
-          devOtp: result.devOtp,
+          email: result.email,
         });
       }
     } catch (err) {
@@ -125,13 +125,13 @@ const Login = () => {
           </div>
           <h3 className="text-lg font-bold text-white mb-2 tracking-tight">Verify Your Identity</h3>
           <p className="text-sm text-white/80">
-            We've sent a verification code to your phone
+            We've sent a verification code to your email
           </p>
         </div>
         <OtpVerification
           userId={otpState.userId}
           phoneNumber={otpState.phoneNumber}
-          devOtp={otpState.devOtp}
+          email={otpState.email}
           onSuccess={handleOtpSuccess}
           onBack={() => setOtpState(null)}
         />
@@ -188,7 +188,7 @@ const Login = () => {
                 value={formData.localPhone}
                 onChange={handleChange}
                 placeholder="8012345678"
-                className="flex-1 px-4 py-4 focus:outline-none bg-transparent text-white placeholder:text-white/60"
+                className="flex-1 px-4 py-4 focus:outline-none bg-transparent text-white placeholder:text-black/60"
                 disabled={isLoading}
                 autoComplete="tel"
                 maxLength={11}
@@ -253,7 +253,7 @@ const Login = () => {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-deepBlue/60 hover:text-white p-1 rounded-lg hover:bg-deepBlue/40 transition-all"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-deepBlue-900 hover:text-deepBlue-900 p-1 rounded-lg hover:bg-deepBlue/40 transition-all"
               tabIndex={-1}
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -290,6 +290,7 @@ const Login = () => {
         <div className="text-center pt-2">
           <button
             type="button"
+            onClick={onForgotPassword}
             className="text-white/80 text-sm hover:text-white font-medium hover:underline underline-offset-2 transition-all"
             disabled={isLoading}
           >
