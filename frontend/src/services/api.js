@@ -60,7 +60,11 @@ const makeRequest = async (endpoint, options = {}) => {
       };
 
       // Inject JWT token from localStorage if present
-      const token = localStorage.getItem('authToken');
+      const isAdminSession = localStorage.getItem('isAdminSession') === 'true';
+      const token = isAdminSession 
+        ? localStorage.getItem('adminAuthToken')
+        : localStorage.getItem('authToken');
+        
       if (token) {
         defaultHeaders['Authorization'] = `Bearer ${token}`;
       }

@@ -1,21 +1,27 @@
 import React from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard, Users, Activity, TrendingUp, MessageSquare,
   BarChart3, FileText, Settings, ChevronLeft, ChevronRight, LogOut
 } from 'lucide-react'
-import { useAuth } from '../../../context/AuthContext'
 import LanguageToggle from '../common/LanguageToggle'
 
 export default function AdminSidebar({ isOpen, onToggle }) {
   const location = useLocation()
-  const { logout, user } = useAuth()
-  const adminRole = user?.role
+  const navigate = useNavigate()
+  const adminRole = localStorage.getItem('adminRole') || 'admin'
+
+  const handleLogout = () => {
+    localStorage.removeItem('adminAuthToken')
+    localStorage.removeItem('isAdminSession')
+    localStorage.removeItem('adminRole')
+    navigate('/admin/login', { replace: true })
+  }
 
   const menuItems = [
-    { icon: LayoutDashboard, label: 'Dashboard',        path: '/admin/dashboard',    roles: ['admin', 'moderator'] },
-    { icon: Users,           label: 'User Management',  path: '/admin/users',        roles: ['admin', 'moderator'] },
-    { icon: Activity,        label: 'Groups',           path: '/admin/groups',       roles: ['admin', 'moderator'] },
+    { icon: LayoutDashboard, label: 'Dashboard',        path: '/admin/dashboard',    roles: ['super_admin', 'admin', 'moderator'] },
+    { icon: Users,           label: 'User Management',  path: '/admin/users',        roles: ['super_admin', 'admin', 'moderator'] },
+    { icon: Activity,        label: 'Groups',           path: '/admin/groups',       roles: ['super_admin', 'admin', 'moderator'] },
   ]
 
   const filtered = menuItems.filter(item => item.roles.includes(adminRole))
@@ -79,7 +85,7 @@ export default function AdminSidebar({ isOpen, onToggle }) {
         </div>
         
         <button
-          onClick={logout}
+          onClick={handleLogout}
           title={!isOpen ? 'Logout' : ''}
           className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600 transition"
         >

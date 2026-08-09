@@ -11,51 +11,32 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const User = require('../src/models/Users');
+const Admin = require('../src/models/Admin');
 
 // ---------------------------------------------------------------------------
 // Seed data - Admin Users
 // ---------------------------------------------------------------------------
 const SEED_ADMINS = [
   {
-    firstName: 'Super',
-    lastName: 'Admin',
+    name: 'Super Admin',
     email: 'admin@ajosave.com',
-    phoneNumber: '+2349000000001',
     password: 'Admin2025!',
-    dateOfBirth: new Date('1985-01-01'), // 18+ years old
-    address: '1 Admin Street, Victoria Island, Lagos',
-    bvn: '11111111111',
-    nin: '11111111111',
-    bvnVerified: true,
-    ninVerified: true,
-    isVerified: true,
-    isEmailVerified: true,
-    isPhoneVerified: true,
-    isFaceVerified: true,
+    role: 'super_admin',
     isActive: true,
-    role: 'admin', // Super admin with full access
-    registrationSource: 'web',
   },
   {
-    firstName: 'Moderator',
-    lastName: 'User',
+    name: 'Moderator User',
     email: 'moderator@ajosave.com',
-    phoneNumber: '+2349000000002',
     password: 'Moderator2025!',
-    dateOfBirth: new Date('1988-05-15'),
-    address: '2 Moderator Lane, Ikoyi, Lagos',
-    bvn: '22222222222',
-    nin: '22222222222',
-    bvnVerified: true,
-    ninVerified: true,
-    isVerified: true,
-    isEmailVerified: true,
-    isPhoneVerified: true,
-    isFaceVerified: true,
+    role: 'moderator',
     isActive: true,
-    role: 'moderator', // Moderator with limited access
-    registrationSource: 'web',
+  },
+  {
+    name: 'Admin User',
+    email: 'admin2@ajosave.com',
+    password: 'Admin2025!',
+    role: 'admin',
+    isActive: true,
   },
 ];
 
@@ -87,7 +68,7 @@ async function seedAdmins() {
   let skipped = 0;
 
   for (const data of SEED_ADMINS) {
-    const existing = await User.findOne({ email: data.email });
+    const existing = await Admin.findOne({ email: data.email });
 
     if (existing) {
       // Update role if it's different
@@ -104,10 +85,10 @@ async function seedAdmins() {
     }
 
     // Create via model so pre-save hooks run (password hashing, etc.)
-    const user = new User(data);
-    await user.save();
+    const admin = new Admin(data);
+    await admin.save();
 
-    console.log(`✅  Created admin: ${user.firstName} ${user.lastName} <${user.email}> [${user.role}]`);
+    console.log(`✅  Created admin: ${admin.name} <${admin.email}> [${admin.role}]`);
     created++;
   }
 
@@ -128,7 +109,7 @@ async function seedAdmins() {
   if (listOnly) {
     console.log('\n🌱  Seed admin users:\n');
     SEED_ADMINS.forEach((u) =>
-      console.log(`  • ${u.firstName} ${u.lastName} <${u.email}> [${u.role}]`)
+      console.log(`  • ${u.name} <${u.email}> [${u.role}]`)
     );
     console.log();
     process.exit(0);
