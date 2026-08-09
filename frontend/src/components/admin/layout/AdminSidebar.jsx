@@ -1,21 +1,27 @@
 import React from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import {
-  LayoutDashboard, Users, Activity, TrendingUp, MessageSquare,
-  BarChart3, FileText, Settings, ChevronLeft, ChevronRight, LogOut
+  LayoutDashboard, Users, Activity, ChevronLeft, ChevronRight, LogOut, User
 } from 'lucide-react'
-import LanguageToggle from '../common/LanguageToggle'
 
 export default function AdminSidebar({ isOpen, onToggle }) {
   const location = useLocation()
   const navigate = useNavigate()
+  const adminName = localStorage.getItem('adminName') || 'Admin User'
   const adminRole = localStorage.getItem('adminRole') || 'admin'
 
   const handleLogout = () => {
     localStorage.removeItem('adminAuthToken')
     localStorage.removeItem('isAdminSession')
     localStorage.removeItem('adminRole')
+    localStorage.removeItem('adminName')
     navigate('/admin/login', { replace: true })
+  }
+
+  const roleLabel = {
+    super_admin: 'Super Admin',
+    admin: 'Administrator',
+    moderator: 'Moderator',
   }
 
   const menuItems = [
@@ -30,7 +36,7 @@ export default function AdminSidebar({ isOpen, onToggle }) {
   return (
     <div className={`${isOpen ? 'w-64' : 'w-[72px]'} bg-white border-r border-gray-200 flex flex-col h-screen transition-all duration-300 flex-shrink-0`}>
 
-      {/* Logo */}
+      {/* Logo & Toggle */}
       <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200">
         {isOpen && (
           <div className="flex items-center space-x-2">
@@ -77,21 +83,34 @@ export default function AdminSidebar({ isOpen, onToggle }) {
         })}
       </nav>
 
-      {/* Logout */}
-      <div className="p-3 border-t border-gray-200 space-y-1">
-        {/* Language Toggle */}
-        <div className={`${isOpen ? 'block' : 'flex justify-center'}`}>
-          <LanguageToggle />
+      {/* Admin Info & Logout */}
+      <div className="border-t border-gray-200">
+        {/* Admin Info */}
+        {isOpen && (
+          <div className="p-3 border-b border-gray-200">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-deepBlue-100 rounded-full flex items-center justify-center ring-2 ring-deepBlue-500">
+                <User className="w-5 h-5 text-deepBlue-600" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-gray-900 truncate">{adminName}</p>
+                <p className="text-xs text-green-500">{roleLabel[adminRole] || adminRole}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Logout Button */}
+        <div className="p-3">
+          <button
+            onClick={handleLogout}
+            title={!isOpen ? 'Logout' : ''}
+            className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600 transition"
+          >
+            <LogOut className="w-5 h-5 flex-shrink-0" />
+            {isOpen && <span className="text-sm font-semibold">Logout</span>}
+          </button>
         </div>
-        
-        <button
-          onClick={handleLogout}
-          title={!isOpen ? 'Logout' : ''}
-          className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600 transition"
-        >
-          <LogOut className="w-5 h-5 flex-shrink-0" />
-          {isOpen && <span className="text-sm font-semibold">Logout</span>}
-        </button>
       </div>
     </div>
   )

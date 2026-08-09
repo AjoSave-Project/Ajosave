@@ -69,9 +69,6 @@ export default function AdminLogin() {
       <div className="w-full max-w-md relative z-10">
         {/* Logo & Title */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-deepBlue-600 rounded-2xl mb-4 shadow-2xl shadow-deepBlue-900/50">
-            <ShieldCheck className="w-10 h-10 text-white" />
-          </div>
           <h1 className="text-4xl font-black text-white tracking-tight">AjoSave</h1>
           <p className="text-green-400 text-sm font-bold tracking-widest uppercase mt-2">Admin Portal</p>
         </div>

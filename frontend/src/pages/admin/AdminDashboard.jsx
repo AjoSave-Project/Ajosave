@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Users, TrendingUp, AlertCircle, DollarSign, Activity, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
 import adminServices from '../../services/adminServices';
 import StatCard from '../../components/admin/dashboard/StatCard';
 import RecentActivityCard from '../../components/admin/dashboard/RecentActivityCard';
@@ -9,8 +8,10 @@ import AlertsCard from '../../components/admin/dashboard/AlertsCard';
 
 export default function AdminDashboard() {
   const [timeRange, setTimeRange] = useState('today');
-  const { user } = useAuth();
   const navigate = useNavigate();
+  
+  // Get admin info from localStorage
+  const adminName = localStorage.getItem('adminName') || 'Admin User';
 
   const [stats, setStats] = useState(null);
   const [activities, setActivities] = useState([]);
@@ -92,7 +93,7 @@ export default function AdminDashboard() {
         <div>
           <h1 className="text-2xl font-black text-gray-900">Dashboard</h1>
           <p className="text-gray-600 text-sm mt-0.5">
-            Welcome back, <span className="text-deepBlue-600 font-semibold">{user?.firstName || user?.name}</span>
+            Welcome back, <span className="text-deepBlue-600 font-semibold">{adminName}</span>
           </p>
         </div>
 

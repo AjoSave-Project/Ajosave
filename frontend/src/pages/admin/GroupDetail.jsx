@@ -1,131 +1,150 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
-  ArrowLeft, Users, TrendingUp, Calendar, Clock, CheckCircle,
-  AlertTriangle, MoreVertical, Send, Flag, Crown, ChevronDown, ChevronUp
+  ArrowLeft, Users, TrendingUp, Calendar, Clock, RefreshCw, AlertCircle
 } from 'lucide-react'
-
-// Mock data — replace with API call using `id`
-const mockGroup = {
-  id: 1,
-  name: 'Ajo Warriors',
-  description: 'A trusted savings group for young professionals in Lagos. Monthly contributions with rotating payouts.',
-  status: 'active',
-  contributionAmount: '₦50,000',
-  frequency: 'Monthly',
-  totalSavings: '₦600,000',
-  nextPayout: '2024-04-30',
-  createdAt: '2024-01-10',
-  cycleProgress: 8, // out of 12
-  admin: 'Chioma Okafor',
-  members: [
-    { id: 1, name: 'Chioma Okafor',  phone: '+234 801 234 5678', contributed: '₦400,000', status: 'paid',    payoutReceived: true,  position: 1, isAdmin: true },
-    { id: 2, name: 'Tunde Adeyemi',  phone: '+234 802 345 6789', contributed: '₦400,000', status: 'paid',    payoutReceived: false, position: 2, isAdmin: false },
-    { id: 3, name: 'Zainab Hassan',  phone: '+234 803 456 7890', contributed: '₦350,000', status: 'partial', payoutReceived: false, position: 3, isAdmin: false },
-    { id: 4, name: 'Emeka Nwosu',    phone: '+234 804 567 8901', contributed: '₦400,000', status: 'paid',    payoutReceived: false, position: 4, isAdmin: false },
-    { id: 5, name: 'Fatima Ibrahim', phone: '+234 805 678 9012', contributed: '₦400,000', status: 'paid',    payoutReceived: false, position: 5, isAdmin: false },
-    { id: 6, name: 'Kemi Adebayo',   phone: '+234 806 789 0123', contributed: '₦0',       status: 'missed',  payoutReceived: false, position: 6, isAdmin: false },
-  ],
-  transactions: [
-    { id: 'TXN001', user: 'Chioma Okafor',  type: 'contribution', amount: '₦50,000', date: '2024-04-01', status: 'completed' },
-    { id: 'TXN002', user: 'Tunde Adeyemi',  type: 'contribution', amount: '₦50,000', date: '2024-04-01', status: 'completed' },
-    { id: 'TXN003', user: 'Zainab Hassan',  type: 'contribution', amount: '₦25,000', date: '2024-04-02', status: 'completed' },
-    { id: 'TXN004', user: 'Chioma Okafor',  type: 'payout',       amount: '₦300,000',date: '2024-03-15', status: 'completed' },
-    { id: 'TXN005', user: 'Kemi Adebayo',   type: 'contribution', amount: '₦50,000', date: '2024-03-01', status: 'failed' },
-  ],
-}
+import adminServices from '../../services/adminServices'
 
 const statusConfig = {
-  active:    { bg: 'bg-green-500/10',  text: 'text-green-400',  border: 'border-green-500/20' },
-  disputed:  { bg: 'bg-amber-500/10',  text: 'text-amber-400',  border: 'border-amber-500/20' },
-  completed: { bg: 'bg-dark-700',      text: 'text-dark-400',   border: 'border-dark-600' },
-}
-
-const memberStatusConfig = {
-  paid:    { bg: 'bg-green-500/10',  text: 'text-green-400',  border: 'border-green-500/20',  label: 'Paid' },
-  partial: { bg: 'bg-amber-500/10',  text: 'text-amber-400',  border: 'border-amber-500/20',  label: 'Partial' },
-  missed:  { bg: 'bg-red-500/10',    text: 'text-red-400',    border: 'border-red-500/20',    label: 'Missed' },
-}
-
-const txnTypeColor = {
-  contribution: 'text-deepBlue-400',
-  payout:       'text-green-400',
-}
-
-const txnStatusConfig = {
-  completed: { text: 'text-green-400',  bg: 'bg-green-500/10',  border: 'border-green-500/20' },
-  failed:    { text: 'text-red-400',    bg: 'bg-red-500/10',    border: 'border-red-500/20' },
-  pending:   { text: 'text-amber-400',  bg: 'bg-amber-500/10',  border: 'border-amber-500/20' },
+  active:    { bg: 'bg-green-50',    text: 'text-green-600',    border: 'border-green-200' },
+  pending:   { bg: 'bg-amber-50',    text: 'text-amber-600',    border: 'border-amber-200' },
+  completed: { bg: 'bg-gray-50',     text: 'text-gray-600',     border: 'border-gray-200' },
+  cancelled: { bg: 'bg-red-50',      text: 'text-red-600',      border: 'border-red-200' },
 }
 
 export default function GroupDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const [group, setGroup] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [activeTab, setActiveTab] = useState('members')
-  const [showDisputeModal, setShowDisputeModal] = useState(false)
-  const [disputeNote, setDisputeNote] = useState('')
-  const [expandedMember, setExpandedMember] = useState(null)
 
-  const group = mockGroup // TODO: fetch by id
+  // Fetch group details
+  const fetchGroupDetails = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      const response = await adminServices.getGroupById(id)
+      
+      if (response.success) {
+        setGroup(response.data)
+      }
+    } catch (err) {
+      console.error('Error fetching group details:', err)
+      setError(err.message || 'Failed to load group details')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (id) {
+      fetchGroupDetails()
+    }
+  }, [id])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex flex-col items-center space-y-4">
+          <RefreshCw className="w-8 h-8 text-deepBlue-600 animate-spin" />
+          <p className="text-gray-600">Loading group details...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error || !group) {
+    return (
+      <div className="space-y-4">
+        <button
+          onClick={() => navigate('/admin/groups')}
+          className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span className="text-sm font-semibold">Back to Groups</span>
+        </button>
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+          <div className="flex items-center space-x-3">
+            <AlertCircle className="w-6 h-6 text-red-600" />
+            <div>
+              <h3 className="font-semibold text-red-900">Error Loading Group</h3>
+              <p className="text-sm text-red-700 mt-1">{error || 'Group not found'}</p>
+            </div>
+          </div>
+          <button
+            onClick={fetchGroupDetails}
+            className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   const sc = statusConfig[group.status] || statusConfig.active
-  const progressPct = Math.round((group.cycleProgress / 12) * 100)
+  const memberCount = group.membersList?.length || group.members?.length || 0
+  const totalSavings = group.totalPool || 0
+  const nextPayout = group.nextPayout ? new Date(group.nextPayout).toLocaleDateString() : 'N/A'
+  const createdAt = group.createdAt ? new Date(group.createdAt).toLocaleDateString() : 'N/A'
 
   const tabs = [
-    { key: 'members',      label: 'Members',      count: group.members.length },
-    { key: 'transactions', label: 'Transactions',  count: group.transactions.length },
-    { key: 'rotation',     label: 'Payout Rotation' },
+    { key: 'members', label: 'Members', count: memberCount },
+    { key: 'transactions', label: 'Transactions', count: group.recentTransactions?.length || 0 },
+    { key: 'details', label: 'Details' },
   ]
 
   return (
     <div className="space-y-6 animate-fade-in">
-
       {/* Back + Header */}
       <div className="flex items-start gap-4">
         <button
           onClick={() => navigate('/admin/groups')}
-          className="p-2 hover:bg-dark-800 rounded-lg transition text-dark-400 hover:text-dark-200 flex-shrink-0 mt-0.5"
+          className="p-2 hover:bg-gray-100 rounded-lg transition text-gray-600 hover:text-gray-900 flex-shrink-0 mt-0.5"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-black text-dark-100">{group.name}</h1>
+            <h1 className="text-2xl font-black text-gray-900">{group.name}</h1>
             <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${sc.bg} ${sc.text} ${sc.border}`}>
               {group.status}
             </span>
           </div>
-          <p className="text-dark-400 text-sm mt-1">{group.description}</p>
+          {group.description && (
+            <p className="text-gray-600 text-sm mt-1">{group.description}</p>
+          )}
         </div>
-        {/* Actions */}
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <button
-            onClick={() => setShowDisputeModal(true)}
-            className="flex items-center space-x-1.5 px-3 py-2 bg-amber-500/10 border border-amber-500/20 text-amber-400 hover:bg-amber-500/20 rounded-lg transition text-sm font-semibold"
-          >
-            <Flag className="w-3.5 h-3.5" />
-            <span>Flag Dispute</span>
-          </button>
-        </div>
+        <button
+          onClick={fetchGroupDetails}
+          className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition text-sm font-semibold text-gray-700"
+        >
+          <RefreshCw className="w-4 h-4" />
+          <span>Refresh</span>
+        </button>
       </div>
 
       {/* Stats Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Members',           value: group.members.length,      icon: Users,      color: 'text-deepBlue-400', bg: 'bg-deepBlue-500/10' },
-          { label: 'Total Savings',     value: group.totalSavings,        icon: TrendingUp, color: 'text-green-400',    bg: 'bg-green-500/10' },
-          { label: 'Contribution',      value: group.contributionAmount,  icon: Calendar,   color: 'text-amber-400',    bg: 'bg-amber-500/10' },
-          { label: 'Next Payout',       value: group.nextPayout,          icon: Clock,      color: 'text-deepBlue-300', bg: 'bg-deepBlue-500/10' },
+          { label: 'Members', value: memberCount, icon: Users, color: 'text-deepBlue-600', bg: 'bg-deepBlue-50' },
+          { label: 'Total Savings', value: `₦${totalSavings.toLocaleString()}`, icon: TrendingUp, color: 'text-green-600', bg: 'bg-green-50' },
+          { label: 'Contribution', value: `₦${(group.contributionAmount || 0).toLocaleString()}`, icon: Calendar, color: 'text-amber-600', bg: 'bg-amber-50' },
+          { label: 'Next Payout', value: nextPayout, icon: Clock, color: 'text-deepBlue-600', bg: 'bg-deepBlue-50' },
         ].map((stat) => {
           const Icon = stat.icon
           return (
-            <div key={stat.label} className="bg-dark-800 border border-dark-700 rounded-xl p-4">
+            <div key={stat.label} className="bg-white border border-gray-200 rounded-xl p-4">
               <div className="flex items-center space-x-3">
                 <div className={`p-2 rounded-lg ${stat.bg}`}>
                   <Icon className={`w-4 h-4 ${stat.color}`} />
                 </div>
                 <div>
-                  <p className="text-xs text-dark-500 font-semibold">{stat.label}</p>
-                  <p className="text-sm font-bold text-dark-100 mt-0.5">{stat.value}</p>
+                  <p className="text-xs text-gray-500 font-semibold">{stat.label}</p>
+                  <p className="text-sm font-bold text-gray-900 mt-0.5">{stat.value}</p>
                 </div>
               </div>
             </div>
@@ -133,45 +152,24 @@ export default function GroupDetail() {
         })}
       </div>
 
-      {/* Cycle Progress */}
-      <div className="bg-dark-800 border border-dark-700 rounded-xl p-5">
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <p className="text-sm font-bold text-dark-200">Cycle Progress</p>
-            <p className="text-xs text-dark-500 mt-0.5">Month {group.cycleProgress} of 12</p>
-          </div>
-          <span className="text-sm font-black text-deepBlue-400">{progressPct}%</span>
-        </div>
-        <div className="h-2 bg-dark-700 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-deepBlue-600 to-deepBlue-400 rounded-full transition-all duration-500"
-            style={{ width: `${progressPct}%` }}
-          />
-        </div>
-        <div className="flex justify-between mt-2">
-          <span className="text-xs text-dark-500">Started {group.createdAt}</span>
-          <span className="text-xs text-dark-500">{group.frequency} · {group.contributionAmount}/member</span>
-        </div>
-      </div>
-
       {/* Tabs */}
-      <div className="bg-dark-800 border border-dark-700 rounded-xl overflow-hidden">
+      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
         {/* Tab Bar */}
-        <div className="flex border-b border-dark-700">
+        <div className="flex border-b border-gray-200">
           {tabs.map((tab) => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               className={`flex items-center space-x-2 px-5 py-3.5 text-sm font-semibold transition border-b-2 ${
                 activeTab === tab.key
-                  ? 'border-deepBlue-500 text-deepBlue-400 bg-deepBlue-500/5'
-                  : 'border-transparent text-dark-400 hover:text-dark-200 hover:bg-dark-700/50'
+                  ? 'border-deepBlue-600 text-deepBlue-600 bg-deepBlue-50'
+                  : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
               }`}
             >
               <span>{tab.label}</span>
               {tab.count !== undefined && (
                 <span className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${
-                  activeTab === tab.key ? 'bg-deepBlue-500/20 text-deepBlue-400' : 'bg-dark-700 text-dark-400'
+                  activeTab === tab.key ? 'bg-deepBlue-100 text-deepBlue-600' : 'bg-gray-100 text-gray-600'
                 }`}>
                   {tab.count}
                 </span>
@@ -182,82 +180,54 @@ export default function GroupDetail() {
 
         {/* Members Tab */}
         {activeTab === 'members' && (
-          <div className="divide-y divide-dark-700">
-            {group.members.map((member) => {
-              const ms = memberStatusConfig[member.status] || memberStatusConfig.paid
-              const isExpanded = expandedMember === member.id
+          <div className="divide-y divide-gray-200">
+            {(group.membersList || []).map((member, index) => {
+              const user = typeof member.userId === 'object' ? member.userId : null
+              const memberName = user ? `${user.firstName} ${user.lastName}` : 'Unknown User'
+              const memberPhone = user?.phoneNumber || 'N/A'
+              const joinDate = member.joinDate ? new Date(member.joinDate).toLocaleDateString() : 'N/A'
+              
               return (
-                <div key={member.id}>
-                  <div
-                    className="flex items-center px-5 py-4 hover:bg-dark-700/40 transition cursor-pointer"
-                    onClick={() => setExpandedMember(isExpanded ? null : member.id)}
-                  >
-                    {/* Position */}
-                    <div className="w-8 h-8 rounded-full bg-dark-700 flex items-center justify-center text-xs font-black text-dark-300 flex-shrink-0 mr-4">
-                      {member.position}
-                    </div>
-
-                    {/* Avatar */}
-                    <div className="w-9 h-9 rounded-full bg-deepBlue-700 flex items-center justify-center flex-shrink-0 mr-3 ring-2 ring-deepBlue-600">
-                      <span className="text-sm font-bold text-deepBlue-200">
-                        {member.name.charAt(0)}
-                      </span>
-                    </div>
-
-                    {/* Info */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm font-bold text-dark-100 truncate">{member.name}</p>
-                        {member.isAdmin && (
-                          <Crown className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
-                        )}
-                        {member.payoutReceived && (
-                          <CheckCircle className="w-3.5 h-3.5 text-green-400 flex-shrink-0" />
-                        )}
-                      </div>
-                      <p className="text-xs text-dark-500 mt-0.5">{member.phone}</p>
-                    </div>
-
-                    {/* Contributed */}
-                    <div className="text-right mr-4 hidden sm:block">
-                      <p className="text-sm font-bold text-dark-200">{member.contributed}</p>
-                      <p className="text-xs text-dark-500">contributed</p>
-                    </div>
-
-                    {/* Status */}
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-bold border mr-3 ${ms.bg} ${ms.text} ${ms.border}`}>
-                      {ms.label}
+                <div key={index} className="flex items-center px-5 py-4 hover:bg-gray-50 transition">
+                  {/* Avatar */}
+                  <div className="w-10 h-10 rounded-full bg-deepBlue-100 flex items-center justify-center flex-shrink-0 mr-3 ring-2 ring-deepBlue-500">
+                    <span className="text-sm font-bold text-deepBlue-600">
+                      {memberName.charAt(0)}
                     </span>
-
-                    {/* Expand */}
-                    {isExpanded
-                      ? <ChevronUp className="w-4 h-4 text-dark-500 flex-shrink-0" />
-                      : <ChevronDown className="w-4 h-4 text-dark-500 flex-shrink-0" />
-                    }
                   </div>
 
-                  {/* Expanded Actions */}
-                  {isExpanded && (
-                    <div className="px-5 pb-4 bg-dark-900/50 border-t border-dark-700/50 flex flex-wrap gap-2 pt-3">
-                      <button className="flex items-center space-x-1.5 px-3 py-1.5 bg-deepBlue-500/10 border border-deepBlue-500/20 text-deepBlue-400 hover:bg-deepBlue-500/20 rounded-lg transition text-xs font-semibold">
-                        <Send className="w-3 h-3" />
-                        <span>Send Reminder</span>
-                      </button>
-                      <button className="flex items-center space-x-1.5 px-3 py-1.5 bg-dark-700 border border-dark-600 text-dark-300 hover:text-dark-100 hover:bg-dark-600 rounded-lg transition text-xs font-semibold">
-                        <Users className="w-3 h-3" />
-                        <span>View Profile</span>
-                      </button>
-                      {member.status === 'missed' && (
-                        <button className="flex items-center space-x-1.5 px-3 py-1.5 bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 rounded-lg transition text-xs font-semibold">
-                          <AlertTriangle className="w-3 h-3" />
-                          <span>Flag Member</span>
-                        </button>
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-bold text-gray-900 truncate">{memberName}</p>
+                      {member.role === 'admin' && (
+                        <span className="text-xs bg-amber-50 text-amber-600 border border-amber-200 px-2 py-0.5 rounded-full font-bold">
+                          Admin
+                        </span>
                       )}
                     </div>
-                  )}
+                    <p className="text-xs text-gray-500 mt-0.5">{memberPhone}</p>
+                  </div>
+
+                  {/* Status */}
+                  <div className="text-right">
+                    <p className="text-xs text-gray-500">Joined: {joinDate}</p>
+                    <span className={`inline-block mt-1 px-2.5 py-1 rounded-full text-xs font-bold ${
+                      member.status === 'active'
+                        ? 'bg-green-50 text-green-600 border border-green-200'
+                        : 'bg-gray-50 text-gray-600 border border-gray-200'
+                    }`}>
+                      {member.status || 'active'}
+                    </span>
+                  </div>
                 </div>
               )
             })}
+            {memberCount === 0 && (
+              <div className="text-center py-12">
+                <p className="text-gray-500">No members found</p>
+              </div>
+            )}
           </div>
         )}
 
@@ -266,31 +236,39 @@ export default function GroupDetail() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-dark-700">
-                  <th className="px-5 py-3 text-left text-xs font-bold text-dark-400 uppercase tracking-wider">Txn ID</th>
-                  <th className="px-5 py-3 text-left text-xs font-bold text-dark-400 uppercase tracking-wider">Member</th>
-                  <th className="px-5 py-3 text-left text-xs font-bold text-dark-400 uppercase tracking-wider">Type</th>
-                  <th className="px-5 py-3 text-left text-xs font-bold text-dark-400 uppercase tracking-wider">Amount</th>
-                  <th className="px-5 py-3 text-left text-xs font-bold text-dark-400 uppercase tracking-wider">Date</th>
-                  <th className="px-5 py-3 text-left text-xs font-bold text-dark-400 uppercase tracking-wider">Status</th>
+                <tr className="border-b border-gray-200 bg-gray-50">
+                  <th className="px-5 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">ID</th>
+                  <th className="px-5 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Type</th>
+                  <th className="px-5 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Amount</th>
+                  <th className="px-5 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Date</th>
+                  <th className="px-5 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-dark-700">
-                {group.transactions.map((txn) => {
-                  const ts = txnStatusConfig[txn.status] || txnStatusConfig.pending
+              <tbody className="divide-y divide-gray-200">
+                {(group.recentTransactions || []).map((txn) => {
+                  const txnDate = txn.createdAt ? new Date(txn.createdAt).toLocaleDateString() : 'N/A'
                   return (
-                    <tr key={txn.id} className="hover:bg-dark-700/40 transition">
-                      <td className="px-5 py-3.5 text-xs font-mono font-semibold text-deepBlue-400">{txn.id}</td>
-                      <td className="px-5 py-3.5 text-sm font-semibold text-dark-200">{txn.user}</td>
+                    <tr key={txn._id} className="hover:bg-gray-50 transition">
+                      <td className="px-5 py-3.5 text-xs font-mono font-semibold text-deepBlue-600">
+                        {txn._id?.slice(-8) || 'N/A'}
+                      </td>
                       <td className="px-5 py-3.5">
-                        <span className={`text-xs font-bold capitalize ${txnTypeColor[txn.type] || 'text-dark-400'}`}>
+                        <span className="text-xs font-bold capitalize text-gray-700">
                           {txn.type}
                         </span>
                       </td>
-                      <td className="px-5 py-3.5 text-sm font-bold text-dark-100">{txn.amount}</td>
-                      <td className="px-5 py-3.5 text-xs text-dark-400">{txn.date}</td>
+                      <td className="px-5 py-3.5 text-sm font-bold text-gray-900">
+                        ₦{(txn.amount || 0).toLocaleString()}
+                      </td>
+                      <td className="px-5 py-3.5 text-xs text-gray-600">{txnDate}</td>
                       <td className="px-5 py-3.5">
-                        <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${ts.bg} ${ts.text} ${ts.border}`}>
+                        <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
+                          txn.status === 'completed'
+                            ? 'bg-green-50 text-green-600 border border-green-200'
+                            : txn.status === 'pending'
+                            ? 'bg-amber-50 text-amber-600 border border-amber-200'
+                            : 'bg-red-50 text-red-600 border border-red-200'
+                        }`}>
                           {txn.status}
                         </span>
                       </td>
@@ -299,104 +277,56 @@ export default function GroupDetail() {
                 })}
               </tbody>
             </table>
+            {(!group.recentTransactions || group.recentTransactions.length === 0) && (
+              <div className="text-center py-12">
+                <p className="text-gray-500">No transactions found</p>
+              </div>
+            )}
           </div>
         )}
 
-        {/* Rotation Tab */}
-        {activeTab === 'rotation' && (
-          <div className="p-5 space-y-3">
-            <p className="text-xs text-dark-500 mb-4">
-              Payout order is determined at group creation. ✓ = payout received · ★ = next in line
-            </p>
-            {group.members.map((member, idx) => {
-              const isNext = !member.payoutReceived && group.members.slice(0, idx).every(m => m.payoutReceived)
-              return (
-                <div
-                  key={member.id}
-                  className={`flex items-center space-x-4 p-4 rounded-xl border transition ${
-                    isNext
-                      ? 'bg-deepBlue-500/10 border-deepBlue-500/30'
-                      : member.payoutReceived
-                      ? 'bg-dark-900/50 border-dark-700/50 opacity-60'
-                      : 'bg-dark-700/30 border-dark-700'
-                  }`}
-                >
-                  {/* Position number */}
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-black flex-shrink-0 ${
-                    isNext ? 'bg-deepBlue-600 text-white' : 'bg-dark-700 text-dark-400'
-                  }`}>
-                    {member.position}
-                  </div>
-
-                  {/* Avatar */}
-                  <div className="w-9 h-9 rounded-full bg-deepBlue-800 flex items-center justify-center flex-shrink-0">
-                    <span className="text-sm font-bold text-deepBlue-300">{member.name.charAt(0)}</span>
-                  </div>
-
-                  {/* Name */}
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-bold text-dark-100">{member.name}</p>
-                      {isNext && <span className="text-xs bg-deepBlue-500/20 text-deepBlue-400 border border-deepBlue-500/30 px-2 py-0.5 rounded-full font-bold">Next ★</span>}
-                    </div>
-                    <p className="text-xs text-dark-500 mt-0.5">{member.phone}</p>
-                  </div>
-
-                  {/* Payout status */}
-                  <div className="text-right">
-                    {member.payoutReceived ? (
-                      <div className="flex items-center space-x-1.5 text-green-400">
-                        <CheckCircle className="w-4 h-4" />
-                        <span className="text-xs font-bold">Received</span>
-                      </div>
-                    ) : (
-                      <span className="text-xs text-dark-500 font-semibold">Pending</span>
-                    )}
-                  </div>
-                </div>
-              )
-            })}
+        {/* Details Tab */}
+        {activeTab === 'details' && (
+          <div className="p-6 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Group Name</p>
+                <p className="text-sm font-bold text-gray-900">{group.name}</p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Status</p>
+                <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold border ${sc.bg} ${sc.text} ${sc.border}`}>
+                  {group.status}
+                </span>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Created Date</p>
+                <p className="text-sm font-bold text-gray-900">{createdAt}</p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Frequency</p>
+                <p className="text-sm font-bold text-gray-900">{group.frequency || 'N/A'}</p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Max Members</p>
+                <p className="text-sm font-bold text-gray-900">{group.maxMembers || 'N/A'}</p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Admin</p>
+                <p className="text-sm font-bold text-gray-900">
+                  {group.admin ? `${group.admin.firstName} ${group.admin.lastName}` : 'N/A'}
+                </p>
+              </div>
+            </div>
+            {group.description && (
+              <div>
+                <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Description</p>
+                <p className="text-sm text-gray-700">{group.description}</p>
+              </div>
+            )}
           </div>
         )}
       </div>
-
-      {/* Dispute Modal */}
-      {showDisputeModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-dark-800 border border-dark-700 rounded-2xl p-6 w-full max-w-md animate-fade-in">
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="p-2 bg-amber-500/10 rounded-lg">
-                <AlertTriangle className="w-5 h-5 text-amber-400" />
-              </div>
-              <h2 className="text-lg font-bold text-dark-100">Flag Group Dispute</h2>
-            </div>
-            <p className="text-sm text-dark-400 mb-4">
-              This will mark <span className="text-dark-200 font-semibold">{group.name}</span> as disputed and notify all members that an admin is investigating.
-            </p>
-            <textarea
-              value={disputeNote}
-              onChange={(e) => setDisputeNote(e.target.value)}
-              placeholder="Describe the dispute or reason for investigation..."
-              rows={4}
-              className="w-full bg-dark-900 border border-dark-600 text-dark-200 placeholder-dark-500 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none mb-4"
-            />
-            <div className="flex gap-3">
-              <button
-                onClick={() => { setShowDisputeModal(false); setDisputeNote('') }}
-                className="flex-1 py-2.5 bg-dark-700 border border-dark-600 text-dark-300 hover:text-dark-100 rounded-lg transition text-sm font-semibold"
-              >
-                Cancel
-              </button>
-              <button
-                disabled={!disputeNote.trim()}
-                className="flex-1 py-2.5 bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed text-dark-950 font-bold rounded-lg transition text-sm"
-              >
-                Flag Dispute
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
