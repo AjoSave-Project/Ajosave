@@ -65,7 +65,7 @@ const Dashboard = () => {
     switch (s) {
       case 'active': return 'bg-green-100 text-green-800'
       case 'pending': return 'bg-yellow-100 text-yellow-800'
-      case 'completed': return 'bg-blue-100 text-blue-800'
+      case 'completed': return 'bg-deepBlue-100 text-deepBlue-800'
       default: return 'bg-gray-100 text-gray-800'
     }
   }
@@ -114,36 +114,36 @@ const Dashboard = () => {
         </div>
 
         {/* Balance Card */}
-        <div className="rounded-xl p-3 sm:p-4 text-white mb-3 shadow-lg" style={{ backgroundColor: '#0a79f0' }}>
+        <div className="rounded-xl p-3 sm:p-4 text-white mb-3 shadow-lg" style={{ backgroundColor: '#3d71d9' }}>
           <div className="flex justify-between items-start mb-3">
             <div className="flex-1">
-              <p className="text-blue-200 text-xs mb-1">Total Balance</p>
+              <p className="text-deepBlue-200 text-xs mb-1">Total Balance</p>
               <div className="flex items-center space-x-2">
                 <h2 className="text-xl sm:text-2xl font-bold">
                   {showBalance ? `₦${wallet?.totalBalance?.toLocaleString() || '0.00'}` : '₦ *****'}
                 </h2>
-                <button onClick={() => setShowBalance(!showBalance)} className="text-blue-200 hover:text-white transition">
+                <button onClick={() => setShowBalance(!showBalance)} className="text-deepBlue-200 hover:text-white transition">
                   {showBalance ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-blue-200 text-xs mb-1">Active Groups</p>
+              <p className="text-deepBlue-200 text-xs mb-1">Active Groups</p>
               <p className="text-xl sm:text-2xl font-bold">{activeGroups.length}</p>
               {pendingGroups.length > 0 && (
-                <p className="text-blue-300 text-xs mt-1">{pendingGroups.length} pending</p>
+                <p className="text-deepBlue-300 text-xs mt-1">{pendingGroups.length} pending</p>
               )}
             </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2 text-sm border-t border-blue-400 border-opacity-40 pt-3">
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-x-4 gap-y-2 text-sm border-t border-deepBlue-400 border-opacity-40 pt-3">
             {[
               { label: 'Locked', key: 'lockedBalance' },
               { label: 'Contributed', key: 'totalContributions' },
               { label: 'Received', key: 'totalPayouts' },
             ].map(({ label, key }) => (
               <div key={key}>
-                <p className="text-blue-200 text-xs">{label}</p>
+                <p className="text-deepBlue-200 text-xs">{label}</p>
                 <p className="font-semibold text-sm">
                   {showBalance ? `₦${wallet?.[key]?.toLocaleString() || '0.00'}` : '****'}
                 </p>
@@ -152,14 +152,14 @@ const Dashboard = () => {
           </div>
 
           {nextPayout && (
-            <div className="flex justify-between items-center pt-3 mt-2 border-t border-blue-400 border-opacity-40">
+            <div className="flex justify-between items-center pt-3 mt-2 border-t border-deepBlue-400 border-opacity-40">
               <div>
-                <p className="text-blue-200 text-xs">Next Payout</p>
+                <p className="text-deepBlue-200 text-xs">Next Payout</p>
                 <p className="font-semibold text-sm">{new Date(nextPayout.nextPayout).toLocaleDateString()}</p>
-                <p className="text-blue-300 text-xs">{nextPayout.name}</p>
+                <p className="text-deepBlue-300 text-xs">{nextPayout.name}</p>
               </div>
               <div className="text-right">
-                <p className="text-blue-200 text-xs">Amount</p>
+                <p className="text-deepBlue-200 text-xs">Amount</p>
                 <p className="font-semibold text-sm">₦{(nextPayout.contributionAmount * nextPayout.maxMembers).toLocaleString()}</p>
               </div>
             </div>
@@ -173,8 +173,8 @@ const Dashboard = () => {
             {quickActions.map(({ icon: Icon, label, onClick }) => (
               <button key={label} onClick={onClick}
                 className="bg-white rounded-lg p-2 shadow-sm border border-deepBlue-100 hover:shadow-md transition flex flex-col items-center gap-1.5">
-                <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ backgroundColor: '#0a79f015' }}>
-                  <Icon className="w-4 h-4" style={{ color: '#0a79f0' }} />
+                <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ backgroundColor: '#3d71d915' }}>
+                  <Icon className="w-4 h-4" style={{ color: '#3d71d9' }} />
                 </div>
                 <span className="text-xs font-medium text-deepBlue-700 text-center leading-tight">{label}</span>
               </button>
@@ -188,15 +188,15 @@ const Dashboard = () => {
           <div>
             <div className="flex justify-between items-center mb-2">
               <h3 className="text-sm font-bold text-deepBlue-800">My Groups</h3>
-              <button onClick={() => navigate('/groups')} className="text-xs font-medium" style={{ color: '#0a79f0' }}>View All</button>
+              <button onClick={() => navigate('/groups')} className="text-xs font-medium" style={{ color: '#3d71d9' }}>View All</button>
             </div>
             {groups.length === 0 ? (
               <div className="text-center py-6 bg-white rounded-xl border border-deepBlue-100">
                 <Users className="w-10 h-10 text-deepBlue-300 mx-auto mb-2" />
                 <p className="text-deepBlue-600 mb-3 text-sm">No groups yet</p>
                 <div className="flex justify-center space-x-2">
-                  <button onClick={() => navigate('/groups/create')} className="text-white text-xs px-3 py-1.5 rounded-lg" style={{ backgroundColor: '#0a79f0' }}>Create</button>
-                  <button onClick={() => navigate('/groups/join')} className="text-xs px-3 py-1.5 rounded-lg border" style={{ borderColor: '#0a79f0', color: '#0a79f0' }}>Join</button>
+                  <button onClick={() => navigate('/groups/create')} className="text-white text-xs px-3 py-1.5 rounded-lg" style={{ backgroundColor: '#3d71d9' }}>Create</button>
+                  <button onClick={() => navigate('/groups/join')} className="text-xs px-3 py-1.5 rounded-lg border" style={{ borderColor: '#3d71d9', color: '#3d71d9' }}>Join</button>
                 </div>
               </div>
             ) : (
@@ -205,8 +205,8 @@ const Dashboard = () => {
                   <div key={group._id} onClick={() => navigate(`/groups/${group._id}`)}
                     className="bg-white rounded-lg p-3 shadow-sm border border-deepBlue-100 hover:shadow-md transition cursor-pointer">
                     <div className="flex items-center space-x-3">
-                      <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#0a79f015' }}>
-                        <Users className="w-4 h-4" style={{ color: '#0a79f0' }} />
+                      <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#3d71d915' }}>
+                        <Users className="w-4 h-4" style={{ color: '#3d71d9' }} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="font-semibold text-deepBlue-800 truncate text-sm">{group.name}</h4>
@@ -234,7 +234,7 @@ const Dashboard = () => {
           <div>
             <div className="flex justify-between items-center mb-2">
               <h3 className="text-sm font-bold text-deepBlue-800">Recent Transactions</h3>
-              <button onClick={() => navigate('/wallet')} className="text-xs font-medium" style={{ color: '#0a79f0' }}>View All</button>
+              <button onClick={() => navigate('/wallet')} className="text-xs font-medium" style={{ color: '#3d71d9' }}>View All</button>
             </div>
             {recentTransactions.length === 0 ? (
               <div className="text-center py-12 bg-white rounded-xl border border-deepBlue-100">
@@ -266,22 +266,22 @@ const Dashboard = () => {
 
         {/* Upcoming Contributions Alert */}
         {upcomingContributions.length > 0 && (
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 mt-3">
+          <div className="bg-deepBlue-50 border border-deepBlue-200 rounded-xl p-3 mt-3">
             <div className="flex items-start space-x-3">
-              <Bell className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <Bell className="w-5 h-5 text-deepBlue-600 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <h3 className="font-semibold text-blue-800 mb-1 text-sm">Upcoming Contributions</h3>
+                <h3 className="font-semibold text-deepBlue-800 mb-1 text-sm">Upcoming Contributions</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   {upcomingContributions.map((group) => (
                     <div key={group._id} className="flex justify-between items-center text-xs">
-                      <span className="text-blue-700">{group.name}</span>
-                      <span className="font-medium text-blue-800">
+                      <span className="text-deepBlue-700">{group.name}</span>
+                      <span className="font-medium text-deepBlue-800">
                         ₦{group.contributionAmount.toLocaleString()} · {new Date(group.nextContribution).toLocaleDateString()}
                       </span>
                     </div>
                   ))}
                 </div>
-                <button onClick={() => navigate('/payment')} className="mt-1 text-xs font-medium text-blue-800 underline">
+                <button onClick={() => navigate('/payment')} className="mt-1 text-xs font-medium text-deepBlue-800 underline">
                   Make Payment →
                 </button>
               </div>

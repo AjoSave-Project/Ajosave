@@ -185,7 +185,7 @@ const Payment = () => {
 
         {/* Wallet balance */}
         <div className="bg-deepBlue-600 text-white rounded-xl p-3 mb-4">
-          <p className="text-blue-100 text-sm mb-1">Wallet Balance</p>
+          <p className="text-deepBlue-100 text-sm mb-1">Wallet Balance</p>
           <p className="text-xl font-bold">₦{availableBalance.toLocaleString()}</p>
         </div>
 

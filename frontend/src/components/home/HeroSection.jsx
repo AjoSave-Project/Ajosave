@@ -23,7 +23,7 @@ const HeroSection = ({ sectionRef, onJoinBeta, onHowItWorks }) => {
 
             {/* Eyebrow */}
             <div className="overflow-hidden px-4 lg:pl-4 lg:pr-0 w-full flex justify-center lg:justify-end">
-              <span className="text-xs font-bold uppercase tracking-widest text-blue-300 animate-slideFromRight [animation-delay:0ms]">
+              <span className="text-xs font-bold uppercase tracking-widest text-deepBlue-300 animate-slideFromRight [animation-delay:0ms]">
                 Community Savings, Reimagined
               </span>
             </div>
@@ -32,7 +32,7 @@ const HeroSection = ({ sectionRef, onJoinBeta, onHowItWorks }) => {
             <div className="overflow-hidden px-4 lg:pl-4 lg:pr-0 w-full flex justify-center lg:justify-end">
               <h1 className="text-3xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.15] max-w-4xl animate-slideFromRight [animation-delay:50ms]">
                 <span>
-                  Save together. <span className="text-blue-400">Trust the process.</span>
+                  Save together. <span className="text-deepBlue-400">Trust the process.</span>
                 </span>
               </h1>
             </div>
@@ -58,7 +58,7 @@ const HeroSection = ({ sectionRef, onJoinBeta, onHowItWorks }) => {
                 </button>
                 <button
                   onClick={onHowItWorks}
-                  className="flex items-center justify-center lg:justify-end gap-2 text-white hover:text-blue-300 font-medium px-5 py-3 text-sm transition-colors rounded-lg hover:bg-white/10 backdrop-blur-sm border border-white/20"
+                  className="flex items-center justify-center lg:justify-end gap-2 text-white hover:text-deepBlue-300 font-medium px-5 py-3 text-sm transition-colors rounded-lg hover:bg-white/10 backdrop-blur-sm border border-white/20"
                 >
                   <Play className="w-4 h-4 fill-current" />
                   <span>See How It Works</span>

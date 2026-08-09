@@ -193,7 +193,7 @@ const HowItWorks = () => {
 
   const features = [
     {
-      icon: <ShieldCheck className="w-6 h-6 text-blue-600" />,
+      icon: <ShieldCheck className="w-6 h-6 text-deepBlue-600" />,
       title: "Protected Escrow",
       description: "Pooled contributions are held securely in institutional-grade escrow structures until rotation day."
     },
@@ -210,7 +210,7 @@ const HowItWorks = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 text-blue-500 font-sans antialiased flex flex-col justify-between">
+    <div className="min-h-screen bg-slate-50 font-sans antialiased flex flex-col justify-between">
       <HomeNavbar />
 
       {/* ── HERO SECTION — stock image as full background ─────────────────── */}
@@ -223,13 +223,13 @@ const HowItWorks = () => {
         }}
       >
         {/* Dark overlay */}
-        <div className="absolute inset-0 bg-deepBlue-950/72" />
+        <div className="absolute inset-0 bg-deepBlue-900/90" />
 
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-8">
           <div ref={heroTextRef} className="space-y-6 text-left max-w-2xl">
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight">
               Traditional group saving, modernized with{' '}
-              <span className="text-blue-400 underline decoration-blue-400 decoration-wavy underline-offset-8">
+              <span className="text-deepBlue-300 underline decoration-deepBlue-300 decoration-wavy underline-offset-8">
                 total transparency
               </span>.
             </h1>
@@ -244,7 +244,7 @@ const HowItWorks = () => {
             <h2 className="text-xs font-bold uppercase tracking-widest text-deepBlue-600">
               ROTATION DEMONSTRATION
             </h2>
-            <p className="text-2xl sm:text-3xl font-extrabold text-blue-500 tracking-tight">
+            <p className="text-2xl sm:text-3xl font-extrabold text-deepBlue-700 tracking-tight">
               Observe real-time contribution movements and pooled disbursement logic.
             </p>
           </div>
@@ -270,7 +270,7 @@ const HowItWorks = () => {
             <span className="text-xs font-bold uppercase tracking-widest text-deepBlue-600">
               Built on Trust
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-blue-500 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-deepBlue-700 tracking-tight">
               Designed for absolute peace of mind
             </h2>
           </div>
@@ -285,25 +285,25 @@ const HowItWorks = () => {
                 <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center">
                   {feat.icon}
                 </div>
-                <h3 className="font-bold text-blue-500 text-base">{feat.title}</h3>
+                <h3 className="font-bold text-deepBlue-700 text-base">{feat.title}</h3>
                 <p className="text-xs text-slate-600 leading-relaxed">{feat.description}</p>
               </div>
             ))}
           </div>
 
           {/* CTA Banner */}
-          <div className="bg-deepBlue-900 text-white rounded-3xl p-8 sm:p-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 shadow-xl text-left">
+          <div className="bg-deepBlue-700 text-white rounded-3xl p-8 sm:p-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 shadow-xl text-left">
             <div className="space-y-2 max-w-xl">
               <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
                 Ready to start your first savings circle?
               </h3>
-              <p className="text-sm sm:text-base text-blue-100/90">
+              <p className="text-sm sm:text-base text-deepBlue-200/90">
                 Join thousands of group savers taking advantage of seamless, transparent community thrift.
               </p>
             </div>
             <a
               href="/auth"
-              className="inline-flex items-center gap-2 bg-white text-blue-500 px-7 py-3 rounded-xl font-bold text-sm hover:bg-slate-100 transition-colors shadow-md shrink-0 w-fit"
+              className="inline-flex items-center gap-2 bg-white text-deepBlue-600 px-7 py-3 rounded-xl font-bold text-sm hover:bg-slate-100 transition-colors shadow-md shrink-0 w-fit"
             >
               Get Started Now <ArrowRight className="w-4 h-4" />
             </a>

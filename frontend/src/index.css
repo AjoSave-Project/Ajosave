@@ -51,7 +51,7 @@ html.home-page body,
 html.home-page body *,
 .scrollbar-blue {
   scrollbar-width: thin !important;
-  scrollbar-color: #0284c7 #e0f2fe !important;
+  scrollbar-color: #3d71d9 #EBF2FF !important;
 }
 
 html.home-page::-webkit-scrollbar,
@@ -60,14 +60,14 @@ html.home-page body *::-webkit-scrollbar,
 .scrollbar-blue::-webkit-scrollbar {
   width: 12px !important;
   display: block !important;
-  background: #e0f2fe !important;
+  background: #EBF2FF !important;
 }
 
 html.home-page::-webkit-scrollbar-track,
 html.home-page body::-webkit-scrollbar-track,
 html.home-page body *::-webkit-scrollbar-track,
 .scrollbar-blue::-webkit-scrollbar-track {
-  background: #e0f2fe !important;
+  background: #EBF2FF !important;
   border-radius: 6px !important;
 }
 
@@ -75,16 +75,16 @@ html.home-page::-webkit-scrollbar-thumb,
 html.home-page body::-webkit-scrollbar-thumb,
 html.home-page body *::-webkit-scrollbar-thumb,
 .scrollbar-blue::-webkit-scrollbar-thumb {
-  background: #0284c7 !important;
+  background: #3d71d9 !important;
   border-radius: 6px !important;
-  border: 2px solid #e0f2fe !important;
+  border: 2px solid #EBF2FF !important;
 }
 
 html.home-page::-webkit-scrollbar-thumb:hover,
 html.home-page body::-webkit-scrollbar-thumb:hover,
 html.home-page body *::-webkit-scrollbar-thumb:hover,
 .scrollbar-blue::-webkit-scrollbar-thumb:hover {
-  background: #0369a1 !important;
+  background: #2760d3 !important;
 }
 
 html, body {
@@ -112,7 +112,7 @@ html {
   
   .scrollbar-blue {
     scrollbar-width: thin !important;
-    scrollbar-color: #0284c7 #e0f2fe !important;
+    scrollbar-color: #3d71d9 #EBF2FF !important;
   }
   
   .scrollbar-blue::-webkit-scrollbar {
@@ -121,22 +121,44 @@ html {
   }
   
   .scrollbar-blue::-webkit-scrollbar-track {
-    background: #e0f2fe !important;
+    background: #EBF2FF !important;
     border-radius: 10px !important;
   }
   
   .scrollbar-blue::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important;
+    background: linear-gradient(180deg, #3d71d9 0%, #2760d3 100%) !important;
     border-radius: 10px !important;
-    border: 2px solid #e0f2fe !important;
+    border: 2px solid #EBF2FF !important;
   }
   
   .scrollbar-blue::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, #0369a1 0%, #075985 100%) !important;
+    background: linear-gradient(180deg, #2760d3 0%, #1f4fad 100%) !important;
   }
   
   .scrollbar-blue::-webkit-scrollbar-thumb:active {
-    background: #075985 !important;
+    background: #1f4fad !important;
+  }
+
+  /* Terms / document page scrollable container */
+  .scrollbar-brand {
+    scrollbar-width: thin !important;
+    scrollbar-color: #3d71d9 #EBF2FF !important;
+  }
+  .scrollbar-brand::-webkit-scrollbar {
+    width: 8px !important;
+    display: block !important;
+  }
+  .scrollbar-brand::-webkit-scrollbar-track {
+    background: #EBF2FF !important;
+    border-radius: 10px !important;
+  }
+  .scrollbar-brand::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #3d71d9 0%, #2760d3 100%) !important;
+    border-radius: 10px !important;
+    border: 2px solid #EBF2FF !important;
+  }
+  .scrollbar-brand::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #2760d3 0%, #1f4fad 100%) !important;
   }
 
   /* Matte Reveal Animation */

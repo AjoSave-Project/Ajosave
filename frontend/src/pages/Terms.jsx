@@ -11,7 +11,7 @@ const Terms = () => {
     window.scrollTo(0, 0);
   }
   return (
-    <div className="min-h-screen bg-slate-100/70 text-slate-800 font-sans antialiased">
+    <div className="min-h-screen bg-slate-100/70 text-slate-800 font-sans antialiased scrollbar-brand">
       <HomeNavbar />
 
       <main className="container mx-auto px-4 py-12 lg:py-16 max-w-5xl">
@@ -23,7 +23,7 @@ const Terms = () => {
           <div className="mb-6 flex items-center justify-between">
             <button
               onClick={() => handleNavigation('/home')}
-              className="inline-flex items-center text-xs font-semibold text-slate-500 hover:text-blue-900 transition-colors gap-1.5"
+              className="inline-flex items-center text-xs font-semibold text-slate-500 hover:text-deepBlue-800 transition-colors gap-1.5"
             >
               <ArrowLeft className="w-4 h-4" /> Back home
             </button>
@@ -33,7 +33,7 @@ const Terms = () => {
           {/* Header */}
           <header className="border-b border-slate-200 pb-8 mb-10">
             <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-blue-50 text-blue-900 text-xs font-semibold border border-blue-200/60">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-deepBlue-50 text-deepBlue-800 text-xs font-semibold border border-deepBlue-200/60">
                 <FileText className="w-3.5 h-3.5" /> Legal Document
               </span>
               <div className="text-xs text-slate-500 font-mono space-x-4">
@@ -57,12 +57,12 @@ const Terms = () => {
               Contents
             </h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-y-2 gap-x-4 text-xs font-medium text-slate-700">
-              <a href="#section-1" className="hover:text-blue-900 transition-colors">1. Who Can Use AjoSave</a>
-              <a href="#section-2" className="hover:text-blue-900 transition-colors">2. Fees</a>
-              <a href="#section-3" className="hover:text-blue-900 transition-colors">3. Your Data & Privacy</a>
-              <a href="#section-4" className="hover:text-blue-900 transition-colors">4. Keeping Your Account Safe</a>
-              <a href="#section-5" className="hover:text-blue-900 transition-colors">5. How to Behave in a Group</a>
-              <a href="#section-6" className="hover:text-blue-900 transition-colors">6. What Happens if Someone Defaults</a>
+              <a href="#section-1" className="hover:text-deepBlue-800 transition-colors">1. Who Can Use AjoSave</a>
+              <a href="#section-2" className="hover:text-deepBlue-800 transition-colors">2. Fees</a>
+              <a href="#section-3" className="hover:text-deepBlue-800 transition-colors">3. Your Data & Privacy</a>
+              <a href="#section-4" className="hover:text-deepBlue-800 transition-colors">4. Keeping Your Account Safe</a>
+              <a href="#section-5" className="hover:text-deepBlue-800 transition-colors">5. How to Behave in a Group</a>
+              <a href="#section-6" className="hover:text-deepBlue-800 transition-colors">6. What Happens if Someone Defaults</a>
             </div>
           </nav>
 
@@ -78,7 +78,7 @@ const Terms = () => {
                 AjoSave is a digital platform for community savings groups. We help people create groups, track contributions, manage rotations, and receive payouts — all in one place.
               </p>
 
-              <div className="bg-slate-50 border-l-2 border-blue-900 p-4 rounded-r-md my-4 space-y-2">
+              <div className="bg-slate-50 border-l-2 border-deepBlue-800 p-4 rounded-r-md my-4 space-y-2">
                 <h3 className="text-xs font-bold uppercase text-slate-900">To create an account you must</h3>
                 <ul className="list-disc pl-5 text-xs text-slate-600 space-y-1">
                   <li>Be at least 18 years old.</li>

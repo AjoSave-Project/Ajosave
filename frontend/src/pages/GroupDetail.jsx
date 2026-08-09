@@ -104,7 +104,7 @@ const GroupDetail = () => {
   const getMemberStatus = (status) => {
     const statusConfig = {
       completed: { color: 'bg-green-100 text-green-800', icon: CheckCircle, text: 'Completed' },
-      current: { color: 'bg-blue-100 text-blue-800', icon: Clock, text: 'Current Turn' },
+      current: { color: 'bg-deepBlue-100 text-deepBlue-800', icon: Clock, text: 'Current Turn' },
       pending: { color: 'bg-yellow-100 text-yellow-800', icon: Clock, text: 'Pending' },
       missed: { color: 'bg-red-100 text-red-800', icon: AlertCircle, text: 'Missed' }
     }
@@ -118,7 +118,7 @@ const GroupDetail = () => {
       case 'pending':
         return 'bg-yellow-100 text-yellow-800'
       case 'completed':
-        return 'bg-blue-100 text-blue-800'
+        return 'bg-deepBlue-100 text-deepBlue-800'
       case 'cancelled':
         return 'bg-red-100 text-red-800'
       default:
@@ -204,7 +204,7 @@ const GroupDetail = () => {
                     {group.credibilityScore}% Credible
                   </span>
                   {isAdmin && (
-                    <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                    <span className="px-3 py-1 bg-deepBlue-100 text-deepBlue-800 rounded-full text-sm font-medium">
                       Admin
                     </span>
                   )}
@@ -262,10 +262,10 @@ const GroupDetail = () => {
                 ₦{group.totalPool.toLocaleString()}
               </p>
             </div>
-            <div className="text-center p-3 bg-blue-50 rounded-lg">
-              <Clock className="w-6 h-6 text-blue-600 mx-auto mb-1" />
-              <p className="text-xs text-blue-600 mb-1">Frequency</p>
-              <p className="text-lg font-bold text-blue-800">
+            <div className="text-center p-3 bg-deepBlue-50 rounded-lg">
+              <Clock className="w-6 h-6 text-deepBlue-600 mx-auto mb-1" />
+              <p className="text-xs text-deepBlue-600 mb-1">Frequency</p>
+              <p className="text-lg font-bold text-deepBlue-800">
                 {group.frequency}
               </p>
             </div>
@@ -412,7 +412,7 @@ const GroupDetail = () => {
                         <div className="flex items-center space-x-2">
                           <p className="font-medium text-deepBlue-800">{member.name}</p>
                           {member.role === 'Admin' && (
-                            <span className="px-2 py-0.5 bg-blue-100 text-blue-800 rounded text-xs font-medium">
+                            <span className="px-2 py-0.5 bg-deepBlue-100 text-deepBlue-800 rounded text-xs font-medium">
                               Admin
                             </span>
                           )}

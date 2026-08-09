@@ -9,7 +9,7 @@ import LoadingSpinner from '../components/common/LoadingSpinner'
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const AVATAR_COLORS = [
-  'from-blue-500 to-blue-600',
+  'from-deepBlue-500 to-deepBlue-600',
   'from-purple-500 to-purple-600',
   'from-emerald-500 to-emerald-600',
   'from-amber-500 to-amber-600',
@@ -39,7 +39,7 @@ function getStatusConfig(status) {
     case 'pending':
       return { dot: 'bg-amber-400', label: 'Pending', badge: 'bg-amber-100 text-amber-700' }
     case 'completed':
-      return { dot: 'bg-blue-500', label: 'Completed', badge: 'bg-blue-100 text-blue-700' }
+      return { dot: 'bg-deepBlue-500', label: 'Completed', badge: 'bg-deepBlue-100 text-deepBlue-700' }
     default:
       return { dot: 'bg-gray-400', label: status, badge: 'bg-gray-100 text-gray-600' }
   }

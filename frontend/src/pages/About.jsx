@@ -56,12 +56,12 @@ const About = () => {
       <HomeNavbar />
 
       {/* ── HERO SECTION ────────────────────────────────────────────────── */}
-      <section className="relative min-h-[90vh] bg-gradient-to-br from-blue-950 via-deepBlue-900 to-blue-900 text-white flex items-center px-4 sm:px-8 py-20 overflow-hidden">
+      <section className="relative min-h-[90vh] bg-gradient-to-br from-deepBlue-900 via-deepBlue-800 to-deepBlue-900 text-white flex items-center px-4 sm:px-8 py-20 overflow-hidden">
 
         {/* Architectural grid lines background */}
         <div className="absolute inset-0 grid grid-cols-2 md:grid-cols-12 pointer-events-none opacity-[0.04]">
           {[...Array(12)].map((_, i) => (
-            <div key={i} className="border-r border-blue-300 h-full last:border-r-0" />
+            <div key={i} className="border-r border-deepBlue-300 h-full last:border-r-0" />
           ))}
         </div>
 
@@ -73,21 +73,21 @@ const About = () => {
               <h1 className="text-3xl sm:text-7xl font-extrabold tracking-tight text-white leading-[1.15]">
                 The best financial futures are built together.
               </h1>
-              <p className="text-base sm:text-lg text-blue-100/90 leading-relaxed">
+              <p className="text-base sm:text-lg text-deepBlue-100/90 leading-relaxed">
                 AjoSave is a digital platform for community savings — Ajo, Esusu, thrift contributions — 
                 built to make group saving transparent, reliable, and simple. Started in Nigeria. 
                 Built for communities everywhere.
               </p>
             </div>
 
-            <div className="pt-6 border-t border-blue-400/20 flex flex-col sm:flex-row gap-6 text-xs text-blue-200">
+            <div className="pt-6 border-t border-deepBlue-400/20 flex flex-col sm:flex-row gap-6 text-xs text-deepBlue-200">
               <div>
-                <span className="block text-blue-400 mb-1 font-semibold uppercase tracking-wider">Origin</span>
-                <p className="text-blue-100 text-sm font-medium">Born at Codefest 2025 Hackathon</p>
+                <span className="block text-deepBlue-400 mb-1 font-semibold uppercase tracking-wider">Origin</span>
+                <p className="text-deepBlue-100 text-sm font-medium">Born at Codefest 2025 Hackathon</p>
               </div>
               <div>
-                <span className="block text-blue-400 mb-1 font-semibold uppercase tracking-wider">Status</span>
-                <p className="text-blue-100 text-sm font-medium">In active development — open beta</p>
+                <span className="block text-deepBlue-400 mb-1 font-semibold uppercase tracking-wider">Status</span>
+                <p className="text-deepBlue-100 text-sm font-medium">In active development — open beta</p>
               </div>
             </div>
           </div>
@@ -97,8 +97,8 @@ const About = () => {
             <div className="absolute -top-16 -left-12 text-[12vw] text-deepBlue-700/30 select-none tracking-tighter leading-none pointer-events-none hidden lg:block font-extrabold">
               AJO
             </div>
-            <div className="relative z-10 aspect-[3/4] w-full max-w-md mx-auto lg:max-w-none bg-deepBlue-800 overflow-hidden border border-blue-400/20 shadow-2xl p-3 rounded-2xl">
-              <div className="absolute inset-5 border border-blue-300/10 pointer-events-none z-20 rounded-xl" />
+            <div className="relative z-10 aspect-[3/4] w-full max-w-md mx-auto lg:max-w-none bg-deepBlue-800 overflow-hidden border border-deepBlue-400/20 shadow-2xl p-3 rounded-2xl">
+              <div className="absolute inset-5 border border-deepBlue-300/10 pointer-events-none z-20 rounded-xl" />
               <div className="w-full h-full overflow-hidden rounded-lg">
                 <img
                   src={heroSlides[currentSlide].image}
@@ -113,7 +113,7 @@ const About = () => {
                     onClick={() => setCurrentSlide(i)}
                     aria-label={`Slide ${i + 1}`}
                     className={`h-1.5 rounded-full transition-all duration-300 ${
-                      i === currentSlide ? 'bg-blue-300 w-6' : 'bg-blue-300/30 w-1.5 hover:bg-blue-300/60'
+                      i === currentSlide ? 'bg-deepBlue-300 w-6' : 'bg-deepBlue-300/30 w-1.5 hover:bg-deepBlue-300/60'
                     }`}
                   />
                 ))}
@@ -133,7 +133,7 @@ const About = () => {
             <span className="text-xs font-bold uppercase tracking-widest text-deepBlue-500 bg-deepBlue-50 px-3 py-1 rounded-full">
               Our Journey
             </span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-blue-500 tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-deepBlue-600 tracking-tight">
               From a hackathon idea to a working product.
             </h2>
             <p className="text-deepBlue-600 text-base">
@@ -158,21 +158,21 @@ const About = () => {
               href="https://codefest25.hacktribe.co/"
               target="_blank"
               rel="noopener noreferrer"
-              className="md:col-span-5 border border-deepBlue-100 rounded-2xl p-6 bg-deepBlue-900 text-white hover:bg-deepBlue-800 transition-all flex flex-col justify-between group shadow-xl"
+              className="md:col-span-5 border border-deepBlue-100 rounded-2xl p-6 bg-deepBlue-700 text-white hover:bg-deepBlue-800 transition-all flex flex-col justify-between group shadow-xl"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-widest text-blue-300">Origin Story</span>
-                <ExternalLink className="w-4 h-4 text-blue-300 group-hover:text-white transition-colors" />
+                <span className="text-xs font-bold uppercase tracking-widest text-deepBlue-300">Origin Story</span>
+                <ExternalLink className="w-4 h-4 text-deepBlue-300 group-hover:text-white transition-colors" />
               </div>
 
               <div className="my-6 space-y-2">
                 <h3 className="text-xl font-bold text-white">Codefest 2025 Hackathon</h3>
-                <p className="text-xs text-blue-100/80 leading-relaxed">
+                <p className="text-xs text-deepBlue-100/80 leading-relaxed">
                   Created as a national hackathon submission challenging developers to solve real community financial challenges.
                 </p>
               </div>
 
-              <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-300 group-hover:text-white transition-colors">
+              <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-deepBlue-300 group-hover:text-white transition-colors">
                 <span>Visit hackathon portal</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </div>
@@ -183,10 +183,10 @@ const About = () => {
           {/* Three Pillars */}
           <div className="grid sm:grid-cols-3 gap-6 pt-4">
             <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200/60 space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
+              <div className="w-10 h-10 rounded-xl bg-deepBlue-100 text-deepBlue-700 flex items-center justify-center font-bold">
                 <ShieldCheck className="w-5 h-5" />
               </div>
-              <h4 className="font-bold text-blue-500 text-base">Transparent Ledgers</h4>
+              <h4 className="font-bold text-deepBlue-600 text-base">Transparent Ledgers</h4>
               <p className="text-xs text-deepBlue-600 leading-relaxed">
                 Every contribution gets recorded instantly. Every member can view total pool status anytime.
               </p>
@@ -196,7 +196,7 @@ const About = () => {
               <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
                 <Bell className="w-5 h-5" />
               </div>
-              <h4 className="font-bold text-blue-500 text-base">Automated Reminders</h4>
+              <h4 className="font-bold text-deepBlue-600 text-base">Automated Reminders</h4>
               <p className="text-xs text-deepBlue-600 leading-relaxed">
                 No awkward manual follow-ups. System notifications keep every member on schedule.
               </p>
@@ -206,7 +206,7 @@ const About = () => {
               <div className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
                 <RefreshCw className="w-5 h-5" />
               </div>
-              <h4 className="font-bold text-blue-500 text-base">Guaranteed Rotation</h4>
+              <h4 className="font-bold text-deepBlue-600 text-base">Guaranteed Rotation</h4>
               <p className="text-xs text-deepBlue-600 leading-relaxed">
                 Clear payout schedules prevent disputes and maintain turn transparency for all members.
               </p>
@@ -216,7 +216,7 @@ const About = () => {
           {/* Pull Quote & Current Phase */}
           <div className="space-y-8 max-w-3xl mx-auto pt-4">
             <blockquote className="border-l-4 border-deepBlue-600 pl-6 py-2 my-6">
-              <p className="text-xl sm:text-2xl font-bold text-blue-500 leading-snug italic">
+              <p className="text-xl sm:text-2xl font-bold text-deepBlue-600 leading-snug italic">
                 "The tradition works. We are just making it easier to trust."
               </p>
             </blockquote>
@@ -230,17 +230,17 @@ const About = () => {
               <div className="grid sm:grid-cols-3 gap-6">
                 <div>
                   <span className="text-xs font-mono font-bold text-deepBlue-500">2025</span>
-                  <p className="text-xs font-bold text-blue-500 mt-1">Codefest Hackathon</p>
+                  <p className="text-xs font-bold text-deepBlue-600 mt-1">Codefest Hackathon</p>
                   <p className="text-xs text-deepBlue-500 mt-0.5">Prototype designed and core architecture built</p>
                 </div>
                 <div>
                   <span className="text-xs font-mono font-bold text-deepBlue-500">2026</span>
-                  <p className="text-xs font-bold text-blue-500 mt-1">Platform Expansion</p>
+                  <p className="text-xs font-bold text-deepBlue-600 mt-1">Platform Expansion</p>
                   <p className="text-xs text-deepBlue-500 mt-0.5">Full backend security and mobile development</p>
                 </div>
                 <div>
                   <span className="text-xs font-mono font-bold text-deepBlue-500">NOW</span>
-                  <p className="text-xs font-bold text-blue-500 mt-1">Open Beta</p>
+                  <p className="text-xs font-bold text-deepBlue-600 mt-1">Open Beta</p>
                   <p className="text-xs text-deepBlue-500 mt-0.5">Active testing with early savings groups</p>
                 </div>
               </div>
@@ -256,7 +256,7 @@ const About = () => {
 
           <div className="max-w-xl mb-14">
             <span className="text-xs font-bold uppercase tracking-widest text-deepBlue-500">The team</span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-blue-500 mt-3 leading-tight tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-deepBlue-600 mt-3 leading-tight tracking-tight">
               Five people. One shared obsession.
             </h2>
             <p className="mt-4 text-deepBlue-600 text-base leading-relaxed">
@@ -282,7 +282,7 @@ const About = () => {
       </section>
 
       {/* ── CLOSING CTA ──────────────────────────────────────────────────── */}
-      <section className="bg-deepBlue-900 text-white py-20">
+      <section className="bg-deepBlue-700 text-white py-20">
         <div className="max-w-3xl mx-auto px-4 text-center space-y-6">
           <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
             Want to save with your community?
@@ -292,7 +292,7 @@ const About = () => {
           </p>
           <a
             href="/auth"
-            className="inline-flex items-center gap-2 bg-white text-blue-500 px-6 py-3 rounded-lg font-semibold text-sm hover:bg-deepBlue-50 transition-colors shadow-sm"
+            className="inline-flex items-center gap-2 bg-white text-deepBlue-600 px-6 py-3 rounded-lg font-semibold text-sm hover:bg-deepBlue-50 transition-colors shadow-sm"
           >
             Start Saving for Free <ArrowRight className="w-4 h-4" />
           </a>
@@ -318,7 +318,7 @@ const TeamCard = ({ member }) => (
     {/* Info */}
     <div className="p-5">
       <p className="text-xs font-bold uppercase tracking-widest text-deepBlue-500 mb-1">{member.role}</p>
-      <h3 className="text-base font-bold text-blue-500 leading-snug mb-2">{member.name}</h3>
+      <h3 className="text-base font-bold text-deepBlue-600 leading-snug mb-2">{member.name}</h3>
       <p className="text-sm text-deepBlue-600 leading-relaxed">{member.bio}</p>
     </div>
   </div>

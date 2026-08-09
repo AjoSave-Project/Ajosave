@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Globe, Check } from 'lucide-react'
-import { useLanguage } from '../../context/LanguageContext'
+import { useLanguage } from '../../../context/LanguageContext'
 
 export default function LanguageToggle({ variant = 'default' }) {
   const { currentLanguage, changeLanguage, supportedLanguages, isLoading } = useLanguage()

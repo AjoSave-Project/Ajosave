@@ -21,7 +21,7 @@ const RefundPolicy = () => {
         <div className="mb-6 flex items-center justify-between">
           <button
             onClick={() => handleNavigation('/terms')}
-            className="inline-flex items-center text-xs font-semibold text-slate-500 hover:text-blue-900 transition-colors gap-1.5"
+            className="inline-flex items-center text-xs font-semibold text-slate-500 hover:text-deepBlue-800 transition-colors gap-1.5"
           >
             <ArrowLeft className="w-4 h-4" /> Back to Terms of Service
           </button>
@@ -34,7 +34,7 @@ const RefundPolicy = () => {
           {/* Document Top Meta Bar */}
           <header className="border-b border-slate-200 pb-8 mb-10">
             <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-blue-50 text-blue-900 text-xs font-semibold border border-blue-200/60">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-deepBlue-50 text-deepBlue-800 text-xs font-semibold border border-deepBlue-200/60">
                 <FileText className="w-3.5 h-3.5" /> Policy Document
               </span>
               <div className="text-xs text-slate-500 font-mono space-x-4">
@@ -59,21 +59,21 @@ const RefundPolicy = () => {
             </h2>
             <div className="grid sm:grid-cols-3 gap-6">
               <div className="flex items-start gap-3">
-                <Clock className="w-5 h-5 text-blue-900 mt-0.5 shrink-0" />
+                <Clock className="w-5 h-5 text-deepBlue-800 mt-0.5 shrink-0" />
                 <div>
                   <h3 className="text-sm font-bold text-slate-900">Request window</h3>
                   <p className="text-xs text-slate-600 mt-0.5">Up to 90 days from the transaction date</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <ShieldCheck className="w-5 h-5 text-blue-900 mt-0.5 shrink-0" />
+                <ShieldCheck className="w-5 h-5 text-deepBlue-800 mt-0.5 shrink-0" />
                 <div>
                   <h3 className="text-sm font-bold text-slate-900">Processing time</h3>
                   <p className="text-xs text-slate-600 mt-0.5">5–7 business days after approval</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="w-5 h-5 text-blue-900 mt-0.5 shrink-0" />
+                <CheckCircle2 className="w-5 h-5 text-deepBlue-800 mt-0.5 shrink-0" />
                 <div>
                   <h3 className="text-sm font-bold text-slate-900">Where it goes</h3>
                   <p className="text-xs text-slate-600 mt-0.5">Back to your original payment source</p>
@@ -162,28 +162,28 @@ const RefundPolicy = () => {
 
               <div className="grid sm:grid-cols-4 gap-4 mt-4">
                 <div className="border border-slate-200 rounded-lg p-4 bg-slate-50/50">
-                  <span className="text-xs font-mono font-bold text-blue-900 uppercase">Step 01</span>
+                  <span className="text-xs font-mono font-bold text-deepBlue-800 uppercase">Step 01</span>
                   <h4 className="text-sm font-bold text-slate-900 mt-1">Submit</h4>
                   <p className="text-xs text-slate-600 mt-1">Send us your transaction ID and what happened.</p>
                   <span className="inline-block mt-3 text-[10px] font-medium text-slate-500">Immediate</span>
                 </div>
 
                 <div className="border border-slate-200 rounded-lg p-4 bg-slate-50/50">
-                  <span className="text-xs font-mono font-bold text-blue-900 uppercase">Step 02</span>
+                  <span className="text-xs font-mono font-bold text-deepBlue-800 uppercase">Step 02</span>
                   <h4 className="text-sm font-bold text-slate-900 mt-1">Review</h4>
                   <p className="text-xs text-slate-600 mt-1">We check the transaction logs and group records.</p>
                   <span className="inline-block mt-3 text-[10px] font-medium text-slate-500">3–5 business days</span>
                 </div>
 
                 <div className="border border-slate-200 rounded-lg p-4 bg-slate-50/50">
-                  <span className="text-xs font-mono font-bold text-blue-900 uppercase">Step 03</span>
+                  <span className="text-xs font-mono font-bold text-deepBlue-800 uppercase">Step 03</span>
                   <h4 className="text-sm font-bold text-slate-900 mt-1">Decision</h4>
                   <p className="text-xs text-slate-600 mt-1">We notify you of the outcome — approved or declined.</p>
                   <span className="inline-block mt-3 text-[10px] font-medium text-slate-500">Within 24 hours</span>
                 </div>
 
                 <div className="border border-slate-200 rounded-lg p-4 bg-slate-50/50">
-                  <span className="text-xs font-mono font-bold text-blue-900 uppercase">Step 04</span>
+                  <span className="text-xs font-mono font-bold text-deepBlue-800 uppercase">Step 04</span>
                   <h4 className="text-sm font-bold text-slate-900 mt-1">Refund</h4>
                   <p className="text-xs text-slate-600 mt-1">Funds are returned to your original payment source.</p>
                   <span className="inline-block mt-3 text-[10px] font-medium text-slate-500">5–7 business days</span>
@@ -205,7 +205,7 @@ const RefundPolicy = () => {
 
                 <h3 className="text-sm font-bold text-slate-900 pt-2">3.2 Appealing a declined request</h3>
                 <p className="text-xs sm:text-sm text-slate-600">
-                  If your refund was declined and you disagree with the decision, you can appeal within 14 days by sending additional supporting information to <span className="font-mono text-blue-900">support@ajosave.com</span>. We will review it carefully. Appeals decisions are final.
+                  If your refund was declined and you disagree with the decision, you can appeal within 14 days by sending additional supporting information to <span className="font-mono text-deepBlue-800">support@ajosave.com</span>. We will review it carefully. Appeals decisions are final.
                 </p>
               </div>
             </section>
@@ -219,13 +219,13 @@ const RefundPolicy = () => {
                     Get in touch with our team. We aim to respond within one business day.
                   </p>
                   <div className="mt-4 flex flex-wrap gap-4 text-xs font-mono text-slate-300">
-                    <span className="flex items-center gap-1.5"><Mail className="w-4 h-4 text-blue-400" /> ajosavesupport@gmail.com</span>
-                    <span className="flex items-center gap-1.5"><Phone className="w-4 h-4 text-blue-400" /> +234 915 62 196 54</span>
+                    <span className="flex items-center gap-1.5"><Mail className="w-4 h-4 text-deepBlue-400" /> ajosavesupport@gmail.com</span>
+                    <span className="flex items-center gap-1.5"><Phone className="w-4 h-4 text-deepBlue-400" /> +234 915 62 196 54</span>
                   </div>
                 </div>
                 <button
                   onClick={() => handleNavigation('/contact')}
-                  className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-5 py-3 rounded-lg transition-colors shrink-0"
+                  className="bg-deepBlue-600 hover:bg-deepBlue-500 text-white text-xs font-semibold px-5 py-3 rounded-lg transition-colors shrink-0"
                 >
                   Contact Us
                 </button>

@@ -10,30 +10,33 @@ export default {
         sans: ['Nunito', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       colors: {
+        // AjoSave brand — Royal Blue (matches mobile app colors.ts Primary)
+        // Primary.main: #3d71d9  Primary.light: #7BA5F3  Primary.dark: #2760d3
         primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
+          50:  '#EBF2FF', // Primary.background
+          100: '#D6E5FF',
+          200: '#ADC9FF',
+          300: '#7BA5F3', // Primary.light
+          400: '#5888EC',
+          500: '#3d71d9', // Primary.main  ← brand blue
+          600: '#2760d3', // Primary.dark
+          700: '#1f4fad',
+          800: '#163a82',
+          900: '#0e2657',
         },
+        // Alias kept for backward-compat — same scale as primary
         deepBlue: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
-        }
+          50:  '#EBF2FF',
+          100: '#D6E5FF',
+          200: '#ADC9FF',
+          300: '#7BA5F3',
+          400: '#5888EC',
+          500: '#3d71d9',
+          600: '#2760d3',
+          700: '#1f4fad',
+          800: '#163a82',
+          900: '#0e2657',
+        },
       },
       keyframes: {
         'slide-in': {

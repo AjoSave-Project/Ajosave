@@ -24,13 +24,13 @@ const Auth = () => {
             <div className="w-48 h-px bg-slate-700 mx-auto mb-6"></div>
             <div className="relative w-48 h-16 mx-auto overflow-hidden">
               <div className="absolute inset-0 flex items-center animate-slide-carousel">
-                <div className="flex-shrink-0 w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mx-2 shadow-sm">
+                <div className="flex-shrink-0 w-12 h-12 bg-deepBlue-600 rounded-lg flex items-center justify-center mx-2 shadow-sm">
                   <Shield className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex-shrink-0 w-12 h-12 bg-slate-800 border-2 border-slate-700 rounded-lg flex items-center justify-center mx-2 shadow-sm">
-                  <Users className="w-6 h-6 text-blue-400" />
+                  <Users className="w-6 h-6 text-deepBlue-400" />
                 </div>
-                <div className="flex-shrink-0 w-12 h-12 bg-blue-800 rounded-lg flex items-center justify-center mx-2 shadow-sm">
+                <div className="flex-shrink-0 w-12 h-12 bg-deepBlue-800 rounded-lg flex items-center justify-center mx-2 shadow-sm">
                   <Zap className="w-6 h-6 text-white" />
                 </div>
               </div>
@@ -62,16 +62,16 @@ const Auth = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-primary-500 text-slate-100 antialiased selection:bg-blue-500/20 overflow-x-hidden">
+    <div className="min-h-screen text-slate-100 antialiased selection:bg-deepBlue-500/20 overflow-x-hidden">
       {/* Hero Section with Slanted Background */}
       <div 
         className="relative min-h-screen flex flex-col justify-between overflow-hidden pb-16"
         style={{
-          backgroundImage: `linear-gradient(to bottom right, #172033, #0c4a6e)`,
+          backgroundImage: `linear-gradient(to bottom right, #1f4fad, #0e2657)`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
-          clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 4vw), 0 100%)',
+          clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 8vw), 0 100%)',
         }}
       >
         <div className="relative z-10 w-full flex-1">
@@ -98,11 +98,11 @@ const Auth = () => {
               {/* Left Side Marketing Text */}
               <div className="lg:col-span-6 space-y-6">
                 <div className="space-y-3">
-                  <span className="text-xs font-bold uppercase tracking-widest text-blue-300 block">
+                  <span className="text-xs font-bold uppercase tracking-widest text-deepBlue-300 block">
                     Secure Authentication
                   </span>
                   <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
-                    Join the future of <span className="text-blue-300 underline decoration-blue-400/40 underline-offset-4">group savings</span>.
+                    Join the future of <span className="text-deepBlue-300 underline decoration-deepBlue-300/40 underline-offset-4">group savings</span>.
                   </h1>
                   <p className="text-sm sm:text-base text-slate-200 leading-relaxed max-w-xl font-normal">
                     Experience transparent, digital Ajo with verified members and automated rotations. Your money, your community, secured by technology.
@@ -113,12 +113,12 @@ const Auth = () => {
                 <div className="hidden lg:grid gap-3 pt-2">
                   {features.map((feature, index) => (
                     <div key={index} className="flex items-start gap-3.5 p-3.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/15">
-                      <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center shrink-0 border border-blue-400/30">
-                        <feature.icon className="w-4 h-4 text-blue-300" />
+                      <div className="w-8 h-8 bg-deepBlue-500/20 rounded-lg flex items-center justify-center shrink-0 border border-deepBlue-400/30">
+                        <feature.icon className="w-4 h-4 text-deepBlue-300" />
                       </div>
                       <div>
                         <h3 className="font-semibold text-white text-xs sm:text-sm">{feature.title}</h3>
-                        <p className="text-xs text-blue-100/80 leading-relaxed mt-0.5">{feature.desc}</p>
+                        <p className="text-xs text-deepBlue-100/80 leading-relaxed mt-0.5">{feature.desc}</p>
                       </div>
                     </div>
                   ))}
@@ -128,7 +128,7 @@ const Auth = () => {
               {/* Right Side Form Container */}
               <div className="lg:col-span-6 flex justify-center lg:justify-end">
                 <div className="w-full max-w-md">
-                  <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 p-6 sm:p-7">
+                  <div className="bg-deepBlue-900 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 p-6 sm:p-7">
                     
                     {/* Tab Navigation Toggle */}
                     <div className="flex bg-white/10 rounded-xl p-1 border border-white/15 mb-6">
@@ -136,7 +136,7 @@ const Auth = () => {
                         onClick={() => setActiveTab('login')}
                         className={`flex-1 py-2 rounded-lg font-semibold transition-all duration-200 text-xs sm:text-sm ${
                           activeTab === 'login'
-                            ? 'bg-blue-600 text-white shadow-md'
+                            ? 'bg-deepBlue-600 text-white shadow-md'
                             : 'text-white/70 hover:text-white hover:bg-white/5'
                         }`}
                       >
@@ -146,7 +146,7 @@ const Auth = () => {
                         onClick={() => setActiveTab('signup')}
                         className={`flex-1 py-2 rounded-lg font-semibold transition-all duration-200 text-xs sm:text-sm ${
                           activeTab === 'signup'
-                            ? 'bg-blue-600 text-white shadow-md'
+                            ? 'bg-deepBlue-600 text-white shadow-md'
                             : 'text-white/70 hover:text-white hover:bg-white/5'
                         }`}
                       >

@@ -472,21 +472,21 @@ export default function Wallet() {
         </div>
 
         {/* Balance Card */}
-        <div className="rounded-xl p-4 text-white mb-4" style={{ backgroundColor: '#0a79f0' }}>
+        <div className="rounded-xl p-4 text-white mb-4" style={{ backgroundColor: '#3d71d9' }}>
           <div className="flex items-center space-x-3 mb-3">
             <div className="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
               <WalletIcon className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-blue-100">Total Balance</p>
+              <p className="text-deepBlue-100">Total Balance</p>
               <h2 className="text-2xl font-bold">₦{(walletData?.totalBalance ?? 0).toLocaleString()}</h2>
             </div>
           </div>
-          <div className="border-t border-blue-400 border-opacity-40 pt-4 grid grid-cols-2 gap-x-6 gap-y-2 text-sm mb-3">
-            <div className="flex justify-between"><span className="text-blue-200">Available</span><span className="font-semibold">₦{(walletData?.availableBalance ?? 0).toLocaleString()}</span></div>
-            <div className="flex justify-between"><span className="text-blue-200">Locked</span><span className="font-semibold">₦{(walletData?.lockedBalance ?? 0).toLocaleString()}</span></div>
-            <div className="flex justify-between"><span className="text-blue-200">Contributed</span><span className="font-semibold">₦{(walletData?.totalContributions ?? 0).toLocaleString()}</span></div>
-            <div className="flex justify-between"><span className="text-blue-200">Received</span><span className="font-semibold">₦{(walletData?.totalPayouts ?? 0).toLocaleString()}</span></div>
+          <div className="border-t border-deepBlue-400 border-opacity-40 pt-4 grid grid-cols-2 gap-x-6 gap-y-2 text-sm mb-3">
+            <div className="flex justify-between"><span className="text-deepBlue-200">Available</span><span className="font-semibold">₦{(walletData?.availableBalance ?? 0).toLocaleString()}</span></div>
+            <div className="flex justify-between"><span className="text-deepBlue-200">Locked</span><span className="font-semibold">₦{(walletData?.lockedBalance ?? 0).toLocaleString()}</span></div>
+            <div className="flex justify-between"><span className="text-deepBlue-200">Contributed</span><span className="font-semibold">₦{(walletData?.totalContributions ?? 0).toLocaleString()}</span></div>
+            <div className="flex justify-between"><span className="text-deepBlue-200">Received</span><span className="font-semibold">₦{(walletData?.totalPayouts ?? 0).toLocaleString()}</span></div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <button onClick={() => setShowFundModal(true)} disabled={funding}
@@ -524,15 +524,15 @@ export default function Wallet() {
           ) : (
             <div className="flex gap-3 overflow-x-auto pb-2 px-3 scrollbar-hide">
               {bankAccounts.map(acc => (
-                <div key={acc._id} className="min-w-[180px] rounded-lg p-3 text-white relative flex-shrink-0" style={{ backgroundColor: '#0a79f0' }}>
+                <div key={acc._id} className="min-w-[180px] rounded-lg p-3 text-white relative flex-shrink-0" style={{ backgroundColor: '#3d71d9' }}>
                   {acc.isPrimary && (
                     <span className="absolute top-2 right-2 bg-white bg-opacity-30 text-white text-xs font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
                       <Star className="w-3 h-3" /> Primary
                     </span>
                   )}
-                  <p className="text-xs text-blue-200 mb-1">{acc.bankName}</p>
+                  <p className="text-xs text-deepBlue-200 mb-1">{acc.bankName}</p>
                   <p className="text-base font-bold tracking-widest mb-1">****{acc.accountNumber.slice(-4)}</p>
-                  <p className="text-xs text-blue-100">{acc.accountName}</p>
+                  <p className="text-xs text-deepBlue-100">{acc.accountName}</p>
                   {!acc.isPrimary && (
                     <button
                       onClick={async () => {
@@ -641,8 +641,8 @@ export default function Wallet() {
         {/* Auto-Withdrawal Setup */}
         <div className="bg-white rounded-xl shadow-sm border border-deepBlue-100 p-4">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Shield className="w-5 h-5 text-blue-600" />
+            <div className="w-10 h-10 bg-deepBlue-100 rounded-lg flex items-center justify-center">
+              <Shield className="w-5 h-5 text-deepBlue-600" />
             </div>
             <div>
               <h3 className="font-semibold text-deepBlue-800">Auto-Withdrawal</h3>

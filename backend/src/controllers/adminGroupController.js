@@ -256,7 +256,7 @@ const updateGroupSettings = async (req, res) => {
 
     // Update frequency if provided
     if (frequency !== undefined) {
-      const validFrequencies = ['Weekly', 'Bi-Weekly', 'Monthly'];
+      const validFrequencies = ['Daily', 'Weekly', 'Bi-Weekly', 'Monthly', 'Bi-Monthly'];
       if (!validFrequencies.includes(frequency)) {
         return sendError(
           res,

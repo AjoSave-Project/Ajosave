@@ -105,7 +105,7 @@ function shouldShowDateDivider(messages, index) {
 }
 
 const AVATAR_COLORS = [
-  'bg-blue-500', 'bg-purple-500', 'bg-emerald-500',
+  'bg-deepBlue-500', 'bg-purple-500', 'bg-emerald-500',
   'bg-amber-500', 'bg-rose-500', 'bg-cyan-500',
 ]
 
@@ -205,7 +205,7 @@ function MessageBubble({ message, isOwn, showAvatar, currentUserId }) {
             </span>
             {isOwn && (
               readCount > 0
-                ? <CheckCheck className="w-3 h-3 text-blue-300" />
+                ? <CheckCheck className="w-3 h-3 text-deepBlue-300" />
                 : <Check className="w-3 h-3 text-white/60" />
             )}
           </div>

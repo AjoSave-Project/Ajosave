@@ -48,10 +48,10 @@ const FAQSection = ({ onContact }) => {
   const [openFAQ, setOpenFAQ] = useState(null)
 
   return (
-    <div className="bg-gradient-to-br from-deepBlue-50/40 to-blue-50/60 py-20 border-b border-deepBlue-100/60">
+    <div className="bg-gradient-to-br from-deepBlue-50/40 to-deepBlue-50/60 py-20 border-b border-deepBlue-100/60">
       <div className="max-w-4xl mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold tracking-tight text-blue-500 mt-8 mb-4 overflow-hidden">
+          <h2 className="text-3xl font-bold tracking-tight text-deepBlue-600 mt-8 mb-4 overflow-hidden">
             <span className="block animate-slideUpReveal-scroll faq-header">Common questions</span>
           </h2>
           <p className="text-deepBlue-600 mb-6 max-w-2xl mx-auto leading-relaxed">
@@ -68,7 +68,7 @@ const FAQSection = ({ onContact }) => {
               <MessageCircle className="w-4 h-4 text-white" />
             </div>
             <div className="text-left">
-              <div className="text-sm font-semibold text-deepBlue-800 group-hover:text-blue-500">
+              <div className="text-sm font-semibold text-deepBlue-800 group-hover:text-deepBlue-500">
                 Join r/AjoSave Community
               </div>
               <div className="text-xs text-deepBlue-600">

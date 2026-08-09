@@ -267,12 +267,12 @@ const CreateGroup = () => {
             value={groupData.maxMembers}
             onChange={(e) => handleInputChange('maxMembers', e.target.value)}
             placeholder="e.g. 10"
-            min="2"
+            min="1"
             max="100"
             className="w-full px-3 py-2 border border-deepBlue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-deepBlue-500"
             required
           />
-          <p className="text-xs text-deepBlue-500 mt-1">Between 2 and 100 members</p>
+          <p className="text-xs text-deepBlue-500 mt-1">Between 1 and 100 members</p>
         </div>
 
         <div>
@@ -331,9 +331,11 @@ const CreateGroup = () => {
             onChange={(e) => handleInputChange('frequency', e.target.value)}
             className="w-full px-3 py-2 border border-deepBlue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-deepBlue-500"
           >
+            <option value="Daily">Daily</option>
             <option value="Weekly">Weekly</option>
             <option value="Bi-Weekly">Bi-Weekly</option>
             <option value="Monthly">Monthly</option>
+            <option value="Bi-Monthly">Bi-Monthly</option>
           </select>
         </div>
 
@@ -382,6 +384,20 @@ const CreateGroup = () => {
               <div>
                 <span className="text-sm font-medium">Bidding System</span>
                 <p className="text-xs text-deepBlue-500">Members bid for turn position</p>
+              </div>
+            </label>
+            <label className="flex items-center space-x-2 p-3 border border-deepBlue-200 rounded-lg cursor-pointer hover:bg-deepBlue-50">
+              <input
+                type="radio"
+                name="payoutOrder"
+                value="vote"
+                checked={groupData.payoutOrder === 'vote'}
+                onChange={(e) => handleInputChange('payoutOrder', e.target.value)}
+                className="text-deepBlue-600 focus:ring-deepBlue-500"
+              />
+              <div>
+                <span className="text-sm font-medium">Group Vote</span>
+                <p className="text-xs text-deepBlue-500">Members vote to decide each payout recipient</p>
               </div>
             </label>
           </div>
@@ -434,6 +450,15 @@ const CreateGroup = () => {
             <div className="flex justify-between">
               <span className="text-deepBlue-600">Max Members:</span>
               <span className="font-medium text-deepBlue-800">{groupData.maxMembers} members</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-deepBlue-600">Payout Order:</span>
+              <span className="font-medium text-deepBlue-800">
+                {groupData.payoutOrder === 'firstCome' ? 'First Come, First Served'
+                  : groupData.payoutOrder === 'vote' ? 'Group Vote'
+                  : groupData.payoutOrder === 'bidding' ? 'Bidding'
+                  : 'Random'}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-deepBlue-600">Duration:</span>

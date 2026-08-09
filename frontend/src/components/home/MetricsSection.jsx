@@ -7,7 +7,7 @@ const METRICS_DATA = [
 
 const MetricsSection = () => {
   return (
-    <div className="bg-blue-500 text-white mt-20 py-8">
+    <div className="bg-deepBlue-700 text-white mt-20 py-8">
       <div className="max-w-6xl mx-auto px-4">
         <p className="text-center text-deepBlue-300 text-xs font-bold uppercase tracking-widest mb-10">Built carefully. Released honestly.</p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">

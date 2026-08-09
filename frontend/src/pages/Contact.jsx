@@ -30,17 +30,17 @@ const Contact = () => {
       <HomeNavbar />
 
       {/* Header Banner */}
-      <section className="bg-gradient-to-br from-blue-950 via-deepBlue-900 to-blue-900 text-white py-16 text-center relative overflow-hidden">
+      <section className="bg-gradient-to-br from-deepBlue-900 via-deepBlue-800 to-deepBlue-900 text-white py-16 text-center relative overflow-hidden">
         {/* Architectural grid lines background (from About page) */}
         <div className="absolute inset-0 grid grid-cols-4 md:grid-cols-12 pointer-events-none opacity-[0.04]">
           {[...Array(12)].map((_, i) => (
-            <div key={i} className="border-r border-blue-300 h-full last:border-r-0" />
+            <div key={i} className="border-r border-deepBlue-300 h-full last:border-r-0" />
           ))}
         </div>
 
         <div className="container mx-auto px-4 max-w-3xl relative z-10">
           <h1 className="text-4xl sm:text-5xl font-extrabold mt-4 tracking-tight">Contact Our Team</h1>
-          <p className="text-blue-100/90 text-sm sm:text-base mt-3 max-w-xl mx-auto">
+          <p className="text-deepBlue-100/90 text-sm sm:text-base mt-3 max-w-xl mx-auto">
             Have questions about group savings, payouts, or account verification? Send us a message or connect directly.
           </p>
         </div>
@@ -68,7 +68,7 @@ const Contact = () => {
                   value={formData.name}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all outline-none"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-deepBlue-600 focus:border-transparent transition-all outline-none"
                   placeholder="e.g. John Doe"
                 />
               </div>
@@ -84,7 +84,7 @@ const Contact = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all outline-none"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-deepBlue-600 focus:border-transparent transition-all outline-none"
                   placeholder="name@example.com"
                 />
               </div>
@@ -99,7 +99,7 @@ const Contact = () => {
                   value={formData.subject}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all outline-none text-slate-700"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-deepBlue-600 focus:border-transparent transition-all outline-none text-slate-700"
                 >
                   <option value="">Select a topic</option>
                   <option value="general">General Inquiry</option>
@@ -122,14 +122,14 @@ const Contact = () => {
                   onChange={handleInputChange}
                   required
                   rows={5}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all outline-none resize-none"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-deepBlue-600 focus:border-transparent transition-all outline-none resize-none"
                   placeholder="How can we help you?"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 px-6 rounded-xl transition-all shadow-lg shadow-blue-600/25 flex items-center justify-center gap-2"
+                className="w-full bg-deepBlue-600 hover:bg-deepBlue-700 text-white font-semibold py-3.5 px-6 rounded-xl transition-all shadow-lg shadow-deepBlue-600/25 flex items-center justify-center gap-2"
               >
                 <Send className="w-4 h-4" />
                 <span>Send Message</span>
@@ -147,7 +147,7 @@ const Contact = () => {
               </h3>
 
               <div className="flex items-start gap-4">
-                <div className="p-3 rounded-xl bg-blue-50 text-blue-600 shrink-0">
+                <div className="p-3 rounded-xl bg-deepBlue-50 text-deepBlue-600 shrink-0">
                   <Mail className="w-5 h-5" />
                 </div>
                 <div>

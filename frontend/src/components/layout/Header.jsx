@@ -31,7 +31,7 @@ const SettingsSidebar = ({ open, onClose, user, onLogout }) => {
       >
         <div className="p-5 pt-12 border-b border-gray-100 flex-shrink-0">
           <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 rounded-full flex items-center justify-center text-white text-lg font-bold flex-shrink-0" style={{ backgroundColor: '#0a79f0' }}>
+            <div className="w-12 h-12 rounded-full flex items-center justify-center text-white text-lg font-bold flex-shrink-0" style={{ backgroundColor: '#3d71d9' }}>
               {user?.firstName?.[0]?.toUpperCase() ?? 'U'}
             </div>
             <div className="flex-1 min-w-0">
@@ -48,8 +48,8 @@ const SettingsSidebar = ({ open, onClose, user, onLogout }) => {
           {items.map(({ icon: Icon, label, path }) => (
             <button key={label} onClick={() => path ? nav(path) : onClose()}
               className="w-full flex items-center space-x-3 px-5 py-3 hover:bg-gray-50 transition">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#0a79f015' }}>
-                <Icon className="w-5 h-5" style={{ color: '#0a79f0' }} />
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#3d71d915' }}>
+                <Icon className="w-5 h-5" style={{ color: '#3d71d9' }} />
               </div>
               <span className="flex-1 text-left text-sm font-medium text-gray-800">{label}</span>
               <ChevronRight className="w-4 h-4 text-gray-400" />
@@ -100,7 +100,7 @@ const Header = () => {
             >
               <div
                 className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
-                style={{ backgroundColor: '#0a79f0' }}
+                style={{ backgroundColor: '#3d71d9' }}
               >
                 {user.firstName?.[0]?.toUpperCase() ?? 'U'}
               </div>

@@ -26,8 +26,8 @@ const GroupSchema = new mongoose.Schema({
   maxMembers: {
     type: Number,
     required: [true, 'Maximum members is required'],
-    min: [2, 'Minimum 2 members required'],
-    max: [50, 'Maximum 50 members allowed']
+    min: [1, 'Minimum 1 member required'],
+    max: [100, 'Maximum 100 members allowed']
   },
 
   members: [{
@@ -55,8 +55,8 @@ const GroupSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Contribution frequency is required'],
     enum: {
-      values: ['Weekly', 'Bi-Weekly', 'Monthly'],
-      message: 'Frequency must be Weekly, Bi-Weekly, or Monthly'
+      values: ['Daily', 'Weekly', 'Bi-Weekly', 'Monthly', 'Bi-Monthly'],
+      message: 'Frequency must be Daily, Weekly, Bi-Weekly, Monthly, or Bi-Monthly'
     }
   },
 
@@ -64,9 +64,21 @@ const GroupSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Payout order is required'],
     enum: {
-      values: ['random', 'firstCome', 'bidding'],
-      message: 'Payout order must be random, firstCome, or bidding'
+      values: ['random', 'firstCome', 'bidding', 'vote'],
+      message: 'Payout order must be random, firstCome, bidding, or vote'
     }
+  },
+
+  // When payoutOrder is 'vote', tracks the voting state
+  payoutVoting: {
+    isOpen: { type: Boolean, default: false },
+    openedAt: { type: Date },
+    closesAt: { type: Date },
+    votes: [{
+      memberId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      nomineeId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      votedAt: { type: Date, default: Date.now }
+    }]
   },
 
   duration: {
@@ -217,12 +229,16 @@ GroupSchema.methods.calculateNextContribution = function() {
   const now = new Date();
   
   switch (this.frequency) {
+    case 'Daily':
+      return new Date(now.setDate(now.getDate() + 1));
     case 'Weekly':
       return new Date(now.setDate(now.getDate() + 7));
     case 'Bi-Weekly':
       return new Date(now.setDate(now.getDate() + 14));
     case 'Monthly':
       return new Date(now.setMonth(now.getMonth() + 1));
+    case 'Bi-Monthly':
+      return new Date(now.setMonth(now.getMonth() + 2));
     default:
       return new Date(now.setMonth(now.getMonth() + 1));
   }

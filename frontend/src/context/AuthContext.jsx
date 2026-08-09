@@ -19,6 +19,8 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
   // Tracks when credentials are verified but OTP hasn't been completed yet
   const [pendingOtp, setPendingOtp] = useState(false);
+  // Admin role tracking
+  const [isAdmin, setIsAdmin] = useState(false);
 
   /**
    * Initialize authentication state on mount
@@ -55,7 +57,8 @@ export const AuthProvider = ({ children }) => {
       if (response.success && user) {
         setUser(user);
         setIsAuthenticated(true);
-        console.log('✅ User authenticated:', user.email);
+        setIsAdmin(user.role === 'admin' || user.role === 'moderator');
+        console.log('✅ User authenticated:', user.email, 'Admin:', user.role);
       }
     } catch (error) {
       if (error instanceof APIError && error.statusCode === 401) {
@@ -68,6 +71,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem('authToken');
       setUser(null);
       setIsAuthenticated(false);
+      setIsAdmin(false);
     } finally {
       setLoading(false);
     }
@@ -95,7 +99,8 @@ export const AuthProvider = ({ children }) => {
       if (response.success && user) {
         setUser(user);
         setIsAuthenticated(true);
-        console.log('✅ Login successful');
+        setIsAdmin(user.role === 'admin' || user.role === 'moderator');
+        console.log('✅ Login successful', 'Admin:', user.role);
         return { success: true, user };
       } else {
         throw new Error('Invalid response from server');
@@ -105,6 +110,7 @@ export const AuthProvider = ({ children }) => {
       setError(error.message);
       setUser(null);
       setIsAuthenticated(false);
+      setIsAdmin(false);
       throw error;
     }
   };
@@ -131,7 +137,8 @@ export const AuthProvider = ({ children }) => {
       if (response.success && user) {
         setUser(user);
         setIsAuthenticated(true);
-        console.log('✅ Signup successful');
+        setIsAdmin(user.role === 'admin' || user.role === 'moderator');
+        console.log('✅ Signup successful', 'Admin:', user.role);
         return { success: true, user };
       } else {
         throw new Error('Invalid response from server');
@@ -141,6 +148,7 @@ export const AuthProvider = ({ children }) => {
       setError(error.message);
       setUser(null);
       setIsAuthenticated(false);
+      setIsAdmin(false);
       throw error;
     }
   };
@@ -157,6 +165,7 @@ export const AuthProvider = ({ children }) => {
     setPendingOtp(false);
     setUser(user || null);
     setIsAuthenticated(true);
+    setIsAdmin(user?.role === 'admin' || user?.role === 'moderator');
     setError(null);
   };
 
@@ -176,6 +185,7 @@ export const AuthProvider = ({ children }) => {
       // Clear local state
       setUser(null);
       setIsAuthenticated(false);
+      setIsAdmin(false);
       setError(null);
       localStorage.removeItem('authToken');
 
@@ -186,6 +196,7 @@ export const AuthProvider = ({ children }) => {
       // Even if logout API call fails, clear local state
       setUser(null);
       setIsAuthenticated(false);
+      setIsAdmin(false);
       setError(null);
       localStorage.removeItem('authToken');
     } finally {
@@ -246,6 +257,7 @@ export const AuthProvider = ({ children }) => {
       // If token refresh fails, user needs to log in again
       setUser(null);
       setIsAuthenticated(false);
+      setIsAdmin(false);
 
       throw error;
     }
@@ -262,6 +274,27 @@ export const AuthProvider = ({ children }) => {
       ...prevUser,
       ...userData
     }));
+    // Update admin status if role changed
+    if (userData.role !== undefined) {
+      setIsAdmin(userData.role === 'admin' || userData.role === 'moderator');
+    }
+  };
+
+  /**
+   * Check Admin Permission
+   * 
+   * @param {string} requiredRole - Required admin role
+   * @returns {boolean} Whether user has required permission
+   */
+  const hasAdminPermission = (requiredRole) => {
+    if (!isAdmin || !user?.role) return false;
+    
+    const roleHierarchy = {
+      'admin': 2,      // Full admin access
+      'moderator': 1   // Limited admin access
+    };
+    
+    return (roleHierarchy[user.role] || 0) >= (roleHierarchy[requiredRole] || 0);
   };
 
   /**
@@ -280,6 +313,7 @@ export const AuthProvider = ({ children }) => {
     loading,
     error,
     pendingOtp,
+    isAdmin,
     login,
     signup,
     logout,
@@ -287,7 +321,8 @@ export const AuthProvider = ({ children }) => {
     refreshAuth,
     updateUser,
     clearError,
-    completeOtpLogin
+    completeOtpLogin,
+    hasAdminPermission
   };
 
   return (

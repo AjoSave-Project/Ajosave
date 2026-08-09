@@ -13,6 +13,7 @@ const HomeFooter = () => {
 
   const footerLinks = {
     company: [
+      { label: 'Home', path: '/' },
       { label: 'About Us', path: '/about' },
       { label: 'How It Works', path: '/how-it-works' },
     ],
@@ -33,9 +34,9 @@ const HomeFooter = () => {
 
   return (
     <footer 
-      className="relative text-white bg-deepBlue-900"
+      className="relative text-white bg-deepBlue-700"
       style={{
-        backgroundImage: `linear-gradient(rgba(17, 24, 39, 0.85), rgba(17, 24, 39, 0.85)), url('https://images.unsplash.com/photo-1650803321892-efba59b28a60?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')`,
+        backgroundImage: `linear-gradient(rgba(19, 62, 148, 0.85), rgba(8, 32, 83, 0.85)), url('https://images.unsplash.com/photo-1650803321892-efba59b28a60?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'

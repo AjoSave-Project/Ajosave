@@ -32,10 +32,12 @@ import CreateGroup from './components/groups/CreateGroup'
 import JoinGroup from './components/groups/JoinGroup'
 import GroupChat from './pages/GroupChat'
 import GroupChats from './pages/GroupChats'
+// Admin imports
+import AdminLayout from './components/admin/layout/AdminLayout'
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading, pendingOtp } = useAuth()
+  const { isAuthenticated, loading, pendingOtp, isAdmin } = useAuth()
   
   if (loading) {
     return (
@@ -46,6 +48,11 @@ const ProtectedRoute = ({ children }) => {
   }
   
   if (isAuthenticated && pendingOtp) return <Navigate to="/auth" replace />
+  
+  // Redirect admins to admin dashboard instead of regular dashboard
+  if (isAuthenticated && isAdmin && window.location.pathname === '/dashboard') {
+    return <Navigate to="/admin/dashboard" replace />
+  }
   
   return isAuthenticated ? children : <Navigate to="/auth" replace />
 }
@@ -61,6 +68,29 @@ const PublicRoute = ({ children }) => {
       </div>
     )
   }
+  return children
+}
+
+// Protected Admin Route Component
+const ProtectedAdminRoute = ({ children }) => {
+  const { isAuthenticated, loading, isAdmin } = useAuth()
+  
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-deepBlue-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-deepBlue-600"></div>
+      </div>
+    )
+  }
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/auth" replace />
+  }
+  
+  if (!isAdmin) {
+    return <Navigate to="/dashboard" replace />
+  }
+  
   return children
 }
 
@@ -252,6 +282,16 @@ const AppContent = () => {
                 <Wallet />
               </Layout>
             </ProtectedRoute>
+          } 
+        />
+
+        {/* Admin Routes - Secure Admin Panel */}
+        <Route 
+          path="/admin/*" 
+          element={
+            <ProtectedAdminRoute>
+              <AdminLayout />
+            </ProtectedAdminRoute>
           } 
         />
       </Routes>

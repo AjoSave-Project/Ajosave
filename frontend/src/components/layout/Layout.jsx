@@ -3,19 +3,21 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, Users, CreditCard, Wallet, LogOut } from 'lucide-react';
+import { Home, Users, CreditCard, Wallet, LogOut, MessageSquare } from 'lucide-react';
 
 const navigation = [
   { path: '/dashboard', icon: Home, label: 'Home' },
   { path: '/groups', icon: Users, label: 'Groups' },
+  { path: '/chats', icon: MessageSquare, label: 'Chats' },
   { path: '/payment', icon: CreditCard, label: 'Pay' },
   { path: '/wallet', icon: Wallet, label: 'Wallet' },
 ];
 
-const isNavActive = (item, pathname) =>
-  item.path === '/groups'
-    ? pathname.startsWith('/groups')
-    : pathname === item.path;
+const isNavActive = (item, pathname) => {
+  if (item.path === '/groups') return pathname.startsWith('/groups') && !pathname.includes('/chat');
+  if (item.path === '/chats') return pathname === '/chats' || pathname.includes('/chat');
+  return pathname === item.path;
+};
 
 // Small dropdown that appears below the avatar on mobile
 const ProfileDropdown = ({ user, onLogout, onClose }) => {
@@ -92,7 +94,7 @@ const Layout = ({ children }) => {
               <div className="flex items-center gap-3">
                 <div
                   className="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
-                  style={{ backgroundColor: '#0a79f0' }}
+                  style={{ backgroundColor: '#3d71d9' }}
                 >
                   {user.firstName?.[0]?.toUpperCase() ?? 'U'}
                 </div>
@@ -156,7 +158,7 @@ const Layout = ({ children }) => {
                 >
                   <div
                     className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
-                    style={{ backgroundColor: '#0a79f0' }}
+                    style={{ backgroundColor: '#3d71d9' }}
                   >
                     {user.firstName?.[0]?.toUpperCase() ?? 'U'}
                   </div>

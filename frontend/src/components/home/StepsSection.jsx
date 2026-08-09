@@ -97,7 +97,7 @@ export default function StepsSection() {
         {/* ================= HEADER SECTION ================= */}
         <div className="text-center max-w-3xl mx-auto mb-6">
           {/* Heading: Shows short text on mobile, long text on large screens */}
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-primary-500 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-deepBlue-600 tracking-tight">
             <span className="block sm:hidden">Four steps to saving together.</span>
             <span className="hidden sm:block">From zero to your first group payout in minutes.</span>
           </h2>
@@ -119,7 +119,7 @@ export default function StepsSection() {
                   key={step.id}
                   onClick={() => setActiveStep(step.id)}
                   className={`flex-1 min-w-[50px] py-2 rounded-lg text-xs font-bold transition-all ${isActive
-                    ? 'bg-blue-300 text-white shadow-md'
+                    ? 'bg-deepBlue-400 text-white shadow-md'
                     : 'bg-white text-slate-600 border border-slate-200'
                     }`}
                 >
@@ -131,7 +131,7 @@ export default function StepsSection() {
 
           <div className="bg-white text-center space-y-4">
             <div className="space-y-1">
-              <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">
+              <span className="text-[10px] font-bold text-deepBlue-600 uppercase tracking-widest">
                 Step {currentStep.id} of {STEPS.length}
               </span>
               <h3 className="text-base font-bold text-slate-900">{currentStep.title}</h3>
@@ -165,14 +165,14 @@ export default function StepsSection() {
                   key={step.id}
                   onClick={() => setActiveStep(step.id)}
                   className={`p-2.5 rounded-xl border-2 transition-all duration-300 cursor-pointer ${isActive
-                    ? 'bg-white border-blue-600 shadow-md transform translate-x-1.5'
+                    ? 'bg-white border-deepBlue-600 shadow-md transform translate-x-1.5'
                     : 'bg-white/40 border-transparent hover:bg-white/80 hover:border-slate-200'
                     }`}
                 >
                   <div className="flex items-start gap-3">
                     <div
                       className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0 transition-colors mt-0.5 ${isActive
-                        ? 'bg-blue-600 text-white'
+                        ? 'bg-deepBlue-600 text-white'
                         : 'bg-slate-200 text-slate-600'
                         }`}
                     >
@@ -180,7 +180,7 @@ export default function StepsSection() {
                     </div>
                     <div>
                       <h4
-                        className={`text-xl font-bold transition-colors ${isActive ? 'text-blue-500' : 'text-slate-700'
+                        className={`text-xl font-bold transition-colors ${isActive ? 'text-deepBlue-500' : 'text-slate-700'
                           }`}
                       >
                         {step.title}
