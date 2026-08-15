@@ -66,6 +66,10 @@ const sendOtpEmail = async (email, otp, firstName = 'User') => {
   // Placing the OTP code in the subject line dramatically improves inbox placement
   const subject = `${otp} is your AjoSave verification code`;
   
+  // Use professional greeting if firstName is 'Temp' (signup flow) or generic 'User'
+  const isGenericName = !firstName || firstName === 'Temp' || firstName === 'User';
+  const greeting = isGenericName ? 'Welcome to AjoSave!' : `Hello ${firstName}!`;
+  
   const htmlContent = `
     <!DOCTYPE html>
     <html>
@@ -136,7 +140,7 @@ const sendOtpEmail = async (email, otp, firstName = 'User') => {
           <p style="color: #6b7280; margin: 0;">Digital Community Saving Made Simple</p>
         </div>
         
-        <h2 style="color: #1e40af;">Hello ${firstName}!</h2>
+        <h2 style="color: #1e40af;">${greeting}</h2>
         
         <p>You requested a verification code to access your AjoSave account. Use the code below to complete your verification:</p>
         
@@ -168,7 +172,7 @@ const sendOtpEmail = async (email, otp, firstName = 'User') => {
   `;
 
   const textContent = `
-Hello ${firstName}!
+${greeting}
 
 Your AjoSave verification code is: ${otp}
 
