@@ -134,7 +134,15 @@ export const AuthProvider = ({ children }) => {
       }
 
       const user = response.data?.user || response.user;
+      const token = response.data?.token || response.token;
+      
       if (response.success && user) {
+        // Store token in localStorage for API authentication
+        if (token) {
+          localStorage.setItem('authToken', token);
+          console.log('🔑 Auth token stored in localStorage');
+        }
+        
         setUser(user);
         setIsAuthenticated(true);
         setIsAdmin(user.role === 'admin' || user.role === 'moderator');
