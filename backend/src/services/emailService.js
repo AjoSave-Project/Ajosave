@@ -16,6 +16,11 @@ const EMAIL_FROM_NAME = process.env.EMAIL_FROM_NAME || 'AjoSave';
 
 /**
  * Create and configure nodemailer transporter
+ * 
+ * Enhanced configuration for better deliverability:
+ * - Explicit host/port settings
+ * - Proper TLS configuration
+ * - Connection pooling for better performance
  */
 const createTransporter = () => {
   if (!EMAIL_USER || !EMAIL_PASSWORD) {
@@ -30,11 +35,27 @@ const createTransporter = () => {
     }
 
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 587, // Use 587 (STARTTLS) instead of 465 (SSL) for better compatibility
+      secure: false, // true for 465, false for other ports
       auth: {
         user: EMAIL_USER,
         pass: EMAIL_PASSWORD,
       },
+      tls: {
+        // Do not fail on invalid certificates (use with caution in production)
+        rejectUnauthorized: true,
+        // Minimum TLS version
+        minVersion: 'TLSv1.2',
+      },
+      // Connection pooling for better performance
+      pool: true,
+      maxConnections: 5,
+      maxMessages: 100,
+      // Keep connection alive
+      connectionTimeout: 10000, // 10 seconds
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
     });
 
     console.log('✅ Email transporter created successfully');
@@ -373,6 +394,8 @@ The AjoSave Team
 
 /**
  * Generic Email Sender
+ * 
+ * Enhanced with anti-spam headers and proper email formatting
  */
 const sendEmail = async (to, subject, text, html) => {
   const transporter = getTransporter();
@@ -390,18 +413,37 @@ const sendEmail = async (to, subject, text, html) => {
       subject,
       text,
       html,
-      // High priority headers for transactional email delivery
+      // Enhanced headers for better deliverability and spam score
       headers: {
+        // Priority headers (use sparingly - only for truly important emails)
         'X-Priority': '1',
         'X-MSMail-Priority': 'High',
         'Importance': 'high',
+        
+        // Email category - helps email providers understand this is transactional
+        'X-Auto-Response-Suppress': 'OOF, DR, RN, NRN, AutoReply',
+        'X-Entity-Ref-ID': process.env.EMAIL_ENTITY_ID || 'ajosave-notifications',
+        
+        // List-Unsubscribe header (required by many email providers)
+        // Even for transactional emails, it's good practice
+        'List-Unsubscribe': '<mailto:support@ajosave.com?subject=unsubscribe>',
+        
+        // Prevent threading/grouping with other emails
+        'X-PM-Message-Id': `ajosave-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       },
+      // Email categories for Gmail
+      category: 'transactional',
+      // Prevent email clients from converting links
+      disableUrlAccess: false,
+      // Message encoding
+      encoding: 'utf-8',
     };
 
     const info = await transporter.sendMail(mailOptions);
     
     console.log(`✅ Email sent successfully to ${to}`);
     console.log(`   Message ID: ${info.messageId}`);
+    console.log(`   Subject: ${subject}`);
     
     return {
       success: true,
@@ -410,6 +452,7 @@ const sendEmail = async (to, subject, text, html) => {
     };
   } catch (error) {
     console.error(`❌ Failed to send email to ${to}:`, error.message);
+    console.error(`   Subject: ${subject}`);
     throw new Error(`Failed to send email: ${error.message}`);
   }
 };
