@@ -145,6 +145,9 @@ const Signup = () => {
 
       if (result?.requiresOtp) {
         setOtpState({ userId: result.userId, phoneNumber: result.phoneNumber, email: result.email });
+      } else if (result?.success) {
+        // Registration completed successfully without OTP
+        setSuccess(true);
       }
     } catch (err) {
       if (err instanceof APIError) {

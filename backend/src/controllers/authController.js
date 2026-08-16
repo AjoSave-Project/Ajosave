@@ -175,7 +175,7 @@ const registerUser = asyncErrorHandler(async (req, res) => {
           success: true,
           message: 'Registration successful! Welcome to Ajosave.',
           data: {
-            user: savedUser,
+            user: formatUserResponse(savedUser),
             token,
           },
           timestamp: new Date().toISOString()
@@ -255,7 +255,7 @@ const registerUser = asyncErrorHandler(async (req, res) => {
       success: true,
       message: 'Registration successful! Welcome to Ajosave.',
       data: {
-        user: savedUser,
+        user: formatUserResponse(savedUser),
         token,
       },
       timestamp: new Date().toISOString()
@@ -863,13 +863,16 @@ const verifyEmailOtp = asyncErrorHandler(async (req, res) => {
   user.isEmailVerified = true;
   await user.save();
 
+  // Generate JWT token for authenticated session
+  const token = generateToken(user._id);
+  setAuthCookie(res, token);
+
   res.status(200).json({
     success: true,
     message: 'Email verified successfully',
     data: {
-      userId: user._id,
-      email: user.email,
-      phoneNumber: user.phoneNumber,
+      user: formatUserResponse(user),
+      token,
     },
     timestamp: new Date().toISOString(),
   });
